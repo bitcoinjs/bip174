@@ -1,0 +1,29 @@
+{
+  "name": "bip174",
+  "version": "0.0.1",
+  "description": "",
+  "main": "index.js",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "standard": "standard",
+    "test": "npm run standard && npm run unit",
+    "unit": "tape tests/*.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bitcoinjs/bip174.git"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "standard": "^10.0.3"
+  },
+  "author": "Daniel Cousens",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bitcoinjs/bip174/issues"
+  },
+  "homepage": "https://github.com/bitcoinjs/bip174#readme"
+}
+
