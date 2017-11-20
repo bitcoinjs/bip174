@@ -4,7 +4,9 @@
 
 [![js-standard-style](https://cdn.rawgit.com/feross/standard/master/badge.svg)](https://github.com/feross/standard)
 
-WIP
+
+A [BIP174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki) compatible partial Transaction encoding library.
+
 
 ## Example
 ``` javascript
