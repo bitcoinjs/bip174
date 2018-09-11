@@ -16,4 +16,4 @@ let bip174 = require('bip174')
 ```
 
 
-## LICENSE [ISC](LICENSE)
+## LICENSE [MIT](LICENSE)
