@@ -20,7 +20,7 @@
     "standard": "^10.0.3"
   },
   "author": "Daniel Cousens",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/bitcoinjs/bip174/issues"
   },
