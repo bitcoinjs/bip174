@@ -1,24 +1,19 @@
 const BN = require('bn.js')
 const varuint = require('varuint-bitcoin')
+const { crypto, ECPair, script, Transaction } = require('bitcoinjs-lib')
+const { decompile } = script
 
 const bip32Derivation = require('./bip32_derivation')
 const checkNonWitnessUtxo = require('./check_non_witness_utxo')
 const checkWitnessUtxo = require('./check_witness_utxo')
-const { crypto } = require('bitcoinjs-lib')
 const decodeSignature = require('./decode_signature')
-const { ECPair } = require('bitcoinjs-lib')
-const { script } = require('bitcoinjs-lib')
-const { Transaction } = require('bitcoinjs-lib')
 const types = require('./types')
 
-const { decompile } = script
-// const fingerPrintByteLength = 4
 const globalSeparatorCode = parseInt(types.global.separator, 16)
 const keyCodeByteLength = 1
 const magicBytes = Buffer.from(types.global.magic)
 const { hash160 } = crypto
 const sigHashTypeByteLength = 4
-// const stackIndexByteLength = 4
 const tokensByteLength = 8
 
 /** Decode a BIP 174 encoded PSBT

@@ -1,6 +1,3 @@
-const { alloc } = Buffer
-const { max } = Math
-
 /** Get from DER
 
   {
@@ -15,8 +12,8 @@ module.exports = ({ x }) => {
     x = x.slice(1)
   }
 
-  const bstart = max(0, 32 - x.length)
-  const buffer = alloc(32, 0)
+  const bstart = Math.max(0, 32 - x.length)
+  const buffer = Buffer.alloc(32, 0)
 
   x.copy(buffer, bstart)
 

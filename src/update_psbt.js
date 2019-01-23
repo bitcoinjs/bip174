@@ -1,26 +1,22 @@
 const BN = require('bn.js')
 const { OP_0 } = require('bitcoin-ops')
 const varuint = require('varuint-bitcoin')
+const { crypto, script, Transaction } = require('bitcoinjs-lib')
+const { decompile } = script
+const { hash160, sha256 } = crypto
 
 const bip32Path = require('./bip32_path')
-const { crypto } = require('bitcoinjs-lib')
 const decodePsbt = require('./decode_psbt')
 const encodePsbt = require('./encode_psbt')
 const encodeSignature = require('./encode_signature')
 const isMultisig = require('./is_multisig')
 const pushData = require('./push_data')
-const { script } = require('bitcoinjs-lib')
-const { Transaction } = require('bitcoinjs-lib')
 const types = require('./types')
 
 const decBase = 10
-const { decompile } = script
 const endianness = 'le'
-const { hash160 } = crypto
 const opNumberOffset = 80
-const { sha256 } = crypto
 const sighashByteLength = 4
-// const stackIndexByteLength = 4
 const tokensByteLength = 8
 
 /** Update a PSBT

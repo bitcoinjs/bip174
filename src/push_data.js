@@ -1,9 +1,6 @@
 const BN = require('bn.js')
-const { OP_PUSHDATA1 } = require('bitcoin-ops')
-const { OP_PUSHDATA2 } = require('bitcoin-ops')
-const { OP_PUSHDATA4 } = require('bitcoin-ops')
+const { OP_PUSHDATA1, OP_PUSHDATA2, OP_PUSHDATA4 } = require('bitcoin-ops')
 const pushdata = require('pushdata-bitcoin')
-// const varuint = require('varuint-bitcoin')
 
 const decBase = 10
 const endianness = 'le'

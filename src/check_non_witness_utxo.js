@@ -1,9 +1,5 @@
-const { OP_EQUAL } = require('bitcoin-ops')
-const { OP_HASH160 } = require('bitcoin-ops')
-
-const { script } = require('bitcoinjs-lib')
-const { Transaction } = require('bitcoinjs-lib')
-
+const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops')
+const { script, Transaction } = require('bitcoinjs-lib')
 const { decompile } = script
 const p2shHashByteLength = 20
 

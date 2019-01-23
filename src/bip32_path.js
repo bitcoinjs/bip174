@@ -1,5 +1,3 @@
-const { concat } = Buffer
-
 const BN = require('bn.js')
 
 const bip32KeyLimit = Math.pow(2, 31)
@@ -21,7 +19,7 @@ const hardenedMarker = "'"
 module.exports = ({ path }) => {
   const indices = path.split(bip32PathSeparator)
 
-  return concat(indices.slice(1).map(n => {
+  return Buffer.concat(indices.slice(1).map(n => {
     const len = hardenedMarker.length
 
     const isHardened = n.slice(-len) === hardenedMarker

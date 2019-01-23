@@ -1,14 +1,11 @@
-const { crypto } = require('bitcoinjs-lib')
-const decodePsbt = require('./decode_psbt')
-const { ECPair } = require('bitcoinjs-lib')
-const encodeSignature = require('./encode_signature')
-const { networks } = require('bitcoinjs-lib')
-const { script } = require('bitcoinjs-lib')
-const { Transaction } = require('bitcoinjs-lib')
-const updatePsbt = require('./update_psbt')
-
+const { crypto, ECPair, networks, script, Transaction } = require('bitcoinjs-lib')
 const { decompile } = script
 const { hash160 } = crypto
+
+const decodePsbt = require('./decode_psbt')
+const encodeSignature = require('./encode_signature')
+const updatePsbt = require('./update_psbt')
+
 const hexBase = 16
 
 /** Update a PSBT with signatures

@@ -1,8 +1,8 @@
 const { OP_CHECKMULTISIG } = require('bitcoin-ops')
 
 const { script } = require('bitcoinjs-lib')
-
 const { decompile } = script
+
 const maxKeyCount = 16
 const opNumberOffset = 80
 

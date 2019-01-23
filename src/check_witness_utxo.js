@@ -1,10 +1,9 @@
-const { OP_EQUAL } = require('bitcoin-ops')
-const { OP_HASH160 } = require('bitcoin-ops')
+const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops')
 
 const checkWitnessVersion = require('./check_witness_version')
 const { script } = require('bitcoinjs-lib')
-
 const { decompile } = script
+
 const nestedScriptPubElementsLen = 3
 const p2pkhHashByteLength = 20
 const p2shHashByteLength = 20
