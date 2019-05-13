@@ -9,13 +9,13 @@
 */
 module.exports = ({ x }) => {
   if (x[0] === 0x00) {
-    x = x.slice(1)
+    x = x.slice(1);
   }
 
-  const bstart = Math.max(0, 32 - x.length)
-  const buffer = Buffer.alloc(32, 0)
+  const bstart = Math.max(0, 32 - x.length);
+  const buffer = Buffer.alloc(32, 0);
 
-  x.copy(buffer, bstart)
+  x.copy(buffer, bstart);
 
-  return buffer
-}
+  return buffer;
+};

@@ -1,7 +1,7 @@
-const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops')
-const { script, Transaction } = require('bitcoinjs-lib')
-const { decompile } = script
-const p2shHashByteLength = 20
+const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops');
+const { script, Transaction } = require('bitcoinjs-lib');
+const { decompile } = script;
+const p2shHashByteLength = 20;
 
 /** Check that an input's non witness utxo is valid
 
@@ -17,29 +17,29 @@ const p2shHashByteLength = 20
 module.exports = ({ hash, script, utxo }) => {
   const scriptPubHashes = Transaction.fromBuffer(utxo).outs.map(out => {
     // It's expected that the scriptPub be a normal P2SH script
-    const [hash160, scriptHash, isEqual, extra] = decompile(out.script)
+    const [hash160, scriptHash, isEqual, extra] = decompile(out.script);
 
     if (hash160 !== OP_HASH160) {
-      return null
+      return null;
     }
 
     if (scriptHash.length !== p2shHashByteLength) {
-      return null
+      return null;
     }
 
     if (isEqual !== OP_EQUAL) {
-      return null
+      return null;
     }
 
     if (extra) {
-      return null
+      return null;
     }
 
-    return scriptHash
-  })
+    return scriptHash;
+  });
 
   // Make sure the p2sh script hashes has a hash that matches the input
   if (!scriptPubHashes.find(h => !!h && h.equals(hash))) {
-    throw new Error('RedeemScriptDoesNotMatchUtxo')
+    throw new Error('RedeemScriptDoesNotMatchUtxo');
   }
-}
+};

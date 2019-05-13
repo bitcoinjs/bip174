@@ -1,10 +1,10 @@
-const BN = require('bn.js')
-const { script, Transaction } = require('bitcoinjs-lib')
-const { decompile } = script
+const BN = require('bn.js');
+const { script, Transaction } = require('bitcoinjs-lib');
+const { decompile } = script;
 
-const decodePsbt = require('./decode_psbt')
+const decodePsbt = require('./decode_psbt');
 
-const decBase = 10
+const decBase = 10;
 
 /** Extract a transaction from a finalized PSBT
 
@@ -21,43 +21,43 @@ const decBase = 10
   }
 */
 module.exports = ({ psbt }) => {
-  let decoded
+  let decoded;
 
   try {
-    decoded = decodePsbt({ psbt })
+    decoded = decodePsbt({ psbt });
   } catch (err) {
-    throw err
+    throw err;
   }
 
-  const tx = Transaction.fromHex(decoded.unsigned_transaction)
+  const tx = Transaction.fromHex(decoded.unsigned_transaction);
 
   decoded.inputs.forEach((n, vin) => {
     if (!n.final_scriptsig && !n.final_scriptwitness) {
-      throw new Error('ExpectedFinalScriptSigsAndWitnesses')
+      throw new Error('ExpectedFinalScriptSigsAndWitnesses');
     }
 
     if (n.final_scriptsig) {
-      tx.setInputScript(vin, Buffer.from(n.final_scriptsig, 'hex'))
+      tx.setInputScript(vin, Buffer.from(n.final_scriptsig, 'hex'));
     }
 
     if (n.final_scriptwitness) {
-      const finalScriptWitness = Buffer.from(n.final_scriptwitness, 'hex')
+      const finalScriptWitness = Buffer.from(n.final_scriptwitness, 'hex');
 
       const witnessElements = decompile(finalScriptWitness).map(n => {
         if (!n) {
-          return Buffer.from([])
+          return Buffer.from([]);
         }
 
         if (Buffer.isBuffer(n)) {
-          return n
+          return n;
         }
 
-        return new BN(n, decBase).toArrayLike(Buffer)
-      })
+        return new BN(n, decBase).toArrayLike(Buffer);
+      });
 
-      tx.setWitness(vin, decompile(witnessElements))
+      tx.setWitness(vin, decompile(witnessElements));
     }
-  })
+  });
 
-  return { transaction: tx.toHex() }
-}
+  return { transaction: tx.toHex() };
+};

@@ -1,8 +1,8 @@
-const bip66 = require('bip66')
+const bip66 = require('bip66');
 
-const fromDer = require('./from_der')
+const fromDer = require('./from_der');
 
-const sigHashByteLength = 1
+const sigHashByteLength = 1;
 
 /** Decode signature
 
@@ -18,17 +18,17 @@ const sigHashByteLength = 1
 */
 module.exports = ({ signature }) => {
   if (!Buffer.isBuffer(signature)) {
-    throw new Error('ExpectedSignatureBufferToDecode')
+    throw new Error('ExpectedSignatureBufferToDecode');
   }
 
-  const buffer = signature
+  const buffer = signature;
 
-  const hashType = buffer.readUInt8(buffer.length - sigHashByteLength)
+  const hashType = buffer.readUInt8(buffer.length - sigHashByteLength);
 
-  const decode = bip66.decode(buffer.slice(0, -sigHashByteLength))
+  const decode = bip66.decode(buffer.slice(0, -sigHashByteLength));
 
-  const r = fromDer({ x: decode.r })
-  const s = fromDer({ x: decode.s })
+  const r = fromDer({ x: decode.r });
+  const s = fromDer({ x: decode.s });
 
-  return { hash_type: hashType, signature: Buffer.concat([r, s], 64) }
-}
+  return { hash_type: hashType, signature: Buffer.concat([r, s], 64) };
+};

@@ -1,5 +1,5 @@
-const maxWitnessVersion = 16
-const minWitnessVersion = 0
+const maxWitnessVersion = 16;
+const minWitnessVersion = 0;
 
 /** Check that a witness version is correct
 
@@ -12,10 +12,10 @@ const minWitnessVersion = 0
 */
 module.exports = ({ version }) => {
   if (version === null || version === undefined) {
-    throw new Error('ExpectedWitnessVersion')
+    throw new Error('ExpectedWitnessVersion');
   }
 
   if (version < minWitnessVersion || version > maxWitnessVersion) {
-    throw new Error('InvalidVersionNumberForWitnessScriptPub')
+    throw new Error('InvalidVersionNumberForWitnessScriptPub');
   }
-}
+};

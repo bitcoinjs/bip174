@@ -1,14 +1,14 @@
-const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops')
+const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops');
 
-const checkWitnessVersion = require('./check_witness_version')
-const { script } = require('bitcoinjs-lib')
-const { decompile } = script
+const checkWitnessVersion = require('./check_witness_version');
+const { script } = require('bitcoinjs-lib');
+const { decompile } = script;
 
-const nestedScriptPubElementsLen = 3
-const p2pkhHashByteLength = 20
-const p2shHashByteLength = 20
-const p2wshHashByteLength = 32
-const witnessScriptPubElementsLen = 2
+const nestedScriptPubElementsLen = 3;
+const p2pkhHashByteLength = 20;
+const p2shHashByteLength = 20;
+const p2wshHashByteLength = 32;
+const witnessScriptPubElementsLen = 2;
 
 /** Check that an input's witness UTXO is valid
 
@@ -23,73 +23,73 @@ const witnessScriptPubElementsLen = 2
 */
 module.exports = ({ hash, redeem, script }) => {
   if (!script) {
-    throw new Error('ExpectedScriptInWitnessUtxoCheck')
+    throw new Error('ExpectedScriptInWitnessUtxoCheck');
   }
 
-  const redeemScript = !redeem ? null : Buffer.from(redeem, 'hex')
-  const scriptPub = Buffer.from(script, 'hex')
+  const redeemScript = !redeem ? null : Buffer.from(redeem, 'hex');
+  const scriptPub = Buffer.from(script, 'hex');
 
-  const decompiledScriptPub = decompile(scriptPub)
+  const decompiledScriptPub = decompile(scriptPub);
 
   switch (decompiledScriptPub.length) {
     case nestedScriptPubElementsLen:
-      const [hash160, nestedScriptHash, isEqual] = decompiledScriptPub
+      const [hash160, nestedScriptHash, isEqual] = decompiledScriptPub;
 
       if (hash160 !== OP_HASH160) {
-        throw new Error('ExpectedHash160ForNestedWitnessScriptPub')
+        throw new Error('ExpectedHash160ForNestedWitnessScriptPub');
       }
 
       if (nestedScriptHash.length !== p2shHashByteLength) {
-        throw new Error('UnexpectedHashLengthForNestedWitnessScriptPub')
+        throw new Error('UnexpectedHashLengthForNestedWitnessScriptPub');
       }
 
       if (isEqual !== OP_EQUAL) {
-        throw new Error('UnexpectedOpCodeForNestedWitnessScriptPub')
+        throw new Error('UnexpectedOpCodeForNestedWitnessScriptPub');
       }
 
       if (!hash || !redeem) {
-        break
+        break;
       }
 
       {
-        const [version, redeemScriptHash, extra] = decompile(redeemScript)
+        const [version, redeemScriptHash, extra] = decompile(redeemScript);
 
         try {
-          checkWitnessVersion({ version })
+          checkWitnessVersion({ version });
         } catch (err) {
-          throw err
+          throw err;
         }
 
         if (extra) {
-          throw new Error('UnexpectedElementInWitnessRedeemScript')
+          throw new Error('UnexpectedElementInWitnessRedeemScript');
         }
 
         if (!redeemScriptHash.equals(hash)) {
-          throw new Error('InvalidRedeemScriptHashForWitnessScript')
+          throw new Error('InvalidRedeemScriptHashForWitnessScript');
         }
       }
-      break
+      break;
 
     case witnessScriptPubElementsLen:
-      const [version, scriptHash] = decompiledScriptPub
+      const [version, scriptHash] = decompiledScriptPub;
 
       try {
-        checkWitnessVersion({ version })
+        checkWitnessVersion({ version });
       } catch (err) {
-        throw err
+        throw err;
       }
 
       switch (scriptHash.length) {
         case p2pkhHashByteLength:
         case p2wshHashByteLength:
-          break
+          break;
 
         default:
-          throw new Error('InvalidScriptHashLengthForWitnessScriptPub')
+          throw new Error('InvalidScriptHashLengthForWitnessScriptPub');
       }
-      break
+      break;
 
     default:
-      throw new Error('ExpectedWitnessScriptPubForWitnessUtxo')
+      throw new Error('ExpectedWitnessScriptPubForWitnessUtxo');
   }
-}
+};

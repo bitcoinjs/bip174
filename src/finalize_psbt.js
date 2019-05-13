@@ -1,4 +1,4 @@
-const updatePsbt = require('./update_psbt')
+const updatePsbt = require('./update_psbt');
 
 /** Finalize the inputs of a PSBT
   {
@@ -14,5 +14,5 @@ const updatePsbt = require('./update_psbt')
   }
 */
 module.exports = ({ psbt }) => {
-  return updatePsbt({ is_final: true, psbt })
-}
+  return updatePsbt({ is_final: true, psbt });
+};
