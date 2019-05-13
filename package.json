@@ -7,7 +7,9 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "standard": "standard",
+    "format": "npm run prettier -- --write",
+    "format:ci": "npm run prettier -- --check",
+    "prettier": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
     "test": "npm run standard && npm run unit",
     "unit": "tap tests/*.js"
   },
@@ -24,7 +26,7 @@
     "varuint-bitcoin": "^1.1.0"
   },
   "devDependencies": {
-    "standard": "^12.0.1",
+    "prettier": "^1.17.0",
     "tap": "^12.2.0"
   },
   "author": "Daniel Cousens",
