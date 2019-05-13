@@ -7,6 +7,9 @@
     "node": ">=8.0.0"
   },
   "scripts": {
+    "coverage": "nyc --check-coverage --branches 90 --functions 90 --lines 90 tap tests/*.js",
+    "coverage-html": "nyc report --reporter=html",
+    "coverage-report": "nyc report --reporter=lcov",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
     "prettier": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
@@ -26,6 +29,7 @@
     "varuint-bitcoin": "^1.1.0"
   },
   "devDependencies": {
+    "nyc": "^14.1.1",
     "prettier": "^1.17.0",
     "tap": "^12.2.0"
   },
