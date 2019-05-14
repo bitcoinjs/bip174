@@ -1,5 +1,5 @@
-"use strict";
 const updatePsbt = require('./update_psbt');
+
 /** Finalize the inputs of a PSBT
   {
     psbt: <BIP 174 Encoded PSBT Hex String>
@@ -14,5 +14,5 @@ const updatePsbt = require('./update_psbt');
   }
 */
 module.exports = ({ psbt }) => {
-    return updatePsbt({ is_final: true, psbt });
+  return updatePsbt({ is_final: true, psbt });
 };

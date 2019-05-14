@@ -1,11 +1,9 @@
+"use strict";
 const varuint = require('varuint-bitcoin');
-
 const types = require('./types');
-
 const globalSeparator = Buffer.from(types.global.separator, 'hex');
 const magicBytes = Buffer.from(types.global.magic);
 const terminator = Buffer.from('00', 'hex');
-
 /** Encode a Partially Signed Bitcoin Transaction
 
   {
@@ -25,34 +23,25 @@ const terminator = Buffer.from('00', 'hex');
   }
 */
 module.exports = ({ pairs }) => {
-  if (!Array.isArray(pairs)) {
-    throw new Error('ExpectedKeyValuePairsToEncode');
-  }
-
-  // const components = [magicBytes, globalSeparator]
-
-  // let lastType = null
-
-  const encodedPairs = Buffer.concat(
-    pairs.map(({ separator, type, value }) => {
-      if ((!type || !value) && !separator) {
-        throw new Error('ExpectedSeparator');
-      }
-
-      if (!type) {
-        return terminator;
-      }
-
-      return Buffer.concat([
-        varuint.encode(type.length),
-        type,
-        varuint.encode(value.length),
-        value,
-      ]);
-    }),
-  );
-
-  const psbt = Buffer.concat([magicBytes, globalSeparator, encodedPairs]);
-
-  return { psbt: psbt.toString('hex') };
+    if (!Array.isArray(pairs)) {
+        throw new Error('ExpectedKeyValuePairsToEncode');
+    }
+    // const components = [magicBytes, globalSeparator]
+    // let lastType = null
+    const encodedPairs = Buffer.concat(pairs.map(({ separator, type, value }) => {
+        if ((!type || !value) && !separator) {
+            throw new Error('ExpectedSeparator');
+        }
+        if (!type) {
+            return terminator;
+        }
+        return Buffer.concat([
+            varuint.encode(type.length),
+            type,
+            varuint.encode(value.length),
+            value,
+        ]);
+    }));
+    const psbt = Buffer.concat([magicBytes, globalSeparator, encodedPairs]);
+    return { psbt: psbt.toString('hex') };
 };

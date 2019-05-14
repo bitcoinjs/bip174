@@ -7,14 +7,20 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "coverage": "nyc --check-coverage --branches 90 --functions 90 --lines 90 tap tests/*.js",
-    "coverage-html": "nyc report --reporter=html",
-    "coverage-report": "nyc report --reporter=lcov",
+    "build": "npm run clean && tsc -p ./tsconfig.json",
+    "clean": "rimraf src",
+    "coverage-report": "npm run build && npm run nobuild:coverage-report",
+    "coverage-html": "npm run build && npm run nobuild:coverage-html",
+    "coverage": "npm run build && npm run nobuild:coverage",
     "format": "npm run prettier -- --write",
     "format:ci": "npm run prettier -- --check",
-    "prettier": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
-    "test": "npm run format:ci && npm run unit",
-    "unit": "tap tests/*.js"
+    "nobuild:coverage": "nyc --check-coverage --branches 90 --functions 90 --lines 90 tap tests/*.js",
+    "nobuild:coverage-html": "nyc report --reporter=html",
+    "nobuild:coverage-report": "nyc report --reporter=lcov",
+    "nobuild:unit": "tap tests/*.js",
+    "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
+    "test": "npm run build && npm run format:ci && npm run unit",
+    "unit": "npm run build && npm run nobuild:unit"
   },
   "repository": {
     "type": "git",
@@ -29,9 +35,12 @@
     "varuint-bitcoin": "^1.1.0"
   },
   "devDependencies": {
+    "@types/node": "^12.0.1",
     "nyc": "^14.1.1",
     "prettier": "^1.17.0",
-    "tap": "^12.2.0"
+    "rimraf": "^2.6.3",
+    "tap": "^12.2.0",
+    "typescript": "^3.4.5"
   },
   "author": "Daniel Cousens",
   "license": "MIT",

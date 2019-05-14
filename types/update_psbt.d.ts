@@ -1,0 +1,18 @@
+declare const BN: any;
+declare const OP_0: any;
+declare const varuint: any;
+declare const crypto: any, script: any, Transaction: any;
+declare const decompile: any;
+declare const hash160: any, sha256: any;
+declare const bip32Path: any;
+declare const decodePsbt: any;
+declare const encodePsbt: any;
+declare const encodeSignature: any;
+declare const isMultisig: any;
+declare const pushData: any;
+declare const types: any;
+declare const decBase = 10;
+declare const endianness = "le";
+declare const opNumberOffset = 80;
+declare const sighashByteLength = 4;
+declare const tokensByteLength = 8;
