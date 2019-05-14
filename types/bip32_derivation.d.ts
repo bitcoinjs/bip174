@@ -21,5 +21,5 @@ export declare function bip32Derivation({ derivation, key }: {
 }): {
     fingerprint: any;
     path: any;
-    public_key: any;
+    public_key: string;
 };

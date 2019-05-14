@@ -15,5 +15,5 @@
 export declare function extractTransaction({ psbt }: {
     psbt: any;
 }): {
-    transaction: any;
+    transaction: string;
 };
