@@ -1,9 +1,16 @@
-declare const OP_EQUAL: any, OP_HASH160: any;
-declare const checkWitnessVersion: any;
-declare const script: any;
-declare const decompile: any;
-declare const nestedScriptPubElementsLen = 3;
-declare const p2pkhHashByteLength = 20;
-declare const p2shHashByteLength = 20;
-declare const p2wshHashByteLength = 32;
-declare const witnessScriptPubElementsLen = 2;
+/** Check that an input's witness UTXO is valid
+
+  {
+    hash: <Witness Script Hash Buffer Object>
+    [redeem]: <Redeem Script Hex String>
+    [script]: <Witness UTXO Script PubKey Hex String>
+  }
+
+  @throws
+  <Error>
+*/
+export declare function checkWitnessUtxo({ hash, redeem, script }: {
+    hash: any;
+    redeem: any;
+    script: any;
+}): void;

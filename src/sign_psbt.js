@@ -1,10 +1,11 @@
 "use strict";
-const { crypto, ECPair, networks, script, Transaction, } = require('bitcoinjs-lib');
-const { decompile } = script;
-const { hash160 } = crypto;
-const decodePsbt = require('./decode_psbt');
-const encodeSignature = require('./encode_signature');
-const updatePsbt = require('./update_psbt');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
+const { hash160 } = bitcoinjs_lib_1.crypto;
+const decode_psbt_1 = require("./decode_psbt");
+const encode_signature_1 = require("./encode_signature");
+const update_psbt_1 = require("./update_psbt");
 const hexBase = 16;
 /** Update a PSBT with signatures
 
@@ -22,23 +23,23 @@ const hexBase = 16;
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = args => {
+function signPsbt(args) {
     let decoded;
     const keys = {};
-    const network = networks[args.network];
+    const network = bitcoinjs_lib_1.networks[args.network];
     const pkHashes = {};
     args.signing_keys.map(k => {
-        const key = ECPair.fromWIF(k, network);
+        const key = bitcoinjs_lib_1.ECPair.fromWIF(k, network);
         keys[key.publicKey.toString('hex')] = key;
         pkHashes[hash160(key.publicKey).toString('hex')] = key;
     });
     try {
-        decoded = decodePsbt({ psbt: args.psbt });
+        decoded = decode_psbt_1.decodePsbt({ psbt: args.psbt });
     }
     catch (err) {
         throw err;
     }
-    const tx = Transaction.fromHex(decoded.unsigned_transaction);
+    const tx = bitcoinjs_lib_1.Transaction.fromHex(decoded.unsigned_transaction);
     const signatures = [];
     decoded.inputs.forEach((input, vin) => {
         // Absent bip32 derivations to look for, look in scripts for keys
@@ -70,11 +71,11 @@ module.exports = args => {
                     }
                     if (!!input.witness_script && !!input.redeem_script) {
                         // Nested witness input
-                        const nonWitnessUtxo = Transaction.fromHex(input.non_witness_utxo);
+                        const nonWitnessUtxo = bitcoinjs_lib_1.Transaction.fromHex(input.non_witness_utxo);
                         const redeemScript = Buffer.from(input.redeem_script, 'hex');
                         const script = Buffer.from(input.witness_script, 'hex');
                         const nestedScriptHash = hash160(redeemScript);
-                        const tx = Transaction.fromHex(decoded.unsigned_transaction);
+                        const tx = bitcoinjs_lib_1.Transaction.fromHex(decoded.unsigned_transaction);
                         // Find the value for the sigHash in the non-witness utxo
                         const { value } = nonWitnessUtxo.outs.find(n => {
                             return decompile(n.script)
@@ -84,7 +85,7 @@ module.exports = args => {
                         hashToSign = tx.hashForWitnessV0(vin, script, value, sighashType);
                     }
                     else if (!!input.witness_script && !!input.non_witness_utxo) {
-                        const txWithOutputs = Transaction.fromHex(input.non_witness_utxo);
+                        const txWithOutputs = bitcoinjs_lib_1.Transaction.fromHex(input.non_witness_utxo);
                         const vout = tx.ins[vin].index;
                         const script = Buffer.from(input.witness_script, 'hex');
                         const tokens = txWithOutputs.outs[vout].value;
@@ -92,12 +93,12 @@ module.exports = args => {
                     }
                     else {
                         // Non-witness script
-                        const forkId = networks[args.network].fork_id;
+                        const forkId = bitcoinjs_lib_1.networks[args.network].fork_id;
                         const forkMod = parseInt(forkId || 0, hexBase);
                         const redeem = Buffer.from(input.redeem_script, 'hex');
                         const sigHash = input.sighash_type;
                         let tokens;
-                        const spendsTx = Transaction.fromHex(input.non_witness_utxo);
+                        const spendsTx = bitcoinjs_lib_1.Transaction.fromHex(input.non_witness_utxo);
                         if (input.witness_utxo) {
                             tokens = input.witness_utxo.tokens;
                         }
@@ -112,7 +113,7 @@ module.exports = args => {
                     if (!hashToSign) {
                         return;
                     }
-                    const sig = encodeSignature({
+                    const sig = encode_signature_1.encodeSignature({
                         flag: sighashType,
                         signature: signingKey.sign(hashToSign).toString('hex'),
                     });
@@ -145,7 +146,7 @@ module.exports = args => {
             if (!hashToSign) {
                 return;
             }
-            const signature = encodeSignature({
+            const signature = encode_signature_1.encodeSignature({
                 flag: sighashType,
                 signature: signingKey.sign(hashToSign).toString('hex'),
             });
@@ -157,5 +158,6 @@ module.exports = args => {
             });
         });
     });
-    return updatePsbt({ signatures, psbt: args.psbt });
-};
+    return update_psbt_1.updatePsbt({ signatures, psbt: args.psbt });
+}
+exports.signPsbt = signPsbt;

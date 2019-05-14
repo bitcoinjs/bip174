@@ -1,9 +1,10 @@
 "use strict";
-const encodePsbt = require('./encode_psbt');
-const { global } = require('./types');
-const { Transaction } = require('bitcoinjs-lib');
+Object.defineProperty(exports, "__esModule", { value: true });
+const encode_psbt_1 = require("./encode_psbt");
+const types_1 = require("./types");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 const defaultTransactionVersionNumber = 2;
-const type = Buffer.from(global.unsigned_tx, 'hex');
+const type = Buffer.from(types_1.global.unsigned_tx, 'hex');
 /** Create a PSBT
 
   {
@@ -25,7 +26,7 @@ const type = Buffer.from(global.unsigned_tx, 'hex');
     psbt: <Partially Signed Bitcoin Transaction Hex Encoded String>
   }
 */
-module.exports = ({ outputs, timelock, utxos, version }) => {
+function createPsbt({ outputs, timelock, utxos, version }) {
     if (!Array.isArray(outputs)) {
         throw new Error('ExpectedTransactionOutputsForNewPsbt');
     }
@@ -33,7 +34,7 @@ module.exports = ({ outputs, timelock, utxos, version }) => {
         throw new Error('ExpectedTransactionInputsForNewPsbt');
     }
     // Construct a new transaction that will be the basis of the PSBT
-    const tx = new Transaction();
+    const tx = new bitcoinjs_lib_1.Transaction();
     tx.locktime = timelock || undefined;
     tx.version = version || defaultTransactionVersionNumber;
     // Push all the unsigned inputs into the transaction
@@ -58,5 +59,6 @@ module.exports = ({ outputs, timelock, utxos, version }) => {
     const pairs = [{ type, value: tx.toBuffer() }, { separator: true }];
     // Each input and output is represented as an empty key value pair
     outputs.concat(utxos).forEach(() => pairs.push({ separator: true }));
-    return encodePsbt({ pairs });
-};
+    return encode_psbt_1.encodePsbt({ pairs });
+}
+exports.createPsbt = createPsbt;

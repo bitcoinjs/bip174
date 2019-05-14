@@ -1,17 +1,18 @@
 "use strict";
-const BN = require('bn.js');
-const { OP_0 } = require('bitcoin-ops');
-const varuint = require('varuint-bitcoin');
-const { crypto, script, Transaction } = require('bitcoinjs-lib');
-const { decompile } = script;
-const { hash160, sha256 } = crypto;
-const bip32Path = require('./bip32_path');
-const decodePsbt = require('./decode_psbt');
-const encodePsbt = require('./encode_psbt');
-const encodeSignature = require('./encode_signature');
-const isMultisig = require('./is_multisig');
-const pushData = require('./push_data');
-const types = require('./types');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = require("bn.js");
+const bitcoin_ops_1 = require("bitcoin-ops");
+const varuint = require("varuint-bitcoin");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
+const { hash160, sha256 } = bitcoinjs_lib_1.crypto;
+const bip32_path_1 = require("./bip32_path");
+const decode_psbt_1 = require("./decode_psbt");
+const encode_psbt_1 = require("./encode_psbt");
+const encode_signature_1 = require("./encode_signature");
+const is_multisig_1 = require("./is_multisig");
+const push_data_1 = require("./push_data");
+const types = require("./types");
 const decBase = 10;
 const endianness = 'le';
 const opNumberOffset = 80;
@@ -56,13 +57,13 @@ const tokensByteLength = 8;
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-module.exports = args => {
+function updatePsbt(args) {
     if (!args.psbt) {
         throw new Error('ExpectedPsbtToUpdate');
     }
     const addAttributes = args.additional_attributes || [];
     const bip32Derivations = args.bip32_derivations || [];
-    const decoded = decodePsbt({ psbt: args.psbt });
+    const decoded = decode_psbt_1.decodePsbt({ psbt: args.psbt });
     const inputs = [];
     const outputs = [];
     const pairs = [];
@@ -77,7 +78,7 @@ module.exports = args => {
     const txs = {};
     const witnessScripts = args.witness_scripts || [];
     const witnesses = {};
-    const tx = Transaction.fromHex(decoded.unsigned_transaction);
+    const tx = bitcoinjs_lib_1.Transaction.fromHex(decoded.unsigned_transaction);
     // The unsigned transaction is the top pair
     pairs.push({
         type: Buffer.from(types.global.unsigned_tx, 'hex'),
@@ -116,7 +117,7 @@ module.exports = args => {
     }
     // Index transactions by id
     transactions.forEach(t => {
-        txs[Transaction.fromHex(t).getId()] = t;
+        txs[bitcoinjs_lib_1.Transaction.fromHex(t).getId()] = t;
         return t;
     });
     // Index redeem scripts by redeem script hash
@@ -174,7 +175,7 @@ module.exports = args => {
         if (!spends) {
             return inputs.push(null);
         }
-        const spendsTx = Transaction.fromHex(spends);
+        const spendsTx = bitcoinjs_lib_1.Transaction.fromHex(spends);
         // Find the non-witness output
         const out = spendsTx.outs
             .map(({ script }) => {
@@ -237,7 +238,7 @@ module.exports = args => {
         // Witness UTXO being spent by this input
         if (n.witness_utxo) {
             const script = Buffer.from(n.witness_utxo.script_pub, 'hex');
-            const tokens = new BN(n.witness_utxo.tokens, decBase).toArrayLike(Buffer, endianness, tokensByteLength);
+            const tokens = new bn_js_1.BN(n.witness_utxo.tokens, decBase).toArrayLike(Buffer, endianness, tokensByteLength);
             pairs.push({
                 type: Buffer.from(types.input.witness_utxo, 'hex'),
                 value: Buffer.concat([tokens, varuint.encode(script.length), script]),
@@ -257,7 +258,7 @@ module.exports = args => {
         }
         // Sighash used to sign this input
         if (!args.is_final && !!n.sighash_type) {
-            const sighash = new BN(n.sighash_type, decBase);
+            const sighash = new bn_js_1.BN(n.sighash_type, decBase);
             pairs.push({
                 type: Buffer.from(types.input.sighash_type, 'hex'),
                 value: sighash.toArrayLike(Buffer, endianness, sighashByteLength),
@@ -289,7 +290,7 @@ module.exports = args => {
                     ]),
                     value: Buffer.concat([
                         Buffer.from(n.fingerprint, 'hex'),
-                        bip32Path({ path: n.path }),
+                        bip32_path_1.bip32Path({ path: n.path }),
                     ]),
                 });
             });
@@ -305,19 +306,19 @@ module.exports = args => {
             const isWitness = !!n.witness_script;
             const redeem = n.redeem_script;
             // const [signature] = n.partial_sig
-            const isP2shMultisig = !!redeem && isMultisig({ script: redeem });
+            const isP2shMultisig = !!redeem && is_multisig_1.isMultisig({ script: redeem });
             const sigs = n.partial_sig.map(n => {
-                const sig = encodeSignature({
+                const sig = encode_signature_1.encodeSignature({
                     flag: n.hash_type,
                     signature: n.signature,
                 });
                 return Buffer.concat([varuint.encode(sig.length), sig]);
             });
             // Non-witness Multi-sig?
-            if (isMultisig({ script: n.redeem_script })) {
-                const nullDummy = new BN(OP_0, decBase).toArrayLike(Buffer);
+            if (is_multisig_1.isMultisig({ script: n.redeem_script })) {
+                const nullDummy = new bn_js_1.BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
                 const redeemScript = Buffer.from(n.redeem_script, 'hex');
-                const redeemScriptPush = pushData({ data: redeemScript });
+                const redeemScriptPush = push_data_1.pushData({ data: redeemScript });
                 const [sigsRequired] = decompile(redeemScript);
                 const requiredSignatureCount = sigsRequired - opNumberOffset;
                 if (sigs.length !== requiredSignatureCount) {
@@ -333,15 +334,15 @@ module.exports = args => {
             if (!!n.redeem_script && !!n.witness_script) {
                 pairs.push({
                     type: Buffer.from(types.input.final_scriptsig, 'hex'),
-                    value: pushData({ encode: n.redeem_script }),
+                    value: push_data_1.pushData({ encode: n.redeem_script }),
                 });
             }
             // Witness Multi-sig?
-            if (isMultisig({ script: n.witness_script })) {
-                const nullDummy = new BN(OP_0, decBase).toArrayLike(Buffer);
+            if (is_multisig_1.isMultisig({ script: n.witness_script })) {
+                const nullDummy = new bn_js_1.BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
                 const witnessScript = Buffer.from(n.witness_script, 'hex');
                 const [sigsRequired] = decompile(witnessScript);
-                const witnessScriptPush = pushData({ data: witnessScript });
+                const witnessScriptPush = push_data_1.pushData({ data: witnessScript });
                 const requiredSignatureCount = sigsRequired - opNumberOffset;
                 if (sigs.length !== requiredSignatureCount) {
                     throw new Error('ExpectedAdditionalSignatures');
@@ -354,8 +355,8 @@ module.exports = args => {
                 });
             }
             // Witness but non-multisig
-            if (!!n.witness_script && !isMultisig({ script: n.witness_script })) {
-                const witnessScriptPush = pushData({ encode: n.witness_script });
+            if (!!n.witness_script && !is_multisig_1.isMultisig({ script: n.witness_script })) {
+                const witnessScriptPush = push_data_1.pushData({ encode: n.witness_script });
                 const components = [].concat(sigs).concat(witnessScriptPush);
                 if (Array.isArray(n.add_stack_elements)) {
                     n.add_stack_elements.sort((a, b) => (a.index < b.index ? -1 : 1));
@@ -379,7 +380,7 @@ module.exports = args => {
             }
             else if (!!redeem && !isWitness && !isP2shMultisig) {
                 const signatures = n.partial_sig.map(n => {
-                    return encodeSignature({ flag: n.hash_type, signature: n.signature });
+                    return encode_signature_1.encodeSignature({ flag: n.hash_type, signature: n.signature });
                 });
                 const redeemScript = Buffer.from(n.redeem_script, 'hex');
                 const components = [].concat(signatures).concat(redeemScript);
@@ -390,7 +391,7 @@ module.exports = args => {
                     });
                 }
                 pairs.push({
-                    value: Buffer.concat(components.map(data => pushData({ data }))),
+                    value: Buffer.concat(components.map(data => push_data_1.pushData({ data }))),
                     type: Buffer.from(types.input.final_scriptsig, 'hex'),
                 });
             }
@@ -428,7 +429,7 @@ module.exports = args => {
                 ]),
                 value: Buffer.concat([
                     Buffer.from(output.bip32_derivation.fingerprint, 'hex'),
-                    bip32Path({ path: output.bip32_derivation.path }),
+                    bip32_path_1.bip32Path({ path: output.bip32_derivation.path }),
                 ]),
             });
         }
@@ -442,5 +443,6 @@ module.exports = args => {
         });
         return pairs.push({ separator: true });
     });
-    return encodePsbt({ pairs });
-};
+    return encode_psbt_1.encodePsbt({ pairs });
+}
+exports.updatePsbt = updatePsbt;

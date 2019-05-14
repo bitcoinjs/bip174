@@ -1,6 +1,6 @@
-const { encode } = require('bip66');
+import { encode } from 'bip66';
 
-const derEncode = require('./der_encode');
+import { derEncode } from './der_encode';
 
 const pointSize = 32;
 
@@ -14,7 +14,7 @@ const pointSize = 32;
   @returns
   <Encoded Signature Buffer>
 */
-module.exports = ({ flag, signature }) => {
+export function encodeSignature({ flag, signature }) {
   const hashType = Buffer.from([flag]);
   const sEnd = pointSize + pointSize;
   const sig = Buffer.from(signature, 'hex');
@@ -23,4 +23,4 @@ module.exports = ({ flag, signature }) => {
   const s = derEncode({ point: sig.slice(pointSize, sEnd).toString('hex') });
 
   return Buffer.concat([encode(r, s), hashType]);
-};
+}

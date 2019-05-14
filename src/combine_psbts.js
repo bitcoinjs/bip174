@@ -1,7 +1,8 @@
 "use strict";
-const decodePsbt = require('./decode_psbt');
-const encodeSignature = require('./encode_signature');
-const updatePsbt = require('./update_psbt');
+Object.defineProperty(exports, "__esModule", { value: true });
+const decode_psbt_1 = require("./decode_psbt");
+const encode_signature_1 = require("./encode_signature");
+const update_psbt_1 = require("./update_psbt");
 /** Combine multiple PSBTs
   {
     psbts: [<BIP 174 Encoded PSBT Hex String>]
@@ -14,7 +15,7 @@ const updatePsbt = require('./update_psbt');
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = ({ psbts }) => {
+function combinePsbts({ psbts }) {
     const additionalAttributes = [];
     const globalAttributes = {};
     const inputAttributes = [];
@@ -23,7 +24,7 @@ module.exports = ({ psbts }) => {
     const signatures = [];
     let tx;
     psbts
-        .map(psbt => decodePsbt({ psbt }))
+        .map(psbt => decode_psbt_1.decodePsbt({ psbt }))
         .forEach(decoded => {
         // Transactions must be unique for all combined psbts
         if (!!tx && tx !== decoded.unsigned_transaction) {
@@ -47,7 +48,7 @@ module.exports = ({ psbts }) => {
                     vin,
                     hash_type: partial.hash_type,
                     public_key: partial.public_key,
-                    signature: encodeSignature({
+                    signature: encode_signature_1.encodeSignature({
                         flag: partial.hash_type,
                         signature: partial.signature,
                     }),
@@ -94,7 +95,7 @@ module.exports = ({ psbts }) => {
         });
     });
     try {
-        return updatePsbt({
+        return update_psbt_1.updatePsbt({
             signatures,
             additional_attributes: additionalAttributes,
             psbt: referencePsbt,
@@ -103,4 +104,5 @@ module.exports = ({ psbts }) => {
     catch (err) {
         throw err;
     }
-};
+}
+exports.combinePsbts = combinePsbts;

@@ -1,18 +1,42 @@
-declare const BN: any;
-declare const OP_0: any;
-declare const varuint: any;
-declare const crypto: any, script: any, Transaction: any;
-declare const decompile: any;
-declare const hash160: any, sha256: any;
-declare const bip32Path: any;
-declare const decodePsbt: any;
-declare const encodePsbt: any;
-declare const encodeSignature: any;
-declare const isMultisig: any;
-declare const pushData: any;
-declare const types: any;
-declare const decBase = 10;
-declare const endianness = "le";
-declare const opNumberOffset = 80;
-declare const sighashByteLength = 4;
-declare const tokensByteLength = 8;
+/** Update a PSBT
+
+  {
+    [additional_attributes]: [{
+      type: <Type Hex String>
+      value: <Value Hex String>
+      vin: <Input Index Number>
+      vout: <Output Index Number>
+    }]
+    [bip32_derivations]: [{
+      fingerprint: <BIP 32 Fingerprint of Parent's Key Hex String>
+      path: <BIP 32 Derivation Path String>
+      public_key: <Public Key String>
+    }]
+    psbt: <BIP 174 Encoded PSBT String>
+    [redeem_scripts]: [<Hex Encoded Redeem Script String>]
+    [sighashes]: [{
+      id: <Transaction Id String>
+      sighash: <Sighash Flag Number>
+      vout: <Spending Output Index Number>
+    }]
+    [signatures]: [{
+      vin: <Signature Input Index Number>
+      hash_type: <Signature Hash Type Number>
+      public_key: <BIP 32 Public Key String>
+      signature: <Signature Hex String>
+    }]
+    [transactions]: [<Hex Encoding Transaction String>]
+    [witness_scripts]: [<Witness Script String>]
+  }
+
+  @throws
+  <Update PSBT Error>
+
+  @returns
+  {
+    psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
+  }
+*/
+export declare function updatePsbt(args: any): {
+    psbt: string;
+};

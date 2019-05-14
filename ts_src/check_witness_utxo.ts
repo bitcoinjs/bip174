@@ -1,7 +1,7 @@
-const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops');
+import { OP_EQUAL, OP_HASH160 } from 'bitcoin-ops';
 
-const checkWitnessVersion = require('./check_witness_version');
-const { script } = require('bitcoinjs-lib');
+import { checkWitnessVersion } from './check_witness_version';
+import { script } from 'bitcoinjs-lib';
 const { decompile } = script;
 
 const nestedScriptPubElementsLen = 3;
@@ -21,7 +21,7 @@ const witnessScriptPubElementsLen = 2;
   @throws
   <Error>
 */
-module.exports = ({ hash, redeem, script }) => {
+export function checkWitnessUtxo({ hash, redeem, script }) {
   if (!script) {
     throw new Error('ExpectedScriptInWitnessUtxoCheck');
   }
@@ -92,4 +92,4 @@ module.exports = ({ hash, redeem, script }) => {
     default:
       throw new Error('ExpectedWitnessScriptPubForWitnessUtxo');
   }
-};
+}

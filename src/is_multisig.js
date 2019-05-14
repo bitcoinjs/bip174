@@ -1,7 +1,8 @@
 "use strict";
-const { OP_CHECKMULTISIG } = require('bitcoin-ops');
-const { script } = require('bitcoinjs-lib');
-const { decompile } = script;
+Object.defineProperty(exports, "__esModule", { value: true });
+const bitcoin_ops_1 = require("bitcoin-ops");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
 const maxKeyCount = 16;
 const opNumberOffset = 80;
 /** Determine if a script is a standard multisig script
@@ -13,7 +14,7 @@ const opNumberOffset = 80;
   @returns
   <Is Multisig Script Bool>
 */
-module.exports = ({ script }) => {
+function isMultisig({ script }) {
     if (!script) {
         return false;
     }
@@ -30,7 +31,7 @@ module.exports = ({ script }) => {
     });
     const [opCheckMultiSig, keyCount, ...elements] = decompiled.reverse();
     // The final op-code must be OP_CHECKMULTISIG
-    if (opCheckMultiSig !== OP_CHECKMULTISIG) {
+    if (opCheckMultiSig !== bitcoin_ops_1.OP_CHECKMULTISIG) {
         return false;
     }
     const [keysRequired] = [elements].reverse();
@@ -48,4 +49,5 @@ module.exports = ({ script }) => {
         return false;
     }
     return true;
-};
+}
+exports.isMultisig = isMultisig;

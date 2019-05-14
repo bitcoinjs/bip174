@@ -1,5 +1,6 @@
 "use strict";
-const BN = require('bn.js');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = require("bn.js");
 const bip32KeyLimit = Math.pow(2, 31);
 const bip32PathSeparator = '/';
 const byteLength = 4;
@@ -15,13 +16,14 @@ const hardenedMarker = "'";
   @returns
   <BIP 32 Path Buffer Object>
 */
-module.exports = ({ path }) => {
+function bip32Path({ path }) {
     const indices = path.split(bip32PathSeparator);
     return Buffer.concat(indices.slice(1).map(n => {
         const len = hardenedMarker.length;
         const isHardened = n.slice(-len) === hardenedMarker;
         const path = isHardened ? n.slice(0, -len) : n;
         const value = parseInt(path, decBase) + (isHardened ? bip32KeyLimit : 0);
-        return new BN(value, decBase).toArrayLike(Buffer, endianness, byteLength);
+        return new bn_js_1.BN(value, decBase).toArrayLike(Buffer, endianness, byteLength);
     }));
-};
+}
+exports.bip32Path = bip32Path;

@@ -1,17 +1,18 @@
 "use strict";
-const BN = require('bn.js');
-const varuint = require('varuint-bitcoin');
-const { crypto, ECPair, script, Transaction } = require('bitcoinjs-lib');
-const { decompile } = script;
-const bip32Derivation = require('./bip32_derivation');
-const checkNonWitnessUtxo = require('./check_non_witness_utxo');
-const checkWitnessUtxo = require('./check_witness_utxo');
-const decodeSignature = require('./decode_signature');
-const types = require('./types');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = require("bn.js");
+const varuint = require("varuint-bitcoin");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
+const bip32_derivation_1 = require("./bip32_derivation");
+const check_non_witness_utxo_1 = require("./check_non_witness_utxo");
+const check_witness_utxo_1 = require("./check_witness_utxo");
+const decode_signature_1 = require("./decode_signature");
+const types = require("./types");
 const globalSeparatorCode = parseInt(types.global.separator, 16);
 const keyCodeByteLength = 1;
 const magicBytes = Buffer.from(types.global.magic);
-const { hash160 } = crypto;
+const { hash160 } = bitcoinjs_lib_1.crypto;
 const sigHashTypeByteLength = 4;
 const tokensByteLength = 8;
 /** Decode a BIP 174 encoded PSBT
@@ -75,7 +76,7 @@ const tokensByteLength = 8;
     unsigned_transaction: <Unsigned Transaction Hex String>
   }
 */
-module.exports = ({ psbt }) => {
+function decodePsbt({ psbt }) {
     if (!psbt) {
         throw new Error('ExpectedHexSerializedPartiallySignedBitcoinTransaction');
     }
@@ -128,7 +129,7 @@ module.exports = ({ psbt }) => {
             // Check non-witness UTXO input redeem scripts
             if (!!input && !!input.non_witness_utxo && !!input.redeem_script) {
                 try {
-                    checkNonWitnessUtxo({
+                    check_non_witness_utxo_1.checkNonWitnessUtxo({
                         hash: input.redeem_script_hash,
                         script: Buffer.from(input.redeem_script, 'hex'),
                         utxo: Buffer.from(input.non_witness_utxo, 'hex'),
@@ -141,7 +142,7 @@ module.exports = ({ psbt }) => {
             // Check witness UTXO
             if (!!input && !!input.witness_utxo) {
                 try {
-                    checkWitnessUtxo({
+                    check_witness_utxo_1.checkWitnessUtxo({
                         hash: input.witness_script_hash,
                         redeem: input.redeem_script,
                         script: input.witness_utxo.script_pub,
@@ -180,7 +181,7 @@ module.exports = ({ psbt }) => {
                     if (decoded.unsigned_transaction) {
                         throw new Error('InvalidGlobalTransactionKeyType');
                     }
-                    const tx = Transaction.fromBuffer(value);
+                    const tx = bitcoinjs_lib_1.Transaction.fromBuffer(value);
                     decoded.unsigned_transaction = value.toString('hex');
                     terminatorsExpected = tx.ins.length + tx.outs.length + [tx].length;
                     tx.ins.forEach(n => {
@@ -230,7 +231,7 @@ module.exports = ({ psbt }) => {
                     const derivation = value;
                     const key = keyType.slice([keyTypeCode].length);
                     try {
-                        bip32 = bip32Derivation({ derivation, key });
+                        bip32 = bip32_derivation_1.bip32Derivation({ derivation, key });
                     }
                     catch (err) {
                         throw err;
@@ -267,7 +268,7 @@ module.exports = ({ psbt }) => {
                         throw new Error('InvalidNonWitnessUtxoTypeKey');
                     }
                     try {
-                        Transaction.fromBuffer(value);
+                        bitcoinjs_lib_1.Transaction.fromBuffer(value);
                     }
                     catch (err) {
                         throw new Error('ExpectedValidTransactionForNonWitnessUtxo');
@@ -281,14 +282,14 @@ module.exports = ({ psbt }) => {
                     let sigPubKey;
                     let signature;
                     try {
-                        signature = decodeSignature({ signature: value });
+                        signature = decode_signature_1.decodeSignature({ signature: value });
                     }
                     catch (err) {
                         throw new Error('ExpectedValidPartialSignature');
                     }
                     // Make sure the partial signature public key is a valid pubkey
                     try {
-                        sigPubKey = ECPair.fromPublicKey(keyType.slice(keyCodeByteLength));
+                        sigPubKey = bitcoinjs_lib_1.ECPair.fromPublicKey(keyType.slice(keyCodeByteLength));
                     }
                     catch (err) {
                         throw new Error('InvalidPublicKeyForPartialSig');
@@ -332,7 +333,7 @@ module.exports = ({ psbt }) => {
                         throw new Error('InvalidWitnessScript');
                     }
                     input.witness_script = value.toString('hex');
-                    input.witness_script_hash = crypto.sha256(value);
+                    input.witness_script_hash = bitcoinjs_lib_1.crypto.sha256(value);
                     break;
                 case types.input.witness_utxo:
                     // The key must only contain the 1 byte type.
@@ -343,7 +344,7 @@ module.exports = ({ psbt }) => {
                     const scriptPub = value.slice(tokensByteLength + varuint.decode.bytes);
                     let tokens;
                     try {
-                        tokens = new BN(value.slice(0, tokensByteLength), 'le').toNumber();
+                        tokens = new bn_js_1.BN(value.slice(0, tokensByteLength), 'le').toNumber();
                     }
                     catch (err) {
                         throw new Error('ExpectedValidTokensNumber');
@@ -377,7 +378,7 @@ module.exports = ({ psbt }) => {
                     const derivation = value;
                     const key = keyType.slice([keyTypeCode].length);
                     try {
-                        output.bip32_derivation = bip32Derivation({ derivation, key });
+                        output.bip32_derivation = bip32_derivation_1.bip32Derivation({ derivation, key });
                     }
                     catch (err) {
                         throw err;
@@ -423,4 +424,5 @@ module.exports = ({ psbt }) => {
         throw new Error('ExpectedAdditionalOutputs');
     }
     return decoded;
-};
+}
+exports.decodePsbt = decodePsbt;

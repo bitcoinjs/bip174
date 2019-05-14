@@ -1,6 +1,6 @@
-const varuint = require('varuint-bitcoin');
+import * as varuint from 'varuint-bitcoin';
 
-const types = require('./types');
+import * as types from './types';
 
 const globalSeparator = Buffer.from(types.global.separator, 'hex');
 const magicBytes = Buffer.from(types.global.magic);
@@ -24,7 +24,7 @@ const terminator = Buffer.from('00', 'hex');
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-module.exports = ({ pairs }) => {
+export function encodePsbt({ pairs }) {
   if (!Array.isArray(pairs)) {
     throw new Error('ExpectedKeyValuePairsToEncode');
   }
@@ -55,4 +55,4 @@ module.exports = ({ pairs }) => {
   const psbt = Buffer.concat([magicBytes, globalSeparator, encodedPairs]);
 
   return { psbt: psbt.toString('hex') };
-};
+}

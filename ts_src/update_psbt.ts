@@ -1,17 +1,17 @@
-const BN = require('bn.js');
-const { OP_0 } = require('bitcoin-ops');
-const varuint = require('varuint-bitcoin');
-const { crypto, script, Transaction } = require('bitcoinjs-lib');
+import { BN } from 'bn.js';
+import { OP_0 } from 'bitcoin-ops';
+import * as varuint from 'varuint-bitcoin';
+import { crypto, script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 const { hash160, sha256 } = crypto;
 
-const bip32Path = require('./bip32_path');
-const decodePsbt = require('./decode_psbt');
-const encodePsbt = require('./encode_psbt');
-const encodeSignature = require('./encode_signature');
-const isMultisig = require('./is_multisig');
-const pushData = require('./push_data');
-const types = require('./types');
+import { bip32Path } from './bip32_path';
+import { decodePsbt } from './decode_psbt';
+import { encodePsbt } from './encode_psbt';
+import { encodeSignature } from './encode_signature';
+import { isMultisig } from './is_multisig';
+import { pushData } from './push_data';
+import * as types from './types';
 
 const decBase = 10;
 const endianness = 'le';
@@ -58,7 +58,7 @@ const tokensByteLength = 8;
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-module.exports = args => {
+export function updatePsbt(args) {
   if (!args.psbt) {
     throw new Error('ExpectedPsbtToUpdate');
   }
@@ -550,4 +550,4 @@ module.exports = args => {
   });
 
   return encodePsbt({ pairs });
-};
+}

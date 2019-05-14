@@ -7,7 +7,7 @@
   @returns
   <Buffer Object>
 */
-module.exports = ({ x }) => {
+export function fromDer({ x }) {
   if (x[0] === 0x00) {
     x = x.slice(1);
   }
@@ -18,4 +18,4 @@ module.exports = ({ x }) => {
   x.copy(buffer, bstart);
 
   return buffer;
-};
+}

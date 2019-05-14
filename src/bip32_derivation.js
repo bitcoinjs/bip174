@@ -1,5 +1,6 @@
 "use strict";
-const { ECPair } = require('bitcoinjs-lib');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 const bip32KeyByteLength = 4;
 const bip32KeyLimit = Math.pow(2, 31);
 const fingerprintByteLength = 4;
@@ -20,11 +21,11 @@ const fingerprintByteLength = 4;
     public_key: <Public Key Hex String>
   }
 */
-module.exports = ({ derivation, key }) => {
+function bip32Derivation({ derivation, key }) {
     let childKey;
     // Derive the public key from the public key bytes
     try {
-        childKey = ECPair.fromPublicKey(key);
+        childKey = bitcoinjs_lib_1.ECPair.fromPublicKey(key);
     }
     catch (err) {
         throw new Error('InvalidBip32Key');
@@ -50,4 +51,5 @@ module.exports = ({ derivation, key }) => {
         path: path,
         public_key: childKey.publicKey.toString('hex'),
     };
-};
+}
+exports.bip32Derivation = bip32Derivation;

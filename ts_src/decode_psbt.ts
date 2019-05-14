@@ -1,13 +1,13 @@
-const BN = require('bn.js');
-const varuint = require('varuint-bitcoin');
-const { crypto, ECPair, script, Transaction } = require('bitcoinjs-lib');
+import { BN } from 'bn.js';
+import * as varuint from 'varuint-bitcoin';
+import { crypto, ECPair, script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 
-const bip32Derivation = require('./bip32_derivation');
-const checkNonWitnessUtxo = require('./check_non_witness_utxo');
-const checkWitnessUtxo = require('./check_witness_utxo');
-const decodeSignature = require('./decode_signature');
-const types = require('./types');
+import { bip32Derivation } from './bip32_derivation';
+import { checkNonWitnessUtxo } from './check_non_witness_utxo';
+import { checkWitnessUtxo } from './check_witness_utxo';
+import { decodeSignature } from './decode_signature';
+import * as types from './types';
 
 const globalSeparatorCode = parseInt(types.global.separator, 16);
 const keyCodeByteLength = 1;
@@ -77,7 +77,7 @@ const tokensByteLength = 8;
     unsigned_transaction: <Unsigned Transaction Hex String>
   }
 */
-module.exports = ({ psbt }) => {
+export function decodePsbt({ psbt }) {
   if (!psbt) {
     throw new Error('ExpectedHexSerializedPartiallySignedBitcoinTransaction');
   }
@@ -508,4 +508,4 @@ module.exports = ({ psbt }) => {
   }
 
   return decoded;
-};
+}

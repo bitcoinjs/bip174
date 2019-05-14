@@ -1,11 +1,10 @@
 /** BIP 174 Partially Signed Bitcoin Transaction Decoding and Encoding
  */
-module.exports = {
-  combinePsbts: require('./combine_psbts'),
-  createPsbt: require('./create_psbt'),
-  decodePsbt: require('./decode_psbt'),
-  extractTransaction: require('./extract_transaction'),
-  finalizePsbt: require('./finalize_psbt'),
-  signPsbt: require('./sign_psbt'),
-  updatePsbt: require('./update_psbt'),
-};
+
+export { combinePsbts } from './combine_psbts';
+export { createPsbt } from './create_psbt';
+export { decodePsbt } from './decode_psbt';
+export { extractTransaction } from './extract_transaction';
+export { finalizePsbt } from './finalize_psbt';
+export { signPsbt } from './sign_psbt';
+export { updatePsbt } from './update_psbt';

@@ -1,2 +1,12 @@
-declare const maxWitnessVersion = 16;
-declare const minWitnessVersion = 0;
+/** Check that a witness version is correct
+
+  {
+    version: <Version Number>
+  }
+
+  @throws
+  <UnexpectedWitnessVersion Error>
+*/
+export declare function checkWitnessVersion({ version }: {
+    version: any;
+}): void;

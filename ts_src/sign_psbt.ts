@@ -1,16 +1,16 @@
-const {
+import {
   crypto,
   ECPair,
   networks,
   script,
   Transaction,
-} = require('bitcoinjs-lib');
+} from 'bitcoinjs-lib';
 const { decompile } = script;
 const { hash160 } = crypto;
 
-const decodePsbt = require('./decode_psbt');
-const encodeSignature = require('./encode_signature');
-const updatePsbt = require('./update_psbt');
+import { decodePsbt } from './decode_psbt';
+import { encodeSignature } from './encode_signature';
+import { updatePsbt } from './update_psbt';
 
 const hexBase = 16;
 
@@ -30,7 +30,7 @@ const hexBase = 16;
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = args => {
+export function signPsbt(args) {
   let decoded;
   const keys = {};
   const network = networks[args.network];
@@ -222,4 +222,4 @@ module.exports = args => {
   });
 
   return updatePsbt({ signatures, psbt: args.psbt });
-};
+}

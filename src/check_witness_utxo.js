@@ -1,8 +1,9 @@
 "use strict";
-const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops');
-const checkWitnessVersion = require('./check_witness_version');
-const { script } = require('bitcoinjs-lib');
-const { decompile } = script;
+Object.defineProperty(exports, "__esModule", { value: true });
+const bitcoin_ops_1 = require("bitcoin-ops");
+const check_witness_version_1 = require("./check_witness_version");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
 const nestedScriptPubElementsLen = 3;
 const p2pkhHashByteLength = 20;
 const p2shHashByteLength = 20;
@@ -19,7 +20,7 @@ const witnessScriptPubElementsLen = 2;
   @throws
   <Error>
 */
-module.exports = ({ hash, redeem, script }) => {
+function checkWitnessUtxo({ hash, redeem, script }) {
     if (!script) {
         throw new Error('ExpectedScriptInWitnessUtxoCheck');
     }
@@ -29,13 +30,13 @@ module.exports = ({ hash, redeem, script }) => {
     switch (decompiledScriptPub.length) {
         case nestedScriptPubElementsLen:
             const [hash160, nestedScriptHash, isEqual] = decompiledScriptPub;
-            if (hash160 !== OP_HASH160) {
+            if (hash160 !== bitcoin_ops_1.OP_HASH160) {
                 throw new Error('ExpectedHash160ForNestedWitnessScriptPub');
             }
             if (nestedScriptHash.length !== p2shHashByteLength) {
                 throw new Error('UnexpectedHashLengthForNestedWitnessScriptPub');
             }
-            if (isEqual !== OP_EQUAL) {
+            if (isEqual !== bitcoin_ops_1.OP_EQUAL) {
                 throw new Error('UnexpectedOpCodeForNestedWitnessScriptPub');
             }
             if (!hash || !redeem) {
@@ -44,7 +45,7 @@ module.exports = ({ hash, redeem, script }) => {
             {
                 const [version, redeemScriptHash, extra] = decompile(redeemScript);
                 try {
-                    checkWitnessVersion({ version });
+                    check_witness_version_1.checkWitnessVersion({ version });
                 }
                 catch (err) {
                     throw err;
@@ -60,7 +61,7 @@ module.exports = ({ hash, redeem, script }) => {
         case witnessScriptPubElementsLen:
             const [version, scriptHash] = decompiledScriptPub;
             try {
-                checkWitnessVersion({ version });
+                check_witness_version_1.checkWitnessVersion({ version });
             }
             catch (err) {
                 throw err;
@@ -76,4 +77,5 @@ module.exports = ({ hash, redeem, script }) => {
         default:
             throw new Error('ExpectedWitnessScriptPubForWitnessUtxo');
     }
-};
+}
+exports.checkWitnessUtxo = checkWitnessUtxo;

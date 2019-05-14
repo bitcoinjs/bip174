@@ -1,6 +1,6 @@
-const encodePsbt = require('./encode_psbt');
-const { global } = require('./types');
-const { Transaction } = require('bitcoinjs-lib');
+import { encodePsbt } from './encode_psbt';
+import { global } from './types';
+import { Transaction } from 'bitcoinjs-lib';
 
 const defaultTransactionVersionNumber = 2;
 const type = Buffer.from(global.unsigned_tx, 'hex');
@@ -26,7 +26,7 @@ const type = Buffer.from(global.unsigned_tx, 'hex');
     psbt: <Partially Signed Bitcoin Transaction Hex Encoded String>
   }
 */
-module.exports = ({ outputs, timelock, utxos, version }) => {
+export function createPsbt({ outputs, timelock, utxos, version }) {
   if (!Array.isArray(outputs)) {
     throw new Error('ExpectedTransactionOutputsForNewPsbt');
   }
@@ -69,4 +69,4 @@ module.exports = ({ outputs, timelock, utxos, version }) => {
   outputs.concat(utxos).forEach(() => pairs.push({ separator: true }));
 
   return encodePsbt({ pairs });
-};
+}

@@ -1,4 +1,4 @@
-const updatePsbt = require('./update_psbt');
+import { updatePsbt } from './update_psbt';
 
 /** Finalize the inputs of a PSBT
   {
@@ -13,6 +13,6 @@ const updatePsbt = require('./update_psbt');
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = ({ psbt }) => {
+export function finalizePsbt({ psbt }) {
   return updatePsbt({ is_final: true, psbt });
-};
+}

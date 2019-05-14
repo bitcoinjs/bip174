@@ -1,5 +1,6 @@
 "use strict";
-const updatePsbt = require('./update_psbt');
+Object.defineProperty(exports, "__esModule", { value: true });
+const update_psbt_1 = require("./update_psbt");
 /** Finalize the inputs of a PSBT
   {
     psbt: <BIP 174 Encoded PSBT Hex String>
@@ -13,6 +14,7 @@ const updatePsbt = require('./update_psbt');
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = ({ psbt }) => {
-    return updatePsbt({ is_final: true, psbt });
-};
+function finalizePsbt({ psbt }) {
+    return update_psbt_1.updatePsbt({ is_final: true, psbt });
+}
+exports.finalizePsbt = finalizePsbt;

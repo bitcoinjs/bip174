@@ -10,7 +10,7 @@ const minWitnessVersion = 0;
   @throws
   <UnexpectedWitnessVersion Error>
 */
-module.exports = ({ version }) => {
+export function checkWitnessVersion({ version }) {
   if (version === null || version === undefined) {
     throw new Error('ExpectedWitnessVersion');
   }
@@ -18,4 +18,4 @@ module.exports = ({ version }) => {
   if (version < minWitnessVersion || version > maxWitnessVersion) {
     throw new Error('InvalidVersionNumberForWitnessScriptPub');
   }
-};
+}

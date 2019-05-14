@@ -9,7 +9,7 @@ const zero = Buffer.from('00', 'hex');
   @return
   <Encoded Point Buffer>
 */
-module.exports = ({ point }) => {
+export function derEncode({ point }) {
   let i = 0;
   let x = Buffer.from(point, 'hex');
 
@@ -28,4 +28,4 @@ module.exports = ({ point }) => {
   } else {
     return x;
   }
-};
+}

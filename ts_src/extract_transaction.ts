@@ -1,8 +1,8 @@
-const BN = require('bn.js');
-const { script, Transaction } = require('bitcoinjs-lib');
+import * as BN from 'bn.js';
+import { script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 
-const decodePsbt = require('./decode_psbt');
+import { decodePsbt } from './decode_psbt';
 
 const decBase = 10;
 
@@ -20,7 +20,7 @@ const decBase = 10;
     transaction: <Hex Serialized Transaction String>
   }
 */
-module.exports = ({ psbt }) => {
+export function extractTransaction({ psbt }) {
   let decoded;
 
   try {
@@ -60,4 +60,4 @@ module.exports = ({ psbt }) => {
   });
 
   return { transaction: tx.toHex() };
-};
+}

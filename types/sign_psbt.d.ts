@@ -1,7 +1,19 @@
-declare const crypto: any, ECPair: any, networks: any, script: any, Transaction: any;
-declare const decompile: any;
-declare const hash160: any;
-declare const decodePsbt: any;
-declare const encodeSignature: any;
-declare const updatePsbt: any;
-declare const hexBase = 16;
+/** Update a PSBT with signatures
+
+  {
+    network: <Network Name String>
+    psbt: <BIP 174 Encoded PSBT Hex String>
+    signing_keys: [<WIF Encoded Private Key String>]
+  }
+
+  @throws
+  <Sign PSBT Error>
+
+  @returns
+  {
+    psbt: <BIP 174 Encoded PSBT Hex String>
+  }
+*/
+export declare function signPsbt(args: any): {
+    psbt: string;
+};

@@ -1,6 +1,6 @@
-const { OP_CHECKMULTISIG } = require('bitcoin-ops');
+import { OP_CHECKMULTISIG } from 'bitcoin-ops';
 
-const { script } = require('bitcoinjs-lib');
+import { script } from 'bitcoinjs-lib';
 const { decompile } = script;
 
 const maxKeyCount = 16;
@@ -15,7 +15,7 @@ const opNumberOffset = 80;
   @returns
   <Is Multisig Script Bool>
 */
-module.exports = ({ script }) => {
+export function isMultisig({ script }) {
   if (!script) {
     return false;
   }
@@ -57,4 +57,4 @@ module.exports = ({ script }) => {
   }
 
   return true;
-};
+}

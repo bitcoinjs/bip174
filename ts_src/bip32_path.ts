@@ -1,4 +1,4 @@
-const BN = require('bn.js');
+import { BN } from 'bn.js';
 
 const bip32KeyLimit = Math.pow(2, 31);
 const bip32PathSeparator = '/';
@@ -16,7 +16,7 @@ const hardenedMarker = "'";
   @returns
   <BIP 32 Path Buffer Object>
 */
-module.exports = ({ path }) => {
+export function bip32Path({ path }) {
   const indices = path.split(bip32PathSeparator);
 
   return Buffer.concat(
@@ -32,4 +32,4 @@ module.exports = ({ path }) => {
       return new BN(value, decBase).toArrayLike(Buffer, endianness, byteLength);
     }),
   );
-};
+}

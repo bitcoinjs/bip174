@@ -1,5 +1,12 @@
-declare const OP_CHECKMULTISIG: any;
-declare const script: any;
-declare const decompile: any;
-declare const maxKeyCount = 16;
-declare const opNumberOffset = 80;
+/** Determine if a script is a standard multisig script
+
+  {
+    [script]: <Script Hex String>
+  }
+
+  @returns
+  <Is Multisig Script Bool>
+*/
+export declare function isMultisig({ script }: {
+    script: any;
+}): boolean;

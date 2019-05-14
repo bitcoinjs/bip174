@@ -1,6 +1,6 @@
-const bip66 = require('bip66');
+import * as bip66 from 'bip66';
 
-const fromDer = require('./from_der');
+import { fromDer } from './from_der';
 
 const sigHashByteLength = 1;
 
@@ -16,7 +16,7 @@ const sigHashByteLength = 1;
     signature: <Signature Buffer Object>
   }
 */
-module.exports = ({ signature }) => {
+export function decodeSignature({ signature }) {
   if (!Buffer.isBuffer(signature)) {
     throw new Error('ExpectedSignatureBufferToDecode');
   }
@@ -31,4 +31,4 @@ module.exports = ({ signature }) => {
   const s = fromDer({ x: decode.s });
 
   return { hash_type: hashType, signature: Buffer.concat([r, s], 64) };
-};
+}

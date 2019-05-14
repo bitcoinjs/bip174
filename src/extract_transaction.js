@@ -1,8 +1,9 @@
 "use strict";
-const BN = require('bn.js');
-const { script, Transaction } = require('bitcoinjs-lib');
-const { decompile } = script;
-const decodePsbt = require('./decode_psbt');
+Object.defineProperty(exports, "__esModule", { value: true });
+const BN = require("bn.js");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
+const decode_psbt_1 = require("./decode_psbt");
 const decBase = 10;
 /** Extract a transaction from a finalized PSBT
 
@@ -18,15 +19,15 @@ const decBase = 10;
     transaction: <Hex Serialized Transaction String>
   }
 */
-module.exports = ({ psbt }) => {
+function extractTransaction({ psbt }) {
     let decoded;
     try {
-        decoded = decodePsbt({ psbt });
+        decoded = decode_psbt_1.decodePsbt({ psbt });
     }
     catch (err) {
         throw err;
     }
-    const tx = Transaction.fromHex(decoded.unsigned_transaction);
+    const tx = bitcoinjs_lib_1.Transaction.fromHex(decoded.unsigned_transaction);
     decoded.inputs.forEach((n, vin) => {
         if (!n.final_scriptsig && !n.final_scriptwitness) {
             throw new Error('ExpectedFinalScriptSigsAndWitnesses');
@@ -49,4 +50,5 @@ module.exports = ({ psbt }) => {
         }
     });
     return { transaction: tx.toHex() };
-};
+}
+exports.extractTransaction = extractTransaction;

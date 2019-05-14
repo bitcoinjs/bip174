@@ -1,7 +1,8 @@
 "use strict";
-const { OP_EQUAL, OP_HASH160 } = require('bitcoin-ops');
-const { script, Transaction } = require('bitcoinjs-lib');
-const { decompile } = script;
+Object.defineProperty(exports, "__esModule", { value: true });
+const bitcoin_ops_1 = require("bitcoin-ops");
+const bitcoinjs_lib_1 = require("bitcoinjs-lib");
+const { decompile } = bitcoinjs_lib_1.script;
 const p2shHashByteLength = 20;
 /** Check that an input's non witness utxo is valid
 
@@ -14,17 +15,17 @@ const p2shHashByteLength = 20;
   @throws
   <RedeemScriptDoesNotMatchUtxo Error>
 */
-module.exports = ({ hash, script, utxo }) => {
-    const scriptPubHashes = Transaction.fromBuffer(utxo).outs.map(out => {
+function checkNonWitnessUtxo({ hash, script, utxo }) {
+    const scriptPubHashes = bitcoinjs_lib_1.Transaction.fromBuffer(utxo).outs.map(out => {
         // It's expected that the scriptPub be a normal P2SH script
         const [hash160, scriptHash, isEqual, extra] = decompile(out.script);
-        if (hash160 !== OP_HASH160) {
+        if (hash160 !== bitcoin_ops_1.OP_HASH160) {
             return null;
         }
         if (scriptHash.length !== p2shHashByteLength) {
             return null;
         }
-        if (isEqual !== OP_EQUAL) {
+        if (isEqual !== bitcoin_ops_1.OP_EQUAL) {
             return null;
         }
         if (extra) {
@@ -36,4 +37,5 @@ module.exports = ({ hash, script, utxo }) => {
     if (!scriptPubHashes.find(h => !!h && h.equals(hash))) {
         throw new Error('RedeemScriptDoesNotMatchUtxo');
     }
-};
+}
+exports.checkNonWitnessUtxo = checkNonWitnessUtxo;

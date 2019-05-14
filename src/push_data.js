@@ -1,7 +1,8 @@
 "use strict";
-const BN = require('bn.js');
-const { OP_PUSHDATA1, OP_PUSHDATA2, OP_PUSHDATA4 } = require('bitcoin-ops');
-const pushdata = require('pushdata-bitcoin');
+Object.defineProperty(exports, "__esModule", { value: true });
+const bn_js_1 = require("bn.js");
+const bitcoin_ops_1 = require("bitcoin-ops");
+const pushdata = require("pushdata-bitcoin");
 const decBase = 10;
 const endianness = 'le';
 /** Get a push data buffer for data to push on the stack
@@ -17,34 +18,35 @@ const endianness = 'le';
   @returns
   <Push Data Buffer>
 */
-module.exports = ({ data, encode }) => {
+function pushData({ data, encode }) {
     const dataToEncode = data || Buffer.from(encode, 'hex');
     const dataLength = dataToEncode.length;
     switch (Buffer.alloc(pushdata.encodingLength(dataLength)).length) {
         case 1:
             return Buffer.concat([
-                new BN(dataLength).toArrayLike(Buffer),
+                new bn_js_1.BN(dataLength).toArrayLike(Buffer),
                 dataToEncode,
             ]);
         case 2:
             return Buffer.concat([
-                new BN(OP_PUSHDATA1, decBase).toArrayLike(Buffer),
-                new BN(dataLength, decBase).toArrayLike(Buffer),
+                new bn_js_1.BN(bitcoin_ops_1.OP_PUSHDATA1, decBase).toArrayLike(Buffer),
+                new bn_js_1.BN(dataLength, decBase).toArrayLike(Buffer),
                 dataToEncode,
             ]);
         case 3:
             return Buffer.concat([
-                new BN(OP_PUSHDATA2, decBase).toArrayLike(Buffer),
-                new BN(dataLength, decBase).toArrayLike(Buffer, endianness, 2),
+                new bn_js_1.BN(bitcoin_ops_1.OP_PUSHDATA2, decBase).toArrayLike(Buffer),
+                new bn_js_1.BN(dataLength, decBase).toArrayLike(Buffer, endianness, 2),
                 dataToEncode,
             ]);
         case 5:
             return Buffer.concat([
-                new BN(OP_PUSHDATA4, decBase).toArrayLike(Buffer),
-                new BN(dataLength, decBase).toArrayLike(Buffer, endianness, 4),
+                new bn_js_1.BN(bitcoin_ops_1.OP_PUSHDATA4, decBase).toArrayLike(Buffer),
+                new bn_js_1.BN(dataLength, decBase).toArrayLike(Buffer, endianness, 4),
                 dataToEncode,
             ]);
         default:
             throw new Error('UnexpectedLengthForDataPush');
     }
-};
+}
+exports.pushData = pushData;

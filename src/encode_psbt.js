@@ -1,6 +1,7 @@
 "use strict";
-const varuint = require('varuint-bitcoin');
-const types = require('./types');
+Object.defineProperty(exports, "__esModule", { value: true });
+const varuint = require("varuint-bitcoin");
+const types = require("./types");
 const globalSeparator = Buffer.from(types.global.separator, 'hex');
 const magicBytes = Buffer.from(types.global.magic);
 const terminator = Buffer.from('00', 'hex');
@@ -22,7 +23,7 @@ const terminator = Buffer.from('00', 'hex');
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-module.exports = ({ pairs }) => {
+function encodePsbt({ pairs }) {
     if (!Array.isArray(pairs)) {
         throw new Error('ExpectedKeyValuePairsToEncode');
     }
@@ -44,4 +45,5 @@ module.exports = ({ pairs }) => {
     }));
     const psbt = Buffer.concat([magicBytes, globalSeparator, encodedPairs]);
     return { psbt: psbt.toString('hex') };
-};
+}
+exports.encodePsbt = encodePsbt;

@@ -1,6 +1,6 @@
-const decodePsbt = require('./decode_psbt');
-const encodeSignature = require('./encode_signature');
-const updatePsbt = require('./update_psbt');
+import { decodePsbt } from './decode_psbt';
+import { encodeSignature } from './encode_signature';
+import { updatePsbt } from './update_psbt';
 
 /** Combine multiple PSBTs
   {
@@ -14,7 +14,7 @@ const updatePsbt = require('./update_psbt');
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-module.exports = ({ psbts }) => {
+export function combinePsbts({ psbts }) {
   const additionalAttributes = [];
   const globalAttributes = {};
   const inputAttributes = [];
@@ -114,4 +114,4 @@ module.exports = ({ psbts }) => {
   } catch (err) {
     throw err;
   }
-};
+}

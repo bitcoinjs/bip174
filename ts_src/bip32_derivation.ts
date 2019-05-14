@@ -1,4 +1,4 @@
-const { ECPair } = require('bitcoinjs-lib');
+import { ECPair } from 'bitcoinjs-lib';
 
 const bip32KeyByteLength = 4;
 const bip32KeyLimit = Math.pow(2, 31);
@@ -21,7 +21,7 @@ const fingerprintByteLength = 4;
     public_key: <Public Key Hex String>
   }
 */
-module.exports = ({ derivation, key }) => {
+export function bip32Derivation({ derivation, key }) {
   let childKey;
 
   // Derive the public key from the public key bytes
@@ -54,4 +54,4 @@ module.exports = ({ derivation, key }) => {
     path: path,
     public_key: childKey.publicKey.toString('hex'),
   };
-};
+}

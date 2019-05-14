@@ -1,5 +1,19 @@
-declare const BN: any;
-declare const script: any, Transaction: any;
-declare const decompile: any;
-declare const decodePsbt: any;
-declare const decBase = 10;
+/** Extract a transaction from a finalized PSBT
+
+  {
+    psbt: <BIP 174 Encoded PSBT Hex String>
+  }
+
+  @throws
+  <Extract Transaction Error>
+
+  @returns
+  {
+    transaction: <Hex Serialized Transaction String>
+  }
+*/
+export declare function extractTransaction({ psbt }: {
+    psbt: any;
+}): {
+    transaction: any;
+};

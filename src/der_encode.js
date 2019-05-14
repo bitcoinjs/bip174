@@ -1,4 +1,5 @@
 "use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
 const zero = Buffer.from('00', 'hex');
 /** DER encode bytes to eliminate sign confusion in a big-endian number.
 
@@ -9,7 +10,7 @@ const zero = Buffer.from('00', 'hex');
   @return
   <Encoded Point Buffer>
 */
-module.exports = ({ point }) => {
+function derEncode({ point }) {
     let i = 0;
     let x = Buffer.from(point, 'hex');
     while (x[i] === 0) {
@@ -25,4 +26,5 @@ module.exports = ({ point }) => {
     else {
         return x;
     }
-};
+}
+exports.derEncode = derEncode;
