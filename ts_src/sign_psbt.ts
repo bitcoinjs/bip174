@@ -1,10 +1,4 @@
-import {
-  crypto,
-  ECPair,
-  networks,
-  script,
-  Transaction,
-} from 'bitcoinjs-lib';
+import { crypto, ECPair, networks, script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 const { hash160 } = crypto;
 
