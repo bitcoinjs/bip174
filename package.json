@@ -18,7 +18,7 @@
     "nobuild:coverage-html": "nyc report --reporter=html",
     "nobuild:coverage-report": "nyc report --reporter=lcov",
     "nobuild:unit": "tap tests/*.js",
-    "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
+    "prettier": "prettier 'ts_src/**/*.ts' 'tests/**/*.js' --ignore-path ./.prettierignore",
     "test": "npm run build && npm run format:ci && npm run unit",
     "unit": "npm run build && npm run nobuild:unit"
   },
