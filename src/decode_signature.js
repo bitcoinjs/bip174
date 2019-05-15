@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bip66 = require("bip66");
+const bip66 = require('bip66');
 const from_der_1 = require("./from_der");
 const sigHashByteLength = 1;
 /** Decode signature

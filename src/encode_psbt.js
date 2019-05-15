@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const varuint = require("varuint-bitcoin");
+const varuint = require('varuint-bitcoin');
 const types = require("./types");
 const globalSeparator = Buffer.from(types.global.separator, 'hex');
 const magicBytes = Buffer.from(types.global.magic);

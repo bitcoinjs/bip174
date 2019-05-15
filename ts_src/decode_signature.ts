@@ -1,4 +1,4 @@
-import * as bip66 from 'bip66';
+const bip66 = require('bip66');
 
 import { fromDer } from './from_der';
 

@@ -1,4 +1,4 @@
-import * as BN from 'bn.js';
+const BN = require('bn.js');
 import { script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 

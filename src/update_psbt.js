@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bn_js_1 = require("bn.js");
+const BN = require('bn.js');
 const bitcoin_ops_1 = require("bitcoin-ops");
-const varuint = require("varuint-bitcoin");
+const varuint = require('varuint-bitcoin');
 const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 const { decompile } = bitcoinjs_lib_1.script;
 const { hash160, sha256 } = bitcoinjs_lib_1.crypto;
@@ -238,7 +238,7 @@ function updatePsbt(args) {
         // Witness UTXO being spent by this input
         if (n.witness_utxo) {
             const script = Buffer.from(n.witness_utxo.script_pub, 'hex');
-            const tokens = new bn_js_1.BN(n.witness_utxo.tokens, decBase).toArrayLike(Buffer, endianness, tokensByteLength);
+            const tokens = new BN(n.witness_utxo.tokens, decBase).toArrayLike(Buffer, endianness, tokensByteLength);
             pairs.push({
                 type: Buffer.from(types.input.witness_utxo, 'hex'),
                 value: Buffer.concat([tokens, varuint.encode(script.length), script]),
@@ -258,7 +258,7 @@ function updatePsbt(args) {
         }
         // Sighash used to sign this input
         if (!args.is_final && !!n.sighash_type) {
-            const sighash = new bn_js_1.BN(n.sighash_type, decBase);
+            const sighash = new BN(n.sighash_type, decBase);
             pairs.push({
                 type: Buffer.from(types.input.sighash_type, 'hex'),
                 value: sighash.toArrayLike(Buffer, endianness, sighashByteLength),
@@ -316,7 +316,7 @@ function updatePsbt(args) {
             });
             // Non-witness Multi-sig?
             if (is_multisig_1.isMultisig({ script: n.redeem_script })) {
-                const nullDummy = new bn_js_1.BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
+                const nullDummy = new BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
                 const redeemScript = Buffer.from(n.redeem_script, 'hex');
                 const redeemScriptPush = push_data_1.pushData({ data: redeemScript });
                 const [sigsRequired] = decompile(redeemScript);
@@ -339,7 +339,7 @@ function updatePsbt(args) {
             }
             // Witness Multi-sig?
             if (is_multisig_1.isMultisig({ script: n.witness_script })) {
-                const nullDummy = new bn_js_1.BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
+                const nullDummy = new BN(bitcoin_ops_1.OP_0, decBase).toArrayLike(Buffer);
                 const witnessScript = Buffer.from(n.witness_script, 'hex');
                 const [sigsRequired] = decompile(witnessScript);
                 const witnessScriptPush = push_data_1.pushData({ data: witnessScript });

@@ -1,4 +1,4 @@
-import { BN } from 'bn.js';
+const BN = require('bn.js');
 
 const bip32KeyLimit = Math.pow(2, 31);
 const bip32PathSeparator = '/';

@@ -1,6 +1,6 @@
-import { BN } from 'bn.js';
+const BN = require('bn.js');
 import { OP_PUSHDATA1, OP_PUSHDATA2, OP_PUSHDATA4 } from 'bitcoin-ops';
-import * as pushdata from 'pushdata-bitcoin';
+const pushdata = require('pushdata-bitcoin');
 
 const decBase = 10;
 const endianness = 'le';

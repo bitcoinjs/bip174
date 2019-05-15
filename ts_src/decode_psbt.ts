@@ -1,5 +1,5 @@
-import { BN } from 'bn.js';
-import * as varuint from 'varuint-bitcoin';
+const BN = require('bn.js');
+const varuint = require('varuint-bitcoin');
 import { crypto, ECPair, script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 

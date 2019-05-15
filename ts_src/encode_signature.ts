@@ -1,4 +1,4 @@
-import { encode } from 'bip66';
+const { encode } = require('bip66');
 
 import { derEncode } from './der_encode';
 

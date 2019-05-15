@@ -1,6 +1,6 @@
-import { BN } from 'bn.js';
+const BN = require('bn.js');
 import { OP_0 } from 'bitcoin-ops';
-import * as varuint from 'varuint-bitcoin';
+const varuint = require('varuint-bitcoin');
 import { crypto, script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
 const { hash160, sha256 } = crypto;

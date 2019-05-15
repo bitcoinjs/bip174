@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const BN = require("bn.js");
+const BN = require('bn.js');
 const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 const { decompile } = bitcoinjs_lib_1.script;
 const decode_psbt_1 = require("./decode_psbt");

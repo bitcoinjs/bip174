@@ -1,4 +1,4 @@
-import * as varuint from 'varuint-bitcoin';
+const varuint = require('varuint-bitcoin');
 
 import * as types from './types';
 

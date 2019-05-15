@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const bn_js_1 = require("bn.js");
-const varuint = require("varuint-bitcoin");
+const BN = require('bn.js');
+const varuint = require('varuint-bitcoin');
 const bitcoinjs_lib_1 = require("bitcoinjs-lib");
 const { decompile } = bitcoinjs_lib_1.script;
 const bip32_derivation_1 = require("./bip32_derivation");
@@ -344,7 +344,7 @@ function decodePsbt({ psbt }) {
                     const scriptPub = value.slice(tokensByteLength + varuint.decode.bytes);
                     let tokens;
                     try {
-                        tokens = new bn_js_1.BN(value.slice(0, tokensByteLength), 'le').toNumber();
+                        tokens = new BN(value.slice(0, tokensByteLength), 'le').toNumber();
                     }
                     catch (err) {
                         throw new Error('ExpectedValidTokensNumber');
