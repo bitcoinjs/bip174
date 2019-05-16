@@ -18,7 +18,7 @@ const hardenedMarker = "'";
 */
 function bip32Path({ path }) {
     const indices = path.split(bip32PathSeparator);
-    return Buffer.concat(indices.slice(1).map(n => {
+    return Buffer.concat(indices.slice(1).map((n) => {
         const len = hardenedMarker.length;
         const isHardened = n.slice(-len) === hardenedMarker;
         const path = isHardened ? n.slice(0, -len) : n;

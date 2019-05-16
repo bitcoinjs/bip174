@@ -1,11 +1,15 @@
 const BN = require('bn.js');
 
-const bip32KeyLimit = Math.pow(2, 31);
-const bip32PathSeparator = '/';
-const byteLength = 4;
-const decBase = 10;
-const endianness = 'le';
-const hardenedMarker = "'";
+const bip32KeyLimit: number = Math.pow(2, 31);
+const bip32PathSeparator: string = '/';
+const byteLength: number = 4;
+const decBase: number = 10;
+const endianness: string = 'le';
+const hardenedMarker: string = "'";
+
+export interface Bip32PathInput {
+  path: string;
+}
 
 /** Encode a BIP32 path
 
@@ -16,18 +20,18 @@ const hardenedMarker = "'";
   @returns
   <BIP 32 Path Buffer Object>
 */
-export function bip32Path({ path }) {
-  const indices = path.split(bip32PathSeparator);
+export function bip32Path({ path }: Bip32PathInput): Buffer {
+  const indices: string[] = path.split(bip32PathSeparator);
 
   return Buffer.concat(
-    indices.slice(1).map(n => {
-      const len = hardenedMarker.length;
+    indices.slice(1).map((n: string) => {
+      const len: number = hardenedMarker.length;
 
-      const isHardened = n.slice(-len) === hardenedMarker;
+      const isHardened: boolean = n.slice(-len) === hardenedMarker;
 
-      const path = isHardened ? n.slice(0, -len) : n;
+      const path: string = isHardened ? n.slice(0, -len) : n;
 
-      const value = parseInt(path, decBase) + (isHardened ? bip32KeyLimit : 0);
+      const value: number = parseInt(path, decBase) + (isHardened ? bip32KeyLimit : 0);
 
       return new BN(value, decBase).toArrayLike(Buffer, endianness, byteLength);
     }),
