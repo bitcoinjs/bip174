@@ -1,3 +1,9 @@
+/// <reference types="node" />
+export interface CheckWitnessUtxoInput {
+    hash: Buffer;
+    redeem: string;
+    script: string;
+}
 /** Check that an input's witness UTXO is valid
 
   {
@@ -9,8 +15,4 @@
   @throws
   <Error>
 */
-export declare function checkWitnessUtxo({ hash, redeem, script }: {
-    hash: any;
-    redeem: any;
-    script: any;
-}): void;
+export declare function checkWitnessUtxo({ hash, redeem, script, }: CheckWitnessUtxoInput): void;

@@ -20,11 +20,13 @@ const witnessScriptPubElementsLen = 2;
   @throws
   <Error>
 */
-function checkWitnessUtxo({ hash, redeem, script }) {
+function checkWitnessUtxo({ hash, redeem, script, }) {
     if (!script) {
         throw new Error('ExpectedScriptInWitnessUtxoCheck');
     }
-    const redeemScript = !redeem ? null : Buffer.from(redeem, 'hex');
+    const redeemScript = !redeem
+        ? null
+        : Buffer.from(redeem, 'hex');
     const scriptPub = Buffer.from(script, 'hex');
     const decompiledScriptPub = decompile(scriptPub);
     switch (decompiledScriptPub.length) {

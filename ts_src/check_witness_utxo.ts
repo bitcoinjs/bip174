@@ -4,11 +4,17 @@ import { checkWitnessVersion } from './check_witness_version';
 import { script } from 'bitcoinjs-lib';
 const { decompile } = script;
 
-const nestedScriptPubElementsLen = 3;
-const p2pkhHashByteLength = 20;
-const p2shHashByteLength = 20;
-const p2wshHashByteLength = 32;
-const witnessScriptPubElementsLen = 2;
+const nestedScriptPubElementsLen: number = 3;
+const p2pkhHashByteLength: number = 20;
+const p2shHashByteLength: number = 20;
+const p2wshHashByteLength: number = 32;
+const witnessScriptPubElementsLen: number = 2;
+
+export interface CheckWitnessUtxoInput {
+  hash: Buffer;
+  redeem: string;
+  script: string;
+}
 
 /** Check that an input's witness UTXO is valid
 
@@ -21,13 +27,19 @@ const witnessScriptPubElementsLen = 2;
   @throws
   <Error>
 */
-export function checkWitnessUtxo({ hash, redeem, script }) {
+export function checkWitnessUtxo({
+  hash,
+  redeem,
+  script,
+}: CheckWitnessUtxoInput) {
   if (!script) {
     throw new Error('ExpectedScriptInWitnessUtxoCheck');
   }
 
-  const redeemScript = !redeem ? null : Buffer.from(redeem, 'hex');
-  const scriptPub = Buffer.from(script, 'hex');
+  const redeemScript: Buffer | null = !redeem
+    ? null
+    : Buffer.from(redeem, 'hex');
+  const scriptPub: Buffer = Buffer.from(script, 'hex');
 
   const decompiledScriptPub = decompile(scriptPub);
 
