@@ -1,3 +1,9 @@
+/// <reference types="node" />
+export interface CheckNonWitnessUtxoInput {
+    hash: Buffer;
+    script: Buffer;
+    utxo: Buffer;
+}
 /** Check that an input's non witness utxo is valid
 
   {
@@ -9,8 +15,4 @@
   @throws
   <RedeemScriptDoesNotMatchUtxo Error>
 */
-export declare function checkNonWitnessUtxo({ hash, script, utxo }: {
-    hash: any;
-    script: any;
-    utxo: any;
-}): void;
+export declare function checkNonWitnessUtxo({ hash, script, utxo, }: CheckNonWitnessUtxoInput): void;

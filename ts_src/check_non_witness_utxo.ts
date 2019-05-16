@@ -1,7 +1,13 @@
 import { OP_EQUAL, OP_HASH160 } from 'bitcoin-ops';
 import { script, Transaction } from 'bitcoinjs-lib';
 const { decompile } = script;
-const p2shHashByteLength = 20;
+const p2shHashByteLength: number = 20;
+
+export interface CheckNonWitnessUtxoInput {
+  hash: Buffer;
+  script: Buffer;
+  utxo: Buffer;
+}
 
 /** Check that an input's non witness utxo is valid
 
@@ -14,7 +20,11 @@ const p2shHashByteLength = 20;
   @throws
   <RedeemScriptDoesNotMatchUtxo Error>
 */
-export function checkNonWitnessUtxo({ hash, script, utxo }) {
+export function checkNonWitnessUtxo({
+  hash,
+  script,
+  utxo,
+}: CheckNonWitnessUtxoInput) {
   const scriptPubHashes = Transaction.fromBuffer(utxo).outs.map(out => {
     // It's expected that the scriptPub be a normal P2SH script
     const [hash160, scriptHash, isEqual, extra] = decompile(out.script);
