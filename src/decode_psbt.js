@@ -131,7 +131,6 @@ function decodePsbt({ psbt }) {
                 try {
                     check_non_witness_utxo_1.checkNonWitnessUtxo({
                         hash: input.redeem_script_hash,
-                        script: Buffer.from(input.redeem_script, 'hex'),
                         utxo: Buffer.from(input.non_witness_utxo, 'hex'),
                     });
                 }

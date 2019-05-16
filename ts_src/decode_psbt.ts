@@ -145,7 +145,6 @@ export function decodePsbt({ psbt }) {
         try {
           checkNonWitnessUtxo({
             hash: input.redeem_script_hash,
-            script: Buffer.from(input.redeem_script, 'hex'),
             utxo: Buffer.from(input.non_witness_utxo, 'hex'),
           });
         } catch (err) {

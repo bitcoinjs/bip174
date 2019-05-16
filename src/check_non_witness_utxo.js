@@ -8,14 +8,13 @@ const p2shHashByteLength = 20;
 
   {
     hash: <Input Redeem Script RIPEMD160 Hash Buffer Object>
-    script: <Input Redeem Script Buffer Object>
     utxo: <Non-Witness UTXO Transaction Buffer Object>
   }
 
   @throws
   <RedeemScriptDoesNotMatchUtxo Error>
 */
-function checkNonWitnessUtxo({ hash, script, utxo, }) {
+function checkNonWitnessUtxo({ hash, utxo }) {
     const scriptPubHashes = bitcoinjs_lib_1.Transaction.fromBuffer(utxo).outs.map(out => {
         // It's expected that the scriptPub be a normal P2SH script
         const [hash160, scriptHash, isEqual, extra] = decompile(out.script);

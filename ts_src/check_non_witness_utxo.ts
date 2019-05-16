@@ -5,7 +5,6 @@ const p2shHashByteLength: number = 20;
 
 export interface CheckNonWitnessUtxoInput {
   hash: Buffer;
-  script: Buffer;
   utxo: Buffer;
 }
 
@@ -13,18 +12,13 @@ export interface CheckNonWitnessUtxoInput {
 
   {
     hash: <Input Redeem Script RIPEMD160 Hash Buffer Object>
-    script: <Input Redeem Script Buffer Object>
     utxo: <Non-Witness UTXO Transaction Buffer Object>
   }
 
   @throws
   <RedeemScriptDoesNotMatchUtxo Error>
 */
-export function checkNonWitnessUtxo({
-  hash,
-  script,
-  utxo,
-}: CheckNonWitnessUtxoInput) {
+export function checkNonWitnessUtxo({ hash, utxo }: CheckNonWitnessUtxoInput) {
   const scriptPubHashes = Transaction.fromBuffer(utxo).outs.map(out => {
     // It's expected that the scriptPub be a normal P2SH script
     const [hash160, scriptHash, isEqual, extra] = decompile(out.script);
