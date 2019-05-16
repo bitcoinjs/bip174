@@ -21,7 +21,7 @@ const fingerprintByteLength = 4;
     public_key: <Public Key Hex String>
   }
 */
-function bip32Derivation({ derivation, key }) {
+function bip32Derivation({ derivation, key, }) {
     let childKey;
     // Derive the public key from the public key bytes
     try {
@@ -39,7 +39,9 @@ function bip32Derivation({ derivation, key }) {
     // First 4 byte chunk is fingerprint
     let fingerPrint = derivation.slice(0, fingerprintByteLength);
     // Construct the path string by reading each 4 byte chunk
-    let path = splitBuffers.slice(1).reduce((_path, buf) => {
+    let path = splitBuffers
+        .slice(1)
+        .reduce((_path, buf) => {
         let index = buf.readUInt32LE(0);
         let isHardened = (index & bip32KeyLimit) !== 0;
         if (isHardened)

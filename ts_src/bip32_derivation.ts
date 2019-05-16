@@ -32,7 +32,10 @@ export interface Bip32DerivationOutput {
     public_key: <Public Key Hex String>
   }
 */
-export function bip32Derivation({ derivation, key }: Bip32DerivationInput): Bip32DerivationOutput {
+export function bip32Derivation({
+  derivation,
+  key,
+}: Bip32DerivationInput): Bip32DerivationOutput {
   let childKey;
 
   // Derive the public key from the public key bytes
@@ -53,12 +56,14 @@ export function bip32Derivation({ derivation, key }: Bip32DerivationInput): Bip3
   let fingerPrint: Buffer = derivation.slice(0, fingerprintByteLength);
 
   // Construct the path string by reading each 4 byte chunk
-  let path: string = splitBuffers.slice(1).reduce((_path: string, buf: Buffer) => {
-    let index: number = buf.readUInt32LE(0);
-    let isHardened: boolean = (index & bip32KeyLimit) !== 0;
-    if (isHardened) index -= bip32KeyLimit;
-    return _path + '/' + index.toString() + (isHardened ? "'" : '');
-  }, 'm');
+  let path: string = splitBuffers
+    .slice(1)
+    .reduce((_path: string, buf: Buffer) => {
+      let index: number = buf.readUInt32LE(0);
+      let isHardened: boolean = (index & bip32KeyLimit) !== 0;
+      if (isHardened) index -= bip32KeyLimit;
+      return _path + '/' + index.toString() + (isHardened ? "'" : '');
+    }, 'm');
 
   return {
     fingerprint: fingerPrint.toString('hex'),

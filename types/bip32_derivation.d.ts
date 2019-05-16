@@ -25,4 +25,4 @@ export interface Bip32DerivationOutput {
     public_key: <Public Key Hex String>
   }
 */
-export declare function bip32Derivation({ derivation, key }: Bip32DerivationInput): Bip32DerivationOutput;
+export declare function bip32Derivation({ derivation, key, }: Bip32DerivationInput): Bip32DerivationOutput;

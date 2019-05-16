@@ -31,7 +31,8 @@ export function bip32Path({ path }: Bip32PathInput): Buffer {
 
       const path: string = isHardened ? n.slice(0, -len) : n;
 
-      const value: number = parseInt(path, decBase) + (isHardened ? bip32KeyLimit : 0);
+      const value: number =
+        parseInt(path, decBase) + (isHardened ? bip32KeyLimit : 0);
 
       return new BN(value, decBase).toArrayLike(Buffer, endianness, byteLength);
     }),
