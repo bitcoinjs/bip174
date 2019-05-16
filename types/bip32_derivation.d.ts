@@ -1,3 +1,13 @@
+/// <reference types="node" />
+export interface Bip32DerivationInput {
+    derivation: Buffer;
+    key: Buffer;
+}
+export interface Bip32DerivationOutput {
+    fingerprint: string;
+    path: string;
+    public_key: string;
+}
 /** Decode BIP32 Derivation Data
 
   {
@@ -15,11 +25,4 @@
     public_key: <Public Key Hex String>
   }
 */
-export declare function bip32Derivation({ derivation, key }: {
-    derivation: any;
-    key: any;
-}): {
-    fingerprint: any;
-    path: any;
-    public_key: string;
-};
+export declare function bip32Derivation({ derivation, key }: Bip32DerivationInput): Bip32DerivationOutput;
