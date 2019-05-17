@@ -57,7 +57,7 @@ function combinePsbts({ psbts }) {
         });
         // Index unrecognized output attributes by vout
         decoded.outputs.forEach((output, vout) => {
-            return (output.unrecognized_attributes || []).forEach(pair => {
+            return (output.unrecognized_attributes || []).forEach((pair) => {
                 outputAttributes[vout] = outputAttributes[vout] || {};
                 outputAttributes[vout][pair.type] = pair.value;
                 return pair.value;

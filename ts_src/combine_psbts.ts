@@ -2,6 +2,28 @@ import { decodePsbt } from './decode_psbt';
 import { encodeSignature } from './encode_signature';
 import { updatePsbt } from './update_psbt';
 
+export interface CombinePsbtsInput {
+  psbts: string[];
+}
+
+export interface CombinePsbtsOutput {
+  psbt: string;
+}
+
+interface Attribute {
+  type: string;
+  value: string;
+  vin?: number;
+  vout?: number;
+}
+
+interface Signature {
+  vin: number;
+  hash_type: number;
+  public_key: string;
+  signature: Buffer;
+}
+
 /** Combine multiple PSBTs
   {
     psbts: [<BIP 174 Encoded PSBT Hex String>]
@@ -14,14 +36,14 @@ import { updatePsbt } from './update_psbt';
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-export function combinePsbts({ psbts }) {
-  const additionalAttributes = [];
-  const globalAttributes = {};
-  const inputAttributes = [];
-  const outputAttributes = [];
+export function combinePsbts({ psbts }: CombinePsbtsInput): CombinePsbtsOutput {
+  const additionalAttributes: Attribute[] = [];
+  const globalAttributes: {} = {};
+  const inputAttributes: Attribute[] = [];
+  const outputAttributes: Attribute[] = [];
   const [referencePsbt] = psbts;
-  const signatures = [];
-  let tx;
+  const signatures: Signature[] = [];
+  let tx: string;
 
   psbts
     .map(psbt => decodePsbt({ psbt }))
@@ -34,19 +56,23 @@ export function combinePsbts({ psbts }) {
       tx = tx || decoded.unsigned_transaction;
 
       // Index unknown global attributes for preservation across combines
-      (decoded.unrecognized_attributes || []).forEach(({ type, value }) => {
-        globalAttributes[type] = value;
-        return value;
-      });
+      (decoded.unrecognized_attributes || []).forEach(
+        ({ type, value }: Attribute) => {
+          globalAttributes[type] = value;
+          return value;
+        },
+      );
 
       // Iterate through inputs to push signatures, index unknown attributes
       decoded.inputs.forEach((input, vin) => {
-        (input.unrecognized_attributes || []).forEach(({ type, value }) => {
-          inputAttributes[vin] = inputAttributes[vin] || {};
+        (input.unrecognized_attributes || []).forEach(
+          ({ type, value }: Attribute) => {
+            inputAttributes[vin] = inputAttributes[vin] || {};
 
-          inputAttributes[vin][type] = value;
-          return value;
-        });
+            inputAttributes[vin][type] = value;
+            return value;
+          },
+        );
 
         return (input.partial_sig || []).forEach(partial => {
           return signatures.push({
@@ -63,12 +89,14 @@ export function combinePsbts({ psbts }) {
 
       // Index unrecognized output attributes by vout
       decoded.outputs.forEach((output, vout) => {
-        return (output.unrecognized_attributes || []).forEach(pair => {
-          outputAttributes[vout] = outputAttributes[vout] || {};
+        return (output.unrecognized_attributes || []).forEach(
+          (pair: Attribute) => {
+            outputAttributes[vout] = outputAttributes[vout] || {};
 
-          outputAttributes[vout][pair.type] = pair.value;
-          return pair.value;
-        });
+            outputAttributes[vout][pair.type] = pair.value;
+            return pair.value;
+          },
+        );
       });
     });
 

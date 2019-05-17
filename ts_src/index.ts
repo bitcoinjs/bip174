@@ -1,7 +1,7 @@
 /** BIP 174 Partially Signed Bitcoin Transaction Decoding and Encoding
  */
 
-export { combinePsbts } from './combine_psbts';
+export { combinePsbts, CombinePsbtsInput } from './combine_psbts';
 export { createPsbt } from './create_psbt';
 export { decodePsbt } from './decode_psbt';
 export { extractTransaction } from './extract_transaction';

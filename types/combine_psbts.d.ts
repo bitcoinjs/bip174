@@ -1,3 +1,9 @@
+export interface CombinePsbtsInput {
+    psbts: string[];
+}
+export interface CombinePsbtsOutput {
+    psbt: string;
+}
 /** Combine multiple PSBTs
   {
     psbts: [<BIP 174 Encoded PSBT Hex String>]
@@ -10,8 +16,4 @@
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-export declare function combinePsbts({ psbts }: {
-    psbts: any;
-}): {
-    psbt: string;
-};
+export declare function combinePsbts({ psbts }: CombinePsbtsInput): CombinePsbtsOutput;
