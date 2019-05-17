@@ -2,8 +2,30 @@ import { encodePsbt } from './encode_psbt';
 import { global } from './types';
 import { Transaction } from 'bitcoinjs-lib';
 
-const defaultTransactionVersionNumber = 2;
-const type = Buffer.from(global.unsigned_tx, 'hex');
+const defaultTransactionVersionNumber: number = 2;
+const type: Buffer = Buffer.from(global.unsigned_tx, 'hex');
+
+interface Output {
+  script: string;
+  tokens: number;
+}
+
+interface Utxo {
+  id: string;
+  sequence?: number;
+  vout: number;
+}
+
+export interface CreatePsbtsInput {
+  outputs: Output[];
+  utxos: Utxo[];
+  timelock?: number;
+  version?: number;
+}
+
+export interface CreatePsbtsOutput {
+  psbt: string;
+}
 
 /** Create a PSBT
 
@@ -26,7 +48,12 @@ const type = Buffer.from(global.unsigned_tx, 'hex');
     psbt: <Partially Signed Bitcoin Transaction Hex Encoded String>
   }
 */
-export function createPsbt({ outputs, timelock, utxos, version }) {
+export function createPsbt({
+  outputs,
+  timelock,
+  utxos,
+  version,
+}: CreatePsbtsInput): CreatePsbtsOutput {
   if (!Array.isArray(outputs)) {
     throw new Error('ExpectedTransactionOutputsForNewPsbt');
   }
@@ -38,7 +65,9 @@ export function createPsbt({ outputs, timelock, utxos, version }) {
   // Construct a new transaction that will be the basis of the PSBT
   const tx = new Transaction();
 
-  tx.locktime = timelock || undefined;
+  if (timelock !== undefined) {
+    tx.locktime = timelock;
+  }
   tx.version = version || defaultTransactionVersionNumber;
 
   // Push all the unsigned inputs into the transaction
@@ -47,12 +76,12 @@ export function createPsbt({ outputs, timelock, utxos, version }) {
     .forEach(({ hash, vout }) => tx.addInput(hash.reverse(), vout));
 
   // Set sequence numbers as necessary
-  utxos
-    .filter(({ sequence }) => sequence !== undefined)
-    .forEach(({ sequence }, vin) => {
+  utxos.forEach(({ sequence }, vin) => {
+    if (sequence !== undefined) {
       tx.ins[vin].sequence = sequence;
-      return sequence;
-    });
+    }
+    return sequence;
+  });
 
   // Append all the outputs to the transaction
   outputs
@@ -66,7 +95,7 @@ export function createPsbt({ outputs, timelock, utxos, version }) {
   const pairs = [{ type, value: tx.toBuffer() }, { separator: true }];
 
   // Each input and output is represented as an empty key value pair
-  outputs.concat(utxos).forEach(() => pairs.push({ separator: true }));
+  [...outputs, ...utxos].forEach(() => pairs.push({ separator: true }));
 
   return encodePsbt({ pairs });
 }

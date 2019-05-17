@@ -1,3 +1,21 @@
+interface Output {
+    script: string;
+    tokens: number;
+}
+interface Utxo {
+    id: string;
+    sequence?: number;
+    vout: number;
+}
+export interface CreatePsbtsInput {
+    outputs: Output[];
+    utxos: Utxo[];
+    timelock?: number;
+    version?: number;
+}
+export interface CreatePsbtsOutput {
+    psbt: string;
+}
 /** Create a PSBT
 
   {
@@ -19,11 +37,5 @@
     psbt: <Partially Signed Bitcoin Transaction Hex Encoded String>
   }
 */
-export declare function createPsbt({ outputs, timelock, utxos, version }: {
-    outputs: any;
-    timelock: any;
-    utxos: any;
-    version: any;
-}): {
-    psbt: string;
-};
+export declare function createPsbt({ outputs, timelock, utxos, version, }: CreatePsbtsInput): CreatePsbtsOutput;
+export {};

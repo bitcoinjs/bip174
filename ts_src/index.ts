@@ -2,7 +2,7 @@
  */
 
 export { combinePsbts, CombinePsbtsInput } from './combine_psbts';
-export { createPsbt } from './create_psbt';
+export { createPsbt, CreatePsbtsInput } from './create_psbt';
 export { decodePsbt } from './decode_psbt';
 export { extractTransaction } from './extract_transaction';
 export { finalizePsbt } from './finalize_psbt';
