@@ -1,3 +1,6 @@
+export interface CheckWitnessVersionInput {
+    version: number;
+}
 /** Check that a witness version is correct
 
   {
@@ -7,6 +10,4 @@
   @throws
   <UnexpectedWitnessVersion Error>
 */
-export declare function checkWitnessVersion({ version }: {
-    version: any;
-}): void;
+export declare function checkWitnessVersion({ version }: CheckWitnessVersionInput): void;

@@ -1,5 +1,9 @@
-const maxWitnessVersion = 16;
-const minWitnessVersion = 0;
+const maxWitnessVersion: number = 16;
+const minWitnessVersion: number = 0;
+
+export interface CheckWitnessVersionInput {
+  version: number;
+}
 
 /** Check that a witness version is correct
 
@@ -10,7 +14,7 @@ const minWitnessVersion = 0;
   @throws
   <UnexpectedWitnessVersion Error>
 */
-export function checkWitnessVersion({ version }) {
+export function checkWitnessVersion({ version }: CheckWitnessVersionInput) {
   if (version === null || version === undefined) {
     throw new Error('ExpectedWitnessVersion');
   }
