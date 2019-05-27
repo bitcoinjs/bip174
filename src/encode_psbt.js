@@ -33,7 +33,7 @@ function encodePsbt({ pairs }) {
         if ((!type || !value) && !separator) {
             throw new Error('ExpectedSeparator');
         }
-        if (!type) {
+        if (!type || !value) {
             return terminator;
         }
         return Buffer.concat([

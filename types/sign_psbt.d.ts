@@ -14,6 +14,4 @@
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-export declare function signPsbt(args: any): {
-    psbt: string;
-};
+export declare function signPsbt(args: any): import("./encode_psbt").EncodePsbtOutput;

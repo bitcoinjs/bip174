@@ -37,6 +37,4 @@
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-export declare function updatePsbt(args: any): {
-    psbt: string;
-};
+export declare function updatePsbt(args: any): import("./encode_psbt").EncodePsbtOutput;

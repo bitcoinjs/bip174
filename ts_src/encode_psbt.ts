@@ -6,6 +6,18 @@ const globalSeparator = Buffer.from(types.global.separator, 'hex');
 const magicBytes = Buffer.from(types.global.magic);
 const terminator = Buffer.from('00', 'hex');
 
+export interface EncodePsbtInput {
+  pairs: {
+    separator?: boolean;
+    type?: Buffer;
+    value?: Buffer;
+  }[];
+}
+
+export interface EncodePsbtOutput {
+  psbt: string;
+}
+
 /** Encode a Partially Signed Bitcoin Transaction
 
   {
@@ -24,7 +36,7 @@ const terminator = Buffer.from('00', 'hex');
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-export function encodePsbt({ pairs }) {
+export function encodePsbt({ pairs }: EncodePsbtInput): EncodePsbtOutput {
   if (!Array.isArray(pairs)) {
     throw new Error('ExpectedKeyValuePairsToEncode');
   }
@@ -39,7 +51,7 @@ export function encodePsbt({ pairs }) {
         throw new Error('ExpectedSeparator');
       }
 
-      if (!type) {
+      if (!type || !value) {
         return terminator;
       }
 

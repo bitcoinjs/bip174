@@ -13,6 +13,4 @@
 */
 export declare function finalizePsbt({ psbt }: {
     psbt: any;
-}): {
-    psbt: string;
-};
+}): import("./encode_psbt").EncodePsbtOutput;

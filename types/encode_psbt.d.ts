@@ -1,3 +1,14 @@
+/// <reference types="node" />
+export interface EncodePsbtInput {
+    pairs: {
+        separator?: boolean;
+        type?: Buffer;
+        value?: Buffer;
+    }[];
+}
+export interface EncodePsbtOutput {
+    psbt: string;
+}
 /** Encode a Partially Signed Bitcoin Transaction
 
   {
@@ -16,8 +27,4 @@
     psbt: <Hex Encoded Partially Signed Bitcoin Transaction String>
   }
 */
-export declare function encodePsbt({ pairs }: {
-    pairs: any;
-}): {
-    psbt: string;
-};
+export declare function encodePsbt({ pairs }: EncodePsbtInput): EncodePsbtOutput;
