@@ -2,7 +2,16 @@ const bip66 = require('bip66');
 
 import { fromDer } from './from_der';
 
-const sigHashByteLength = 1;
+const sigHashByteLength: number = 1;
+
+export interface DecodeSignatureInput {
+  signature: Buffer;
+}
+
+export interface DecodeSignatureOutput {
+  hash_type: number;
+  signature: Buffer;
+}
 
 /** Decode signature
 
@@ -16,7 +25,9 @@ const sigHashByteLength = 1;
     signature: <Signature Buffer Object>
   }
 */
-export function decodeSignature({ signature }) {
+export function decodeSignature({
+  signature,
+}: DecodeSignatureInput): DecodeSignatureOutput {
   if (!Buffer.isBuffer(signature)) {
     throw new Error('ExpectedSignatureBufferToDecode');
   }

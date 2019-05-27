@@ -15,7 +15,7 @@ const sigHashByteLength = 1;
     signature: <Signature Buffer Object>
   }
 */
-function decodeSignature({ signature }) {
+function decodeSignature({ signature, }) {
     if (!Buffer.isBuffer(signature)) {
         throw new Error('ExpectedSignatureBufferToDecode');
     }
