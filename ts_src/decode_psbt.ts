@@ -9,12 +9,77 @@ import { checkWitnessUtxo } from './check_witness_utxo';
 import { decodeSignature } from './decode_signature';
 import * as types from './types';
 
-const globalSeparatorCode = parseInt(types.global.separator, 16);
-const keyCodeByteLength = 1;
-const magicBytes = Buffer.from(types.global.magic);
+const globalSeparatorCode: number = parseInt(types.global.separator, 16);
+const keyCodeByteLength: number = 1;
+const magicBytes: Buffer = Buffer.from(types.global.magic);
 const { hash160 } = crypto;
-const sigHashTypeByteLength = 4;
-const tokensByteLength = 8;
+const sigHashTypeByteLength: number = 4;
+const tokensByteLength: number = 8;
+
+export interface DecodePsbtsInput {
+  psbt: string;
+}
+
+export interface Input {
+  bip32_derivations?: {
+    fingerprint: string;
+    path: string;
+    public_key: string;
+  }[];
+  final_scriptsig?: string;
+  final_scriptwitness?: string;
+  non_witness_utxo?: string;
+  partial_sig?: {
+    hash_type: number;
+    public_key: string;
+    signature: string;
+  }[];
+  redeem_script?: string;
+  redeem_script_hash?: Buffer;
+  sighash_type?: number;
+  unrecognized_attributes?: {
+    type: string;
+    value: string;
+  }[];
+  witness_script?: string;
+  witness_script_hash?: Buffer;
+  witness_utxo?: {
+    script_pub: string;
+    tokens: number;
+  };
+}
+
+export interface Output {
+  bip32_derivation?: {
+    fingerprint: string;
+    path: string;
+    public_key: string;
+  };
+  redeem_script?: string;
+  unrecognized_attributes?: {
+    type: string;
+    value: string;
+  }[];
+  witness_script?: string;
+}
+
+export interface DecodePsbtsOutput {
+  inputs: Input[];
+  outputs: Output[];
+  pairs: {
+    type: string;
+    value: string;
+  }[];
+  unrecognized_attributes?: {
+    type: string;
+    value: string;
+  }[];
+  unsigned_transaction?: string;
+}
+
+interface KeyTypeMap {
+  [keyType: string]: boolean;
+}
 
 /** Decode a BIP 174 encoded PSBT
 
@@ -77,27 +142,27 @@ const tokensByteLength = 8;
     unsigned_transaction: <Unsigned Transaction Hex String>
   }
 */
-export function decodePsbt({ psbt }) {
+export function decodePsbt({ psbt }: DecodePsbtsInput): DecodePsbtsOutput {
   if (!psbt) {
     throw new Error('ExpectedHexSerializedPartiallySignedBitcoinTransaction');
   }
 
-  const buffer = Buffer.from(psbt, 'hex');
-  const decoded = { inputs: [], outputs: [], pairs: [] };
-  const foundInputs = [];
-  const foundOutputs = [];
-  const globalKeys = {};
-  let input;
-  let inputKeys = {};
-  let isGlobal = true;
-  let offset = 0;
-  let output;
-  let outputKeys = {};
+  const buffer: Buffer = Buffer.from(psbt, 'hex');
+  const decoded: DecodePsbtsOutput = { inputs: [], outputs: [], pairs: [] };
+  const foundInputs: {}[] = [];
+  const foundOutputs: {}[] = [];
+  const globalKeys: KeyTypeMap = {};
+  let input: Input | null | undefined;
+  let inputKeys: KeyTypeMap = {};
+  let isGlobal: boolean = true;
+  let offset: number = 0;
+  let output: Output | null | undefined;
+  let outputKeys: KeyTypeMap = {};
   let terminatorsExpected;
   let terminatorsFound = 0;
 
   // Buffer read methods
-  const read = bytesCount => {
+  const read = (bytesCount: number) => {
     offset += bytesCount;
 
     return buffer.slice(offset - bytesCount, offset);
@@ -144,7 +209,7 @@ export function decodePsbt({ psbt }) {
       if (!!input && !!input.non_witness_utxo && !!input.redeem_script) {
         try {
           checkNonWitnessUtxo({
-            hash: input.redeem_script_hash,
+            hash: input.redeem_script_hash as Buffer,
             utxo: Buffer.from(input.non_witness_utxo, 'hex'),
           });
         } catch (err) {
@@ -156,8 +221,8 @@ export function decodePsbt({ psbt }) {
       if (!!input && !!input.witness_utxo) {
         try {
           checkWitnessUtxo({
-            hash: input.witness_script_hash,
-            redeem: input.redeem_script,
+            hash: input.witness_script_hash as Buffer,
+            redeem: input.redeem_script as string,
             script: input.witness_utxo.script_pub,
           });
         } catch (err) {
@@ -349,7 +414,7 @@ export function decodePsbt({ psbt }) {
 
           input.partial_sig.push({
             hash_type: signature.hash_type,
-            public_key: sigPubKey.publicKey.toString('hex'),
+            public_key: sigPubKey.publicKey!.toString('hex'),
             signature: signature.signature.toString('hex'),
           });
           break;
@@ -379,7 +444,7 @@ export function decodePsbt({ psbt }) {
             throw new Error('UnexpectedSigHashTypeByteLength');
           }
 
-          input.sighash_type = value.readUInt32LE();
+          input.sighash_type = value.readUInt32LE(0);
           break;
 
         case types.input.witness_script:

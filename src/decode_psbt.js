@@ -94,7 +94,7 @@ function decodePsbt({ psbt }) {
     let terminatorsExpected;
     let terminatorsFound = 0;
     // Buffer read methods
-    const read = bytesCount => {
+    const read = (bytesCount) => {
         offset += bytesCount;
         return buffer.slice(offset - bytesCount, offset);
     };
@@ -320,7 +320,7 @@ function decodePsbt({ psbt }) {
                     if (value.length !== sigHashTypeByteLength) {
                         throw new Error('UnexpectedSigHashTypeByteLength');
                     }
-                    input.sighash_type = value.readUInt32LE();
+                    input.sighash_type = value.readUInt32LE(0);
                     break;
                 case types.input.witness_script:
                     // The key must only contain the 1 byte type.

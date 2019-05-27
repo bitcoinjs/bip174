@@ -1,3 +1,61 @@
+/// <reference types="node" />
+export interface DecodePsbtsInput {
+    psbt: string;
+}
+export interface Input {
+    bip32_derivations?: {
+        fingerprint: string;
+        path: string;
+        public_key: string;
+    }[];
+    final_scriptsig?: string;
+    final_scriptwitness?: string;
+    non_witness_utxo?: string;
+    partial_sig?: {
+        hash_type: number;
+        public_key: string;
+        signature: string;
+    }[];
+    redeem_script?: string;
+    redeem_script_hash?: Buffer;
+    sighash_type?: number;
+    unrecognized_attributes?: {
+        type: string;
+        value: string;
+    }[];
+    witness_script?: string;
+    witness_script_hash?: Buffer;
+    witness_utxo?: {
+        script_pub: string;
+        tokens: number;
+    };
+}
+export interface Output {
+    bip32_derivation?: {
+        fingerprint: string;
+        path: string;
+        public_key: string;
+    };
+    redeem_script?: string;
+    unrecognized_attributes?: {
+        type: string;
+        value: string;
+    }[];
+    witness_script?: string;
+}
+export interface DecodePsbtsOutput {
+    inputs: Input[];
+    outputs: Output[];
+    pairs: {
+        type: string;
+        value: string;
+    }[];
+    unrecognized_attributes?: {
+        type: string;
+        value: string;
+    }[];
+    unsigned_transaction?: string;
+}
 /** Decode a BIP 174 encoded PSBT
 
   {
@@ -59,10 +117,4 @@
     unsigned_transaction: <Unsigned Transaction Hex String>
   }
 */
-export declare function decodePsbt({ psbt }: {
-    psbt: any;
-}): {
-    inputs: never[];
-    outputs: never[];
-    pairs: never[];
-};
+export declare function decodePsbt({ psbt }: DecodePsbtsInput): DecodePsbtsOutput;
