@@ -34,7 +34,7 @@ function isMultisig({ script }) {
     if (opCheckMultiSig !== bitcoin_ops_1.OP_CHECKMULTISIG) {
         return false;
     }
-    const [keysRequired] = [elements].reverse();
+    const [keysRequired] = elements.reverse();
     // The remaining elements must be just the pubkeys and a sigs required count
     if (keyCount !== elements.length - [keysRequired].length) {
         return false;

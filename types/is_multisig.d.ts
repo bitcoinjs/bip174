@@ -1,3 +1,6 @@
+export interface isMultisigInput {
+    script?: string;
+}
 /** Determine if a script is a standard multisig script
 
   {
@@ -7,6 +10,4 @@
   @returns
   <Is Multisig Script Bool>
 */
-export declare function isMultisig({ script }: {
-    script: any;
-}): boolean;
+export declare function isMultisig({ script }: isMultisigInput): boolean;

@@ -7,7 +7,7 @@ const maxKeyCount: number = 16;
 const opNumberOffset: number = 80;
 
 export interface isMultisigInput {
-  script?: string
+  script?: string;
 }
 
 /** Determine if a script is a standard multisig script
