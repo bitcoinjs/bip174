@@ -53,7 +53,7 @@ export function extractTransaction({
     if (n.final_scriptwitness) {
       const finalScriptWitness = Buffer.from(n.final_scriptwitness, 'hex');
 
-      const witnessElements = (decompile(finalScriptWitness) as Buffer[]).map(
+      const witnessElements = (decompile(finalScriptWitness) as []).map(
         n => {
           if (!n) {
             return Buffer.from([]);
@@ -67,7 +67,7 @@ export function extractTransaction({
         },
       );
 
-      tx.setWitness(vin, decompile(witnessElements) as Buffer[]);
+      tx.setWitness(vin, decompile(witnessElements) as []);
     }
   });
 
