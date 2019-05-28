@@ -13,7 +13,7 @@ const pointSize = 32;
   @returns
   <Encoded Signature Buffer>
 */
-function encodeSignature({ flag, signature }) {
+function encodeSignature({ flag, signature, }) {
     const hashType = Buffer.from([flag]);
     const sEnd = pointSize + pointSize;
     const sig = Buffer.from(signature, 'hex');

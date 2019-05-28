@@ -1,4 +1,8 @@
 /// <reference types="node" />
+export interface EncodeSignatureInput {
+    flag: number;
+    signature: string;
+}
 /** Encode a signature
 
   {
@@ -9,7 +13,4 @@
   @returns
   <Encoded Signature Buffer>
 */
-export declare function encodeSignature({ flag, signature }: {
-    flag: any;
-    signature: any;
-}): Buffer;
+export declare function encodeSignature({ flag, signature, }: EncodeSignatureInput): Buffer;

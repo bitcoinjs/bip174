@@ -2,7 +2,12 @@ const { encode } = require('bip66');
 
 import { derEncode } from './der_encode';
 
-const pointSize = 32;
+const pointSize: number = 32;
+
+export interface EncodeSignatureInput {
+  flag: number;
+  signature: string;
+}
 
 /** Encode a signature
 
@@ -14,7 +19,10 @@ const pointSize = 32;
   @returns
   <Encoded Signature Buffer>
 */
-export function encodeSignature({ flag, signature }) {
+export function encodeSignature({
+  flag,
+  signature,
+}: EncodeSignatureInput): Buffer {
   const hashType = Buffer.from([flag]);
   const sEnd = pointSize + pointSize;
   const sig = Buffer.from(signature, 'hex');
