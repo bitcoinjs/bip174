@@ -3,8 +3,12 @@ import { OP_CHECKMULTISIG } from 'bitcoin-ops';
 import { script } from 'bitcoinjs-lib';
 const { decompile } = script;
 
-const maxKeyCount = 16;
-const opNumberOffset = 80;
+const maxKeyCount: number = 16;
+const opNumberOffset: number = 80;
+
+export interface isMultisigInput {
+  script?: string
+}
 
 /** Determine if a script is a standard multisig script
 
@@ -15,12 +19,12 @@ const opNumberOffset = 80;
   @returns
   <Is Multisig Script Bool>
 */
-export function isMultisig({ script }) {
+export function isMultisig({ script }: isMultisigInput): boolean {
   if (!script) {
     return false;
   }
 
-  const decompiled = decompile(Buffer.from(script, 'hex')).map(n => {
+  const decompiled = (decompile(Buffer.from(script, 'hex')) as []).map(n => {
     if (Buffer.isBuffer(n)) {
       return n;
     } else if (n > opNumberOffset && n <= opNumberOffset + maxKeyCount) {
@@ -37,7 +41,7 @@ export function isMultisig({ script }) {
     return false;
   }
 
-  const [keysRequired] = [elements].reverse();
+  const [keysRequired] = elements.reverse();
 
   // The remaining elements must be just the pubkeys and a sigs required count
   if (keyCount !== elements.length - [keysRequired].length) {
