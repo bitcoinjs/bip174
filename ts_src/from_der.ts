@@ -1,3 +1,7 @@
+export interface XObject {
+  x: Buffer;
+}
+
 /** Get from DER
 
   {
@@ -7,7 +11,7 @@
   @returns
   <Buffer Object>
 */
-export function fromDer({ x }) {
+export function fromDer({ x }: XObject): Buffer {
   if (x[0] === 0x00) {
     x = x.slice(1);
   }

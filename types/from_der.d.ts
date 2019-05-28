@@ -1,4 +1,7 @@
 /// <reference types="node" />
+export interface XObject {
+    x: Buffer;
+}
 /** Get from DER
 
   {
@@ -8,6 +11,4 @@
   @returns
   <Buffer Object>
 */
-export declare function fromDer({ x }: {
-    x: any;
-}): Buffer;
+export declare function fromDer({ x }: XObject): Buffer;
