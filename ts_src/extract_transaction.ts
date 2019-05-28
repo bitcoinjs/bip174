@@ -4,7 +4,15 @@ const { decompile } = script;
 
 import { decodePsbt } from './decode_psbt';
 
-const decBase = 10;
+const decBase: number = 10;
+
+export interface ExtractTransactionInput {
+  psbt: string;
+}
+
+export interface ExtractTransactionOutput {
+  transaction: string;
+}
 
 /** Extract a transaction from a finalized PSBT
 
@@ -20,7 +28,9 @@ const decBase = 10;
     transaction: <Hex Serialized Transaction String>
   }
 */
-export function extractTransaction({ psbt }) {
+export function extractTransaction({
+  psbt,
+}: ExtractTransactionInput): ExtractTransactionOutput {
   let decoded;
 
   try {
@@ -29,7 +39,7 @@ export function extractTransaction({ psbt }) {
     throw err;
   }
 
-  const tx = Transaction.fromHex(decoded.unsigned_transaction);
+  const tx = Transaction.fromHex(decoded.unsigned_transaction!);
 
   decoded.inputs.forEach((n, vin) => {
     if (!n.final_scriptsig && !n.final_scriptwitness) {
@@ -43,19 +53,21 @@ export function extractTransaction({ psbt }) {
     if (n.final_scriptwitness) {
       const finalScriptWitness = Buffer.from(n.final_scriptwitness, 'hex');
 
-      const witnessElements = decompile(finalScriptWitness).map(n => {
-        if (!n) {
-          return Buffer.from([]);
-        }
+      const witnessElements = (decompile(finalScriptWitness) as Buffer[]).map(
+        n => {
+          if (!n) {
+            return Buffer.from([]);
+          }
 
-        if (Buffer.isBuffer(n)) {
-          return n;
-        }
+          if (Buffer.isBuffer(n)) {
+            return n;
+          }
 
-        return new BN(n, decBase).toArrayLike(Buffer);
-      });
+          return new BN(n, decBase).toArrayLike(Buffer);
+        },
+      );
 
-      tx.setWitness(vin, decompile(witnessElements));
+      tx.setWitness(vin, decompile(witnessElements) as Buffer[]);
     }
   });
 

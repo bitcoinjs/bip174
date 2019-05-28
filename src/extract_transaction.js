@@ -19,7 +19,7 @@ const decBase = 10;
     transaction: <Hex Serialized Transaction String>
   }
 */
-function extractTransaction({ psbt }) {
+function extractTransaction({ psbt, }) {
     let decoded;
     try {
         decoded = decode_psbt_1.decodePsbt({ psbt });

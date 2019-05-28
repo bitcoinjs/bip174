@@ -1,3 +1,9 @@
+export interface ExtractTransactionInput {
+    psbt: string;
+}
+export interface ExtractTransactionOutput {
+    transaction: string;
+}
 /** Extract a transaction from a finalized PSBT
 
   {
@@ -12,8 +18,4 @@
     transaction: <Hex Serialized Transaction String>
   }
 */
-export declare function extractTransaction({ psbt }: {
-    psbt: any;
-}): {
-    transaction: string;
-};
+export declare function extractTransaction({ psbt, }: ExtractTransactionInput): ExtractTransactionOutput;
