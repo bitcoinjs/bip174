@@ -53,19 +53,17 @@ export function extractTransaction({
     if (n.final_scriptwitness) {
       const finalScriptWitness = Buffer.from(n.final_scriptwitness, 'hex');
 
-      const witnessElements = (decompile(finalScriptWitness) as []).map(
-        n => {
-          if (!n) {
-            return Buffer.from([]);
-          }
+      const witnessElements = (decompile(finalScriptWitness) as []).map(n => {
+        if (!n) {
+          return Buffer.from([]);
+        }
 
-          if (Buffer.isBuffer(n)) {
-            return n;
-          }
+        if (Buffer.isBuffer(n)) {
+          return n;
+        }
 
-          return new BN(n, decBase).toArrayLike(Buffer);
-        },
-      );
+        return new BN(n, decBase).toArrayLike(Buffer);
+      });
 
       tx.setWitness(vin, decompile(witnessElements) as []);
     }
