@@ -1,10 +1,14 @@
-export const global = {
+interface Dict {
+  [details: string]: string;
+}
+
+export const global: Dict = {
   magic: 'psbt',
   separator: 'ff',
   unsigned_tx: '00',
 };
 
-export const input = {
+export const input: Dict = {
   bip32_derivation: '06',
   final_scriptsig: '07',
   final_scriptwitness: '08',
@@ -16,7 +20,7 @@ export const input = {
   witness_utxo: '01',
 };
 
-export const output = {
+export const output: Dict = {
   bip32_derivation: '02',
   redeem_script: '00',
   witness_script: '01',
