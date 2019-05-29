@@ -1,12 +1,33 @@
-import { crypto, ECPair, networks, script, Transaction } from 'bitcoinjs-lib';
+import {
+  crypto,
+  ECPair,
+  networks,
+  script,
+  Transaction,
+  TxOutput,
+} from 'bitcoinjs-lib';
 const { decompile } = script;
 const { hash160 } = crypto;
 
-import { decodePsbt } from './decode_psbt';
+import { decodePsbt, DecodePsbtsOutput } from './decode_psbt';
 import { encodeSignature } from './encode_signature';
 import { updatePsbt } from './update_psbt';
 
-const hexBase = 16;
+const hexBase: number = 16;
+
+export interface SignPsbtInput {
+  network: string;
+  psbt: string;
+  signing_keys: string[];
+}
+
+export interface SignPsbtOutput {
+  psbt: string;
+}
+
+interface KeyMap {
+  [keyType: string]: ECPair.ECPairInterface;
+}
 
 /** Update a PSBT with signatures
 
@@ -24,17 +45,17 @@ const hexBase = 16;
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-export function signPsbt(args) {
-  let decoded;
-  const keys = {};
+export function signPsbt(args: SignPsbtInput): SignPsbtOutput {
+  let decoded: DecodePsbtsOutput;
+  const keys: KeyMap = {};
   const network = networks[args.network];
-  const pkHashes = {};
+  const pkHashes: KeyMap = {};
 
   args.signing_keys.map(k => {
     const key = ECPair.fromWIF(k, network);
 
-    keys[key.publicKey.toString('hex')] = key;
-    pkHashes[hash160(key.publicKey).toString('hex')] = key;
+    keys[key.publicKey!.toString('hex')] = key;
+    pkHashes[hash160(key.publicKey!).toString('hex')] = key;
   });
 
   try {
@@ -43,8 +64,8 @@ export function signPsbt(args) {
     throw err;
   }
 
-  const tx = Transaction.fromHex(decoded.unsigned_transaction);
-  const signatures = [];
+  const tx = Transaction.fromHex(decoded.unsigned_transaction as string);
+  const signatures: {}[] = [];
 
   decoded.inputs.forEach((input, vin) => {
     // Absent bip32 derivations to look for, look in scripts for keys
@@ -54,9 +75,9 @@ export function signPsbt(args) {
       // Go through the scripts that match keys and add signatures
       scripts
         .filter(n => !!n)
-        .map(n => Buffer.from(n, 'hex'))
+        .map(n => Buffer.from(n as string, 'hex'))
         .forEach(n => {
-          const buffers = decompile(n).filter(Buffer.isBuffer);
+          const buffers = decompile(n)!.filter(Buffer.isBuffer);
 
           // Lookup data pushes in the key and key hash indexes
           const keysToSign = buffers
@@ -70,12 +91,12 @@ export function signPsbt(args) {
             .filter(n => !!n)
             .forEach(signingKey => {
               let hashToSign;
-              let sighashType = input.sighash_type;
+              let sighashType = input.sighash_type as number;
 
               // Witness input spending a witness utxo
-              if (!!input.witness_script && !!n.witness_utxo) {
+              if (!!input.witness_script && !!input.witness_utxo) {
                 const script = Buffer.from(input.witness_script, 'hex');
-                const tokens = input.witness_utxo.tokens;
+                const tokens = input.witness_utxo!.tokens;
 
                 hashToSign = tx.hashForWitnessV0(
                   vin,
@@ -87,21 +108,23 @@ export function signPsbt(args) {
               if (!!input.witness_script && !!input.redeem_script) {
                 // Nested witness input
                 const nonWitnessUtxo = Transaction.fromHex(
-                  input.non_witness_utxo,
+                  input.non_witness_utxo!,
                 );
                 const redeemScript = Buffer.from(input.redeem_script, 'hex');
                 const script = Buffer.from(input.witness_script, 'hex');
 
                 const nestedScriptHash = hash160(redeemScript);
 
-                const tx = Transaction.fromHex(decoded.unsigned_transaction);
+                const tx = Transaction.fromHex(
+                  decoded.unsigned_transaction as string,
+                );
 
                 // Find the value for the sigHash in the non-witness utxo
                 const { value } = nonWitnessUtxo.outs.find(n => {
-                  return decompile(n.script)
+                  return !!decompile(n.script)!
                     .filter(Buffer.isBuffer)
                     .find(n => n.equals(nestedScriptHash));
-                });
+                }) as TxOutput;
 
                 hashToSign = tx.hashForWitnessV0(
                   vin,
@@ -117,7 +140,7 @@ export function signPsbt(args) {
                 const vout = tx.ins[vin].index;
 
                 const script = Buffer.from(input.witness_script, 'hex');
-                const tokens = txWithOutputs.outs[vout].value;
+                const tokens = (txWithOutputs.outs[vout] as TxOutput).value;
 
                 hashToSign = tx.hashForWitnessV0(
                   vin,
@@ -130,23 +153,30 @@ export function signPsbt(args) {
                 const forkId = networks[args.network].fork_id;
 
                 const forkMod = parseInt(forkId || 0, hexBase);
-                const redeem = Buffer.from(input.redeem_script, 'hex');
+                const redeem = Buffer.from(
+                  input.redeem_script as string,
+                  'hex',
+                );
                 const sigHash = input.sighash_type;
                 let tokens;
-                const spendsTx = Transaction.fromHex(input.non_witness_utxo);
+                const spendsTx = Transaction.fromHex(
+                  input.non_witness_utxo as string,
+                );
 
                 if (input.witness_utxo) {
                   tokens = input.witness_utxo.tokens;
                 } else if (input.non_witness_utxo) {
-                  tokens = spendsTx.outs[tx.ins[vin].index].value;
+                  tokens = (spendsTx.outs[tx.ins[vin].index] as TxOutput).value;
                 }
 
-                sighashType = !forkMod ? sigHash : forkMod | sigHash;
+                sighashType = (!forkMod
+                  ? sigHash
+                  : forkMod | sigHash!) as number;
 
                 const fork = tx.hashForWitnessV0(
                   vin,
                   redeem,
-                  tokens,
+                  tokens as number,
                   sighashType,
                 );
                 const normal = tx.hashForSignature(vin, redeem, sighashType);
@@ -166,7 +196,7 @@ export function signPsbt(args) {
               return signatures.push({
                 vin,
                 hash_type: sighashType,
-                public_key: signingKey.publicKey.toString('hex'),
+                public_key: signingKey.publicKey!.toString('hex'),
                 signature: sig.toString('hex'),
               });
             });
@@ -182,7 +212,7 @@ export function signPsbt(args) {
       }
 
       let hashToSign;
-      const sighashType = input.sighash_type;
+      const sighashType = input.sighash_type as number;
 
       if (!!input.witness_script && !!input.witness_utxo) {
         const script = Buffer.from(input.witness_script, 'hex');

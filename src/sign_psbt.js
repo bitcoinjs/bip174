@@ -64,7 +64,7 @@ function signPsbt(args) {
                     let hashToSign;
                     let sighashType = input.sighash_type;
                     // Witness input spending a witness utxo
-                    if (!!input.witness_script && !!n.witness_utxo) {
+                    if (!!input.witness_script && !!input.witness_utxo) {
                         const script = Buffer.from(input.witness_script, 'hex');
                         const tokens = input.witness_utxo.tokens;
                         hashToSign = tx.hashForWitnessV0(vin, script, tokens, sighashType);
@@ -78,7 +78,7 @@ function signPsbt(args) {
                         const tx = bitcoinjs_lib_1.Transaction.fromHex(decoded.unsigned_transaction);
                         // Find the value for the sigHash in the non-witness utxo
                         const { value } = nonWitnessUtxo.outs.find(n => {
-                            return decompile(n.script)
+                            return !!decompile(n.script)
                                 .filter(Buffer.isBuffer)
                                 .find(n => n.equals(nestedScriptHash));
                         });
@@ -105,7 +105,9 @@ function signPsbt(args) {
                         else if (input.non_witness_utxo) {
                             tokens = spendsTx.outs[tx.ins[vin].index].value;
                         }
-                        sighashType = !forkMod ? sigHash : forkMod | sigHash;
+                        sighashType = (!forkMod
+                            ? sigHash
+                            : forkMod | sigHash);
                         const fork = tx.hashForWitnessV0(vin, redeem, tokens, sighashType);
                         const normal = tx.hashForSignature(vin, redeem, sighashType);
                         hashToSign = forkMod ? fork : normal;

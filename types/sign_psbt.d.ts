@@ -1,3 +1,11 @@
+export interface SignPsbtInput {
+    network: string;
+    psbt: string;
+    signing_keys: string[];
+}
+export interface SignPsbtOutput {
+    psbt: string;
+}
 /** Update a PSBT with signatures
 
   {
@@ -14,4 +22,4 @@
     psbt: <BIP 174 Encoded PSBT Hex String>
   }
 */
-export declare function signPsbt(args: any): import("./encode_psbt").EncodePsbtOutput;
+export declare function signPsbt(args: SignPsbtInput): SignPsbtOutput;
