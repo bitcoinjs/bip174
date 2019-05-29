@@ -1,4 +1,8 @@
 /// <reference types="node" />
+export interface PushDataInput {
+    data?: Buffer;
+    encode?: string;
+}
 /** Get a push data buffer for data to push on the stack
 
   {
@@ -12,7 +16,4 @@
   @returns
   <Push Data Buffer>
 */
-export declare function pushData({ data, encode }: {
-    data: any;
-    encode: any;
-}): Buffer;
+export declare function pushData({ data, encode }: PushDataInput): Buffer;

@@ -2,8 +2,13 @@ const BN = require('bn.js');
 import { OP_PUSHDATA1, OP_PUSHDATA2, OP_PUSHDATA4 } from 'bitcoin-ops';
 const pushdata = require('pushdata-bitcoin');
 
-const decBase = 10;
-const endianness = 'le';
+const decBase: number = 10;
+const endianness: string = 'le';
+
+export interface PushDataInput {
+  data?: Buffer;
+  encode?: string;
+}
 
 /** Get a push data buffer for data to push on the stack
 
@@ -18,8 +23,8 @@ const endianness = 'le';
   @returns
   <Push Data Buffer>
 */
-export function pushData({ data, encode }) {
-  const dataToEncode = data || Buffer.from(encode, 'hex');
+export function pushData({ data, encode }: PushDataInput): Buffer {
+  const dataToEncode = data || Buffer.from(encode as string, 'hex');
 
   const dataLength = dataToEncode.length;
 
