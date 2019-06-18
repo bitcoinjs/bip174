@@ -3,7 +3,10 @@
   "version": "0.0.1",
   "description": "",
   "main": "src/lib/psbt.js",
-  "types": "types/lib/psbt.d.ts",
+  "types": "src/lib/psbt.d.ts",
+  "files": [
+    "src/lib"
+  ],
   "engines": {
     "node": ">=8.0.0"
   },
