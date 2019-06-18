@@ -120,6 +120,9 @@ export function psbtToBuffer({
     }
   }
 
+  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
+  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
+
   return Buffer.concat(
     [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
       inputBuffers,

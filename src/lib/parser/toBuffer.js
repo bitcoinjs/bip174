@@ -103,6 +103,8 @@ function psbtToBuffer({ unsignedTx, globalMap, inputs, outputs }) {
       outputBuffers.push(tools_1.keyValsToBuffer(outputKeyVals));
     }
   }
+  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
+  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
   return Buffer.concat(
     [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
       inputBuffers,
