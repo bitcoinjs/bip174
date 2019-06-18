@@ -1,4 +1,5 @@
 import { Transaction } from 'bitcoinjs-lib';
+import * as convert from './convert';
 import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
 
@@ -24,7 +25,7 @@ export class Psbt {
   unsignedTx: Transaction;
 
   constructor() {
-    this.globalMap = {};
+    this.globalMap = { keyVals: [] };
     this.inputs = [];
     this.outputs = [];
     this.unsignedTx = new Transaction();
@@ -113,19 +114,17 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
     return isEnd;
   }
 
-  const magicNumber = readUInt32BE();
-  const globalSeparator = readUInt8();
-  if (magicNumber !== 0x70736274) {
+  if (readUInt32BE() !== 0x70736274) {
     throw new Error('Format Error: Invalid Magic Number');
   }
-  if (globalSeparator !== 0xff) {
+  if (readUInt8() !== 0xff) {
     throw new Error(
       'Format Error: Magic Number must be followed by 0xff separator',
     );
   }
 
   // Global fields (Currently only UNSIGNED_TX)
-  const globalMap: any = {};
+  const globalMap: PsbtGlobal = { keyVals: [] };
   {
     // closing scope for const variables
     const globalMapKeyVals: KeyValue[] = [];
@@ -145,19 +144,14 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
   }
 
   const unsignedTxMaps = globalMap.keyVals.filter(
-    (keyVal: KeyValue) => keyVal.key[0] === GlobalTypes.UNSIGNED_TX,
+    keyVal => keyVal.key[0] === GlobalTypes.UNSIGNED_TX,
   );
 
   if (unsignedTxMaps.length !== 1) {
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
 
-  let unsignedTx: Transaction;
-  try {
-    unsignedTx = Transaction.fromBuffer(unsignedTxMaps[0].value);
-  } catch (err) {
-    throw new Error('Format Error: Error parsing Transaction: ' + err.message);
-  }
+  const unsignedTx = convert.globals.unsignedTx.decode(unsignedTxMaps[0]);
 
   if (
     !unsignedTx.ins.every(
@@ -204,6 +198,15 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
         )
       ) {
         pubkey = keyVal.key.slice(1);
+        if (
+          !(pubkey.length === 33 || pubkey.length === 65) ||
+          ![2, 3, 4].includes(pubkey[0])
+        ) {
+          throw new Error(
+            'Format Error: invalid pubkey in key 0x' +
+              keyVal.key.toString('hex'),
+          );
+        }
       }
 
       switch (keyVal.key[0]) {
@@ -216,17 +219,9 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
               'Format Error: Input has multiple [NON_]WITNESS_UTXO',
             );
           }
-          try {
-            const myData = {
-              tx: Transaction.fromBuffer(keyVal.value),
-              index: keyValPos,
-            };
-            input.nonWitnessUtxo = myData;
-          } catch (err) {
-            throw new Error(
-              'Format Error: Error parsing NON_WITNESS_UTXO: ' + err.message,
-            );
-          }
+          const nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
+          nonWitnessUtxo.index = keyValPos;
+          input.nonWitnessUtxo = nonWitnessUtxo;
           break;
         case InputTypes.WITNESS_UTXO:
           if (
@@ -237,25 +232,9 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
               'Format Error: Input has multiple [NON_]WITNESS_UTXO',
             );
           }
-          const valBuf = keyVal.value.slice(0, 8);
-          const revBuf = reverseBuffer(Buffer.from(valBuf));
-          const value = parseInt(revBuf.toString('hex'), 16);
-          let _offset = 8;
-          const scriptLen = varuint.decode(keyVal.value, _offset);
-          _offset += varuint.encodingLength(scriptLen);
-          const script = keyVal.value.slice(_offset);
-          if (script.length !== scriptLen) {
-            throw new Error(
-              'Format Error: WITNESS_UTXO script is not proper length',
-            );
-          }
-          input.witnessUtxo = {
-            index: keyValPos,
-            data: {
-              script,
-              value,
-            },
-          };
+          const witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
+          witnessUtxo.index = keyValPos;
+          input.witnessUtxo = witnessUtxo;
           break;
         case InputTypes.PARTIAL_SIG:
           if (pubkey === undefined) {
@@ -266,11 +245,9 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
           if (input.partialSigs === undefined) {
             input.partialSigs = [];
           }
-          input.partialSigs.push({
-            index: keyValPos,
-            pubkey,
-            signature: keyVal.value,
-          });
+          const partialSig = convert.inputs.partialSig.decode(keyVal);
+          partialSig.index = keyValPos;
+          input.partialSigs.push(partialSig);
           break;
         case InputTypes.SIGHASH_TYPE:
           if (input.sighashType !== undefined) {
@@ -305,28 +282,12 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
               'Format Error: Input BIP32_DERIVATION requires pubkey in the key of KeyValue',
             );
           }
-          if ((keyVal.value.length / 4) % 1 !== 0) {
-            throw new Error(
-              'Format Error: Input BIP32_DERIVATION value length should be multiple of 4',
-            );
-          }
           if (input.bip32Derivation === undefined) {
             input.bip32Derivation = [];
           }
-          const data = {
-            index: keyValPos,
-            // What is a master key fingerprint??? master node parent fingerprint is 0x00000000???
-            masterFingerprint: keyVal.value.slice(0, 4),
-            pubkey,
-            path: 'm',
-          };
-          for (const i of range(keyVal.value.length / 4 - 1)) {
-            const val = keyVal.value.readUInt32LE(i * 4 + 4);
-            const isHard = !!(val & 0x80000000);
-            const idx = val & 0x7fffffff;
-            data.path += '/' + idx.toString(10) + (isHard ? "'" : '');
-          }
-          input.bip32Derivation.push(data);
+          const bip32Derivation = convert.inputs.bip32Derivation.decode(keyVal);
+          bip32Derivation.index = keyValPos;
+          input.bip32Derivation.push(bip32Derivation);
           break;
         case InputTypes.FINAL_SCRIPTSIG:
           input.finalScriptSig = {
@@ -403,27 +364,14 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
               'Format Error: Output BIP32_DERIVATION requires pubkey in the key of KeyValue',
             );
           }
-          if ((keyVal.value.length / 4) % 1 !== 0) {
-            throw new Error(
-              'Format Error: Output BIP32_DERIVATION value length should be multiple of 4',
-            );
-          }
           if (output.bip32Derivation === undefined) {
             output.bip32Derivation = [];
           }
-          const data = {
-            index: keyValPos,
-            masterFingerprint: keyVal.value.slice(0, 4),
-            pubkey,
-            path: 'm',
-          };
-          for (const i of range(keyVal.value.length / 4 - 1)) {
-            const val = keyVal.value.readUInt32BE(i * 4 + 4);
-            const isHard = !!(val & 0x80000000);
-            const idx = val & 0x7fffffff;
-            data.path += '/' + idx.toString(10) + (isHard ? "'" : '');
-          }
-          output.bip32Derivation.push(data);
+          const bip32Derivation = convert.outputs.bip32Derivation.decode(
+            keyVal,
+          );
+          bip32Derivation.index = keyValPos;
+          output.bip32Derivation.push(bip32Derivation);
           break;
         default:
       }
@@ -432,17 +380,4 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
   }
 
   callback({ unsignedTx, globalMap, inputs, outputs });
-}
-
-function reverseBuffer(buffer: Buffer): Buffer {
-  if (buffer.length < 1) return buffer;
-  let j = buffer.length - 1;
-  let tmp = 0;
-  for (let i = 0; i < buffer.length / 2; i++) {
-    tmp = buffer[i];
-    buffer[i] = buffer[j];
-    buffer[j] = tmp;
-    j--;
-  }
-  return buffer;
 }
