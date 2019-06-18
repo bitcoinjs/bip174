@@ -1,9 +1,9 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const convert = require('../convert');
+const tools_1 = require('../convert/tools');
 const typeFields_1 = require('../typeFields');
 const varuint = require('varuint-bitcoin');
-const range = n => [...Array(n).keys()];
 function psbtFromBuffer(buffer) {
   let offset = 0;
   function varSlice() {
@@ -90,7 +90,7 @@ function psbtFromBuffer(buffer) {
   const inputs = [];
   const outputs = [];
   // Get input fields
-  for (const index of range(inputCount)) {
+  for (const index of tools_1.range(inputCount)) {
     const inputKeyIndex = {};
     const input = {
       keyVals: [],
@@ -237,7 +237,7 @@ function psbtFromBuffer(buffer) {
     }
     inputs.push(input);
   }
-  for (const index of range(outputCount)) {
+  for (const index of tools_1.range(outputCount)) {
     const outputKeyIndex = {};
     const output = {
       keyVals: [],
