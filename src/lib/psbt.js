@@ -218,28 +218,31 @@ function psbtFromBuffer(buffer, callback) {
           if (input.sighashType !== undefined) {
             throw new Error('Format Error: Input has multiple SIGHASH_TYPE');
           }
-          input.sighashType = {
-            index: keyValPos,
-            data: keyVal.value.readUInt32LE(0),
-          };
+          input.sighashType = Object.assign(
+            {},
+            convert.inputs.sighashType.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.InputTypes.REDEEM_SCRIPT:
           if (input.redeemScript !== undefined) {
             throw new Error('Format Error: Input has multiple REDEEM_SCRIPT');
           }
-          input.redeemScript = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          input.redeemScript = Object.assign(
+            {},
+            convert.inputs.redeemScript.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.InputTypes.WITNESS_SCRIPT:
           if (input.witnessScript !== undefined) {
             throw new Error('Format Error: Input has multiple WITNESS_SCRIPT');
           }
-          input.witnessScript = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          input.witnessScript = Object.assign(
+            {},
+            convert.inputs.witnessScript.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.InputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {
@@ -255,22 +258,25 @@ function psbtFromBuffer(buffer, callback) {
           input.bip32Derivation.push(bip32Derivation);
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTSIG:
-          input.finalScriptSig = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          input.finalScriptSig = Object.assign(
+            {},
+            convert.inputs.finalScriptSig.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTWITNESS:
-          input.finalScriptWitness = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          input.finalScriptWitness = Object.assign(
+            {},
+            convert.inputs.finalScriptWitness.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.InputTypes.POR_COMMITMENT:
-          input.porCommitment = {
-            index: keyValPos,
-            data: keyVal.value.toString('utf8'),
-          };
+          input.porCommitment = Object.assign(
+            {},
+            convert.inputs.porCommitment.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         default:
       }
@@ -306,19 +312,21 @@ function psbtFromBuffer(buffer, callback) {
           if (output.redeemScript !== undefined) {
             throw new Error('Format Error: Output has multiple REDEEM_SCRIPT');
           }
-          output.redeemScript = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          output.redeemScript = Object.assign(
+            {},
+            convert.outputs.redeemScript.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.OutputTypes.WITNESS_SCRIPT:
           if (output.witnessScript !== undefined) {
             throw new Error('Format Error: Output has multiple WITNESS_SCRIPT');
           }
-          output.witnessScript = {
-            index: keyValPos,
-            data: keyVal.value,
-          };
+          output.witnessScript = Object.assign(
+            {},
+            convert.outputs.witnessScript.decode(keyVal),
+            { index: keyValPos },
+          );
           break;
         case typeFields_1.OutputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {

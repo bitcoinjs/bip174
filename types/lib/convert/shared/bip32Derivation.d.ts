@@ -1,3 +1,5 @@
 import { Bip32Derivation, KeyValue } from '../../interfaces';
-export declare function decode(keyVal: KeyValue): Bip32Derivation;
-export declare function encode(data: Bip32Derivation): KeyValue;
+export declare function makeConverter(TYPE_BYTE: number): {
+    decode: (keyVal: KeyValue) => Bip32Derivation;
+    encode: (data: Bip32Derivation) => KeyValue;
+};

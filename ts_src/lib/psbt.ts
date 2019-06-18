@@ -254,8 +254,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
             throw new Error('Format Error: Input has multiple SIGHASH_TYPE');
           }
           input.sighashType = {
-            index: keyValPos,
-            data: keyVal.value.readUInt32LE(0),
+            ...convert.inputs.sighashType.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case InputTypes.REDEEM_SCRIPT:
@@ -263,8 +263,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
             throw new Error('Format Error: Input has multiple REDEEM_SCRIPT');
           }
           input.redeemScript = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.inputs.redeemScript.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case InputTypes.WITNESS_SCRIPT:
@@ -272,8 +272,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
             throw new Error('Format Error: Input has multiple WITNESS_SCRIPT');
           }
           input.witnessScript = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.inputs.witnessScript.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case InputTypes.BIP32_DERIVATION:
@@ -291,20 +291,20 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
           break;
         case InputTypes.FINAL_SCRIPTSIG:
           input.finalScriptSig = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.inputs.finalScriptSig.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case InputTypes.FINAL_SCRIPTWITNESS:
           input.finalScriptWitness = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.inputs.finalScriptWitness.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case InputTypes.POR_COMMITMENT:
           input.porCommitment = {
-            index: keyValPos,
-            data: keyVal.value.toString('utf8'),
+            ...convert.inputs.porCommitment.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         default:
@@ -345,8 +345,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
             throw new Error('Format Error: Output has multiple REDEEM_SCRIPT');
           }
           output.redeemScript = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.outputs.redeemScript.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case OutputTypes.WITNESS_SCRIPT:
@@ -354,8 +354,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
             throw new Error('Format Error: Output has multiple WITNESS_SCRIPT');
           }
           output.witnessScript = {
-            index: keyValPos,
-            data: keyVal.value,
+            ...convert.outputs.witnessScript.decode(keyVal),
+            ...{ index: keyValPos },
           };
           break;
         case OutputTypes.BIP32_DERIVATION:
