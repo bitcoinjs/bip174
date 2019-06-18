@@ -6,11 +6,11 @@ export const GLOBAL_TYPE_NAMES = ['unsignedTx'];
 export enum InputTypes {
   NON_WITNESS_UTXO,
   WITNESS_UTXO,
-  PARTIAL_SIG,
+  PARTIAL_SIG, // multiple OK, key contains pubkey
   SIGHASH_TYPE,
   REDEEM_SCRIPT,
   WITNESS_SCRIPT,
-  BIP32_DERIVATION,
+  BIP32_DERIVATION, // multiple OK, key contains pubkey
   FINAL_SCRIPTSIG,
   FINAL_SCRIPTWITNESS,
   POR_COMMITMENT,
@@ -31,7 +31,7 @@ export const INPUT_TYPE_NAMES = [
 export enum OutputTypes {
   REDEEM_SCRIPT,
   WITNESS_SCRIPT,
-  BIP32_DERIVATION,
+  BIP32_DERIVATION, // multiple OK, key contains pubkey
 }
 export const OUTPUT_TYPE_NAMES = [
   'redeemScript',

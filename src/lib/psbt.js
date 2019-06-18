@@ -22,6 +22,10 @@ class Psbt {
     this.inputs = [];
     this.outputs = [];
     this.unsignedTx = new bitcoinjs_lib_1.Transaction();
+    this.globalMap.keyVals.push({
+      key: Buffer.from([0]),
+      value: this.unsignedTx.toBuffer(),
+    });
   }
   toBase64() {
     const buffer = this.toBuffer();
