@@ -73,17 +73,29 @@ type FromBufferCallback = (arg: FromBufferCallbackArg) => void;
 function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
   let offset = 0;
 
-  function getKeyValue(): KeyValue {
+  function varSlice(): Buffer {
     const keyLen = varuint.decode(buffer, offset);
     offset += varuint.encodingLength(keyLen);
     const key = buffer.slice(offset, offset + keyLen);
     offset += keyLen;
+    return key;
+  }
 
-    const valLen = varuint.decode(buffer, offset);
-    offset += varuint.encodingLength(valLen);
-    const value = buffer.slice(offset, offset + valLen);
-    offset += valLen;
+  function readUInt32BE(): number {
+    const num = buffer.readUInt32BE(offset);
+    offset += 4;
+    return num;
+  }
 
+  function readUInt8(): number {
+    const num = buffer.readUInt8(offset);
+    offset += 1;
+    return num;
+  }
+
+  function getKeyValue(): KeyValue {
+    const key = varSlice();
+    const value = varSlice();
     return {
       key,
       value,
@@ -101,10 +113,8 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
     return isEnd;
   }
 
-  const magicNumber = buffer.readUInt32BE(offset);
-  offset += 4;
-  const globalSeparator = buffer.readUInt8(offset);
-  offset += 1;
+  const magicNumber = readUInt32BE();
+  const globalSeparator = readUInt8();
   if (magicNumber !== 0x70736274) {
     throw new Error('Format Error: Invalid Magic Number');
   }

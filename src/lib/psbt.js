@@ -51,15 +51,26 @@ class Psbt {
 exports.Psbt = Psbt;
 function psbtFromBuffer(buffer, callback) {
   let offset = 0;
-  function getKeyValue() {
+  function varSlice() {
     const keyLen = varuint.decode(buffer, offset);
     offset += varuint.encodingLength(keyLen);
     const key = buffer.slice(offset, offset + keyLen);
     offset += keyLen;
-    const valLen = varuint.decode(buffer, offset);
-    offset += varuint.encodingLength(valLen);
-    const value = buffer.slice(offset, offset + valLen);
-    offset += valLen;
+    return key;
+  }
+  function readUInt32BE() {
+    const num = buffer.readUInt32BE(offset);
+    offset += 4;
+    return num;
+  }
+  function readUInt8() {
+    const num = buffer.readUInt8(offset);
+    offset += 1;
+    return num;
+  }
+  function getKeyValue() {
+    const key = varSlice();
+    const value = varSlice();
     return {
       key,
       value,
@@ -75,10 +86,8 @@ function psbtFromBuffer(buffer, callback) {
     }
     return isEnd;
   }
-  const magicNumber = buffer.readUInt32BE(offset);
-  offset += 4;
-  const globalSeparator = buffer.readUInt8(offset);
-  offset += 1;
+  const magicNumber = readUInt32BE();
+  const globalSeparator = readUInt8();
   if (magicNumber !== 0x70736274) {
     throw new Error('Format Error: Invalid Magic Number');
   }
