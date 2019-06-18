@@ -78,3 +78,5 @@ interface Bip32Derivation {
   pubkey: Buffer;
   path: string;
 }
+
+export type PsbtGlobal = any;

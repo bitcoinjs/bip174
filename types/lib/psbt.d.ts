@@ -1,13 +1,16 @@
 /// <reference types="node" />
 import { Transaction } from 'bitcoinjs-lib';
+import { PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
 export declare class Psbt {
     static fromBase64(data: string): Psbt;
     static fromBuffer(buffer: Buffer): Psbt;
-    private inputs;
-    private outputs;
-    private unsignedTx;
+    inputs: PsbtInput[];
+    outputs: PsbtOutput[];
+    globalMap: PsbtGlobal;
+    unsignedTx: Transaction;
     constructor();
     toBase64(): string;
+    toBuffer(): Buffer;
     combine(...those: Psbt[]): Psbt;
     finalize(): Psbt;
     extractTransaction(): Transaction;

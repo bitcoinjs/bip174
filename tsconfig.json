@@ -19,8 +19,8 @@
     "noImplicitThis": true,
     "alwaysStrict": true,
     "esModuleInterop": false,
-    "noUnusedLocals": false,
-    "noUnusedParameters": false
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
   },
   "include": [
       "ts_src/**/*.ts"

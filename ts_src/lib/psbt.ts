@@ -1,5 +1,5 @@
 import { Transaction } from 'bitcoinjs-lib';
-import { KeyValue, PsbtInput, PsbtOutput } from './interfaces';
+import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
 
 const varuint = require('varuint-bitcoin');
@@ -12,19 +12,19 @@ export class Psbt {
   }
   static fromBuffer(buffer: Buffer): Psbt {
     const psbt = new Psbt();
-    psbtFromBuffer(buffer, (uTx, inputs, outputs) => {
-      psbt.unsignedTx = uTx;
-      psbt.inputs = inputs;
-      psbt.outputs = outputs;
+    psbtFromBuffer(buffer, results => {
+      Object.assign(psbt, results);
     });
     return psbt;
   }
 
-  private inputs: PsbtInput[];
-  private outputs: PsbtOutput[];
-  private unsignedTx: Transaction;
+  inputs: PsbtInput[];
+  outputs: PsbtOutput[];
+  globalMap: PsbtGlobal;
+  unsignedTx: Transaction;
 
   constructor() {
+    this.globalMap = {};
     this.inputs = [];
     this.outputs = [];
     this.unsignedTx = new Transaction();
@@ -35,6 +35,13 @@ export class Psbt {
     return '';
   }
 
+  toBuffer(): Buffer {
+    // encode self into base64 string rep of official binary encoding
+    // const { unsignedTx, globalMap, inputs, outputs } = this;
+
+    return Buffer.from([]);
+  }
+
   // TODO:
   // Add methods to update various parts. (ie. "updater" responsibility)
   // Return self for chaining.
@@ -42,7 +49,7 @@ export class Psbt {
   combine(...those: Psbt[]): Psbt {
     // Combine this with those.
     // Return self for chaining.
-    return this;
+    return those[0];
   }
   finalize(): Psbt {
     // Finalize all inputs, default throw if can not
@@ -55,11 +62,13 @@ export class Psbt {
   }
 }
 
-type FromBufferCallback = (
-  utx: Transaction,
-  inputs: PsbtInput[],
-  outputs: PsbtOutput[],
-) => void;
+interface FromBufferCallbackArg {
+  unsignedTx: Transaction;
+  globalMap: PsbtGlobal;
+  inputs: PsbtInput[];
+  outputs: PsbtOutput[];
+}
+type FromBufferCallback = (arg: FromBufferCallbackArg) => void;
 
 function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
   let offset = 0;
@@ -85,7 +94,11 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
     if (offset >= buffer.length) {
       throw new Error('Format Error: Unexpected End of PSBT');
     }
-    return buffer.readUInt8(offset) === 0;
+    const isEnd = buffer.readUInt8(offset) === 0;
+    if (isEnd) {
+      offset++;
+    }
+    return isEnd;
   }
 
   const magicNumber = buffer.readUInt32BE(offset);
@@ -102,27 +115,48 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
   }
 
   // Global fields (Currently only UNSIGNED_TX)
-  const globalMaps: KeyValue[] = [];
-  while (!checkEndOfKeyValPairs()) {
-    globalMaps.push(getKeyValue());
+  const globalMap: any = {};
+  {
+    // closing scope for const variables
+    const globalMapKeyVals: KeyValue[] = [];
+    globalMap.keyVals = globalMapKeyVals;
+    const globalKeyIndex: { [index: string]: number } = {};
+    while (!checkEndOfKeyValPairs()) {
+      const keyVal = getKeyValue();
+      const hexKey = keyVal.key.toString('hex');
+      if (globalKeyIndex[hexKey]) {
+        throw new Error(
+          'Format Error: Keys must be unique for global keymap: key ' + hexKey,
+        );
+      }
+      globalKeyIndex[hexKey] = 1;
+      globalMapKeyVals.push(keyVal);
+    }
   }
-  offset += 1;
 
-  if (
-    globalMaps.length !== 1 ||
-    globalMaps[0].key[0] !== GlobalTypes.UNSIGNED_TX
-  ) {
-    throw new Error(
-      'Format Error: Only one Global KeyValue map allowed, ' +
-        'and it must be an UNSIGNED_TX',
-    );
+  const unsignedTxMaps = globalMap.keyVals.filter(
+    (keyVal: KeyValue) => keyVal.key[0] === GlobalTypes.UNSIGNED_TX,
+  );
+
+  if (unsignedTxMaps.length !== 1) {
+    throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
 
   let unsignedTx: Transaction;
   try {
-    unsignedTx = Transaction.fromBuffer(globalMaps[0].value);
+    unsignedTx = Transaction.fromBuffer(unsignedTxMaps[0].value);
   } catch (err) {
     throw new Error('Format Error: Error parsing Transaction: ' + err.message);
+  }
+
+  if (
+    !unsignedTx.ins.every(
+      input => input.script.length === 0 && input.witness.length === 0,
+    )
+  ) {
+    throw new Error(
+      'Format Error: Encoded transaction must have no scriptSigs or witnessStacks',
+    );
   }
 
   // Get input and output counts to loop the respective fields
@@ -133,11 +167,23 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
 
   // Get input fields
   for (const index of range(inputCount)) {
+    const inputKeyIndex: { [index: string]: number } = {};
     const input: PsbtInput = {
       keyVals: [] as KeyValue[],
     };
     while (!checkEndOfKeyValPairs()) {
       const keyVal = getKeyValue();
+      const hexKey = keyVal.key.toString('hex');
+      if (inputKeyIndex[hexKey]) {
+        throw new Error(
+          'Format Error: Keys must be unique for each input: ' +
+            'input index ' +
+            index +
+            ' key ' +
+            hexKey,
+        );
+      }
+      inputKeyIndex[hexKey] = 1;
       input.keyVals.push(keyVal);
       const keyValPos = input.keyVals.length - 1;
 
@@ -293,17 +339,27 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
         default:
       }
     }
-    // skip the ending byte of the keymap
-    offset += 1;
     inputs.push(input);
   }
 
   for (const index of range(outputCount)) {
+    const outputKeyIndex: { [index: string]: number } = {};
     const output: PsbtOutput = {
       keyVals: [] as KeyValue[],
     };
     while (!checkEndOfKeyValPairs()) {
       const keyVal = getKeyValue();
+      const hexKey = keyVal.key.toString('hex');
+      if (outputKeyIndex[hexKey]) {
+        throw new Error(
+          'Format Error: Keys must be unique for each output: ' +
+            'output index ' +
+            index +
+            ' key ' +
+            hexKey,
+        );
+      }
+      outputKeyIndex[hexKey] = 1;
       output.keyVals.push(keyVal);
       const keyValPos = output.keyVals.length - 1;
 
@@ -362,12 +418,10 @@ function psbtFromBuffer(buffer: Buffer, callback: FromBufferCallback): void {
         default:
       }
     }
-    // skip the ending byte of the keymap
-    offset += 1;
     outputs.push(output);
   }
 
-  callback(unsignedTx, inputs, outputs);
+  callback({ unsignedTx, globalMap, inputs, outputs });
 }
 
 function reverseBuffer(buffer: Buffer): Buffer {
