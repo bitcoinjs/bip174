@@ -1,9 +1,30 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const combiner_1 = require('./combiner');
+const convert = require('./converter');
 const parser_1 = require('./parser');
 const typeFields_1 = require('./typeFields');
 class Psbt {
+  static fromTransaction(txBuf, txCountGetter) {
+    if (txCountGetter === undefined)
+      txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
+    const result = txCountGetter(txBuf);
+    const psbt = new Psbt();
+    psbt.globalMap.keyVals[0].value = txBuf;
+    while (result.inputCount > 0) {
+      psbt.inputs.push({
+        keyVals: [],
+      });
+      result.inputCount--;
+    }
+    while (result.outputCount > 0) {
+      psbt.outputs.push({
+        keyVals: [],
+      });
+      result.outputCount--;
+    }
+    return psbt;
+  }
   static fromBase64(data, txCountGetter) {
     const buffer = Buffer.from(data, 'base64');
     return Psbt.fromBuffer(buffer, txCountGetter);

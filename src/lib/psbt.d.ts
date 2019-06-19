@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { PsbtGlobal, PsbtInput, PsbtOutput, TransactionIOCountGetter } from './interfaces';
 export declare class Psbt {
+    static fromTransaction(txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;
     static fromBase64(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
     static fromHex(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
     static fromBuffer(buffer: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;

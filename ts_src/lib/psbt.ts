@@ -1,4 +1,5 @@
 import { combine } from './combiner';
+import * as convert from './converter';
 import {
   PsbtGlobal,
   PsbtInput,
@@ -9,6 +10,29 @@ import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes } from './typeFields';
 
 export class Psbt {
+  static fromTransaction(
+    txBuf: Buffer,
+    txCountGetter?: TransactionIOCountGetter,
+  ): Psbt {
+    if (txCountGetter === undefined)
+      txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
+    const result = txCountGetter(txBuf);
+    const psbt = new Psbt();
+    psbt.globalMap.keyVals[0].value = txBuf;
+    while (result.inputCount > 0) {
+      psbt.inputs.push({
+        keyVals: [],
+      });
+      result.inputCount--;
+    }
+    while (result.outputCount > 0) {
+      psbt.outputs.push({
+        keyVals: [],
+      });
+      result.outputCount--;
+    }
+    return psbt;
+  }
   static fromBase64(
     data: string,
     txCountGetter?: TransactionIOCountGetter,
