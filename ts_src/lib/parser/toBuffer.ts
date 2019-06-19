@@ -3,6 +3,37 @@ import { keyValsToBuffer, range } from '../converter/tools';
 import { KeyValue } from '../interfaces';
 import { PsbtAttributes } from './index';
 
+export function psbtToBuffer({
+  globalMap,
+  inputs,
+  outputs,
+}: PsbtAttributes): Buffer {
+  const { globalKeyVals, inputKeyVals, outputKeyVals } = psbtToKeyVals({
+    globalMap,
+    inputs,
+    outputs,
+  });
+  const globalBuffer = keyValsToBuffer(globalKeyVals);
+  const inputBuffers = [] as Buffer[];
+  const outputBuffers = [] as Buffer[];
+  inputKeyVals.forEach(input => {
+    inputBuffers.push(keyValsToBuffer(input));
+  });
+  outputKeyVals.forEach(output => {
+    outputBuffers.push(keyValsToBuffer(output));
+  });
+
+  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
+  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
+
+  return Buffer.concat(
+    [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
+      inputBuffers,
+      outputBuffers,
+    ),
+  );
+}
+
 const sortKeyVals = (_a: KeyValue, _b: KeyValue): number => {
   const a = _a.key.toString('hex');
   const b = _b.key.toString('hex');
@@ -11,18 +42,20 @@ const sortKeyVals = (_a: KeyValue, _b: KeyValue): number => {
   else return 0;
 };
 
-export function psbtToBuffer({
+export function psbtToKeyVals({
   globalMap,
   inputs,
   outputs,
-}: PsbtAttributes): Buffer {
+}: PsbtAttributes): {
+  globalKeyVals: KeyValue[];
+  inputKeyVals: KeyValue[][];
+  outputKeyVals: KeyValue[][];
+} {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
   const globalKeyVals = globalMap.keyVals.sort(sortKeyVals);
-  // Global buffer of the KeyValue map with a 0x00 at the end
-  const globalBuffer: Buffer = keyValsToBuffer(globalKeyVals);
-  const inputBuffers = [] as Buffer[];
-  const outputBuffers = [] as Buffer[];
+  const inputKeyVals = [] as KeyValue[][];
+  const outputKeyVals = [] as KeyValue[][];
 
   for (const index of range(inputs.length)) {
     const input = inputs[index];
@@ -63,14 +96,8 @@ export function psbtToBuffer({
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
 
-    const inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
-    const isEmpty = inputKeyVals.length === 0;
-    // buffer of the KeyValue map with a 0x00 at the end for one input
-    if (isEmpty) {
-      inputBuffers.push(Buffer.from([0]));
-    } else {
-      inputBuffers.push(keyValsToBuffer(inputKeyVals));
-    }
+    const _inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
+    inputKeyVals.push(_inputKeyVals);
   }
 
   for (const index of range(outputs.length)) {
@@ -112,23 +139,13 @@ export function psbtToBuffer({
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
 
-    const outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
-    const isEmpty = outputKeyVals.length === 0;
-    // buffer of the KeyValue map with a 0x00 at the end for one output
-    if (isEmpty) {
-      outputBuffers.push(Buffer.from([0]));
-    } else {
-      outputBuffers.push(keyValsToBuffer(outputKeyVals));
-    }
+    const _outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
+    outputKeyVals.push(_outputKeyVals);
   }
 
-  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
-  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
-
-  return Buffer.concat(
-    [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
-      inputBuffers,
-      outputBuffers,
-    ),
-  );
+  return {
+    globalKeyVals,
+    inputKeyVals,
+    outputKeyVals,
+  };
 }

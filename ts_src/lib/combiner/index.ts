@@ -1,4 +1,6 @@
-import { PsbtAttributes } from '../parser';
+import { KeyValue } from '../interfaces';
+import { PsbtAttributes, psbtFromKeyVals, psbtToKeyVals } from '../parser';
+import { GlobalTypes } from '../typeFields';
 
 /*
 Possible outcomes:
@@ -25,14 +27,101 @@ TODO:
 
 export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
   const self = psbts[0];
+  const selfKeyVals = psbtToKeyVals(self);
   const others = psbts.slice(1);
   if (others.length === 0) throw new Error('Combine: Nothing to combine');
 
-  for (const other of others) {
-    const txKeyVal = other.globalMap.keyVals.filter(kv =>
-      kv.key.equals(Buffer.from([0])),
-    )[0];
-    txKeyVal.key = Buffer.from([]);
+  const selfTxKeyVal = getTx(self);
+  if (selfTxKeyVal === undefined) {
+    throw new Error('Combine: Self missing transaction');
   }
-  return self;
+  const selfGlobalSet = getKeySet(selfKeyVals.globalKeyVals);
+  const selfInputSets = selfKeyVals.inputKeyVals.map(input => getKeySet(input));
+  const selfOutputSets = selfKeyVals.outputKeyVals.map(output =>
+    getKeySet(output),
+  );
+
+  for (const other of others) {
+    const otherTxKeyVal = getTx(other);
+    if (
+      otherTxKeyVal === undefined ||
+      !otherTxKeyVal.value.equals(selfTxKeyVal.value)
+    ) {
+      throw new Error(
+        'Combine: One of the Psbts does not have the same transaction.',
+      );
+    }
+    const otherKeyVals = psbtToKeyVals(other);
+
+    const otherGlobalSet = getKeySet(otherKeyVals.globalKeyVals);
+    otherGlobalSet.forEach(
+      keyPusher(
+        selfGlobalSet,
+        selfKeyVals.globalKeyVals,
+        otherKeyVals.globalKeyVals,
+      ),
+    );
+
+    const otherInputSets = otherKeyVals.inputKeyVals.map(input =>
+      getKeySet(input),
+    );
+    otherInputSets.forEach((inputSet, idx) =>
+      inputSet.forEach(
+        keyPusher(
+          selfInputSets[idx],
+          selfKeyVals.inputKeyVals[idx],
+          otherKeyVals.inputKeyVals[idx],
+        ),
+      ),
+    );
+
+    const otherOutputSets = otherKeyVals.outputKeyVals.map(output =>
+      getKeySet(output),
+    );
+    otherOutputSets.forEach((outputSet, idx) =>
+      outputSet.forEach(
+        keyPusher(
+          selfOutputSets[idx],
+          selfKeyVals.outputKeyVals[idx],
+          otherKeyVals.outputKeyVals[idx],
+        ),
+      ),
+    );
+  }
+  return psbtFromKeyVals({
+    globalMapKeyVals: selfKeyVals.globalKeyVals,
+    inputKeyVals: selfKeyVals.inputKeyVals,
+    outputKeyVals: selfKeyVals.outputKeyVals,
+  });
+}
+
+function keyPusher(
+  selfGlobalSet: Set<string>,
+  selfGlobalKeyVals: KeyValue[],
+  otherGlobalKeyVals: KeyValue[],
+): (key: string) => void {
+  return (key: string): void => {
+    if (selfGlobalSet.has(key)) return;
+    const newKv = otherGlobalKeyVals.filter(
+      kv => kv.key.toString('hex') === key,
+    )[0];
+    selfGlobalKeyVals.push(newKv);
+  };
+}
+
+function getTx(psbt: PsbtAttributes): KeyValue | undefined {
+  return psbt.globalMap.keyVals.filter(kv =>
+    kv.key.equals(Buffer.from([GlobalTypes.UNSIGNED_TX])),
+  )[0];
+}
+
+function getKeySet(keyVals: KeyValue[]): Set<string> {
+  const set: Set<string> = new Set();
+  keyVals.forEach(keyVal => {
+    const hex = keyVal.key.toString('hex');
+    if (set.has(hex))
+      throw new Error('Combine: KeyValue Map keys should be unique');
+    set.add(hex);
+  });
+  return set;
 }

@@ -11,7 +11,7 @@
     "node": ">=8.0.0"
   },
   "scripts": {
-    "build": "npm run clean && tsc -p ./tsconfig.json && npm run formatjs",
+    "build": "npm run clean && tsc -p ./tsconfig.json ; npm run formatjs",
     "clean": "rimraf src types",
     "format": "npm run prettier -- --write",
     "formatjs": "npm run prettierjs -- --write > /dev/null 2>&1",

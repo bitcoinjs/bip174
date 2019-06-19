@@ -23,6 +23,7 @@ class Psbt {
       keyVals: [
         {
           key: Buffer.from([typeFields_1.GlobalTypes.UNSIGNED_TX]),
+          // version 1, locktime 0, 0 ins, 0 outs
           value: Buffer.from('01000000000000000000', 'hex'),
         },
       ],
@@ -39,8 +40,7 @@ class Psbt {
     return buffer.toString('hex');
   }
   toBuffer() {
-    const { globalMap, inputs, outputs } = this;
-    return parser_1.psbtToBuffer({ globalMap, inputs, outputs });
+    return parser_1.psbtToBuffer(this);
   }
   // TODO:
   // Add methods to update various parts. (ie. "updater" responsibility)
@@ -48,17 +48,7 @@ class Psbt {
   combine(...those) {
     // Combine this with those.
     // Return self for chaining.
-    let self;
-    {
-      const { globalMap, inputs, outputs } = this;
-      self = { globalMap, inputs, outputs };
-    }
-    const dataToJoin = [];
-    those.forEach(psbt => {
-      const { globalMap, inputs, outputs } = psbt;
-      dataToJoin.push({ globalMap, inputs, outputs });
-    });
-    const result = combiner_1.combine([self].concat(dataToJoin));
+    const result = combiner_1.combine([this].concat(those));
     Object.assign(this, result);
     return this;
   }

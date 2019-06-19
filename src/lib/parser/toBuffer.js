@@ -2,6 +2,31 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const convert = require('../converter');
 const tools_1 = require('../converter/tools');
+function psbtToBuffer({ globalMap, inputs, outputs }) {
+  const { globalKeyVals, inputKeyVals, outputKeyVals } = psbtToKeyVals({
+    globalMap,
+    inputs,
+    outputs,
+  });
+  const globalBuffer = tools_1.keyValsToBuffer(globalKeyVals);
+  const inputBuffers = [];
+  const outputBuffers = [];
+  inputKeyVals.forEach(input => {
+    inputBuffers.push(tools_1.keyValsToBuffer(input));
+  });
+  outputKeyVals.forEach(output => {
+    outputBuffers.push(tools_1.keyValsToBuffer(output));
+  });
+  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
+  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
+  return Buffer.concat(
+    [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
+      inputBuffers,
+      outputBuffers,
+    ),
+  );
+}
+exports.psbtToBuffer = psbtToBuffer;
 const sortKeyVals = (_a, _b) => {
   const a = _a.key.toString('hex');
   const b = _b.key.toString('hex');
@@ -9,14 +34,12 @@ const sortKeyVals = (_a, _b) => {
   else if (a > b) return 1;
   else return 0;
 };
-function psbtToBuffer({ globalMap, inputs, outputs }) {
+function psbtToKeyVals({ globalMap, inputs, outputs }) {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
   const globalKeyVals = globalMap.keyVals.sort(sortKeyVals);
-  // Global buffer of the KeyValue map with a 0x00 at the end
-  const globalBuffer = tools_1.keyValsToBuffer(globalKeyVals);
-  const inputBuffers = [];
-  const outputBuffers = [];
+  const inputKeyVals = [];
+  const outputKeyVals = [];
   for (const index of tools_1.range(inputs.length)) {
     const input = inputs[index];
     const attributes = Object.keys(input).filter(k => k !== 'keyVals');
@@ -52,14 +75,8 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
     const otherInputKeyVals = input.keyVals.filter(keyVal => {
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
-    const inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
-    const isEmpty = inputKeyVals.length === 0;
-    // buffer of the KeyValue map with a 0x00 at the end for one input
-    if (isEmpty) {
-      inputBuffers.push(Buffer.from([0]));
-    } else {
-      inputBuffers.push(tools_1.keyValsToBuffer(inputKeyVals));
-    }
+    const _inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
+    inputKeyVals.push(_inputKeyVals);
   }
   for (const index of tools_1.range(outputs.length)) {
     const output = outputs[index];
@@ -96,22 +113,13 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
     const otherOutputKeyVals = output.keyVals.filter(keyVal => {
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
-    const outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
-    const isEmpty = outputKeyVals.length === 0;
-    // buffer of the KeyValue map with a 0x00 at the end for one output
-    if (isEmpty) {
-      outputBuffers.push(Buffer.from([0]));
-    } else {
-      outputBuffers.push(tools_1.keyValsToBuffer(outputKeyVals));
-    }
+    const _outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
+    outputKeyVals.push(_outputKeyVals);
   }
-  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
-  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
-  return Buffer.concat(
-    [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
-      inputBuffers,
-      outputBuffers,
-    ),
-  );
+  return {
+    globalKeyVals,
+    inputKeyVals,
+    outputKeyVals,
+  };
 }
-exports.psbtToBuffer = psbtToBuffer;
+exports.psbtToKeyVals = psbtToKeyVals;

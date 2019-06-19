@@ -5,7 +5,7 @@ import {
   PsbtOutput,
   TransactionIOCountGetter,
 } from './interfaces';
-import { PsbtAttributes, psbtFromBuffer, psbtToBuffer } from './parser';
+import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes } from './typeFields';
 
 export class Psbt {
@@ -39,6 +39,7 @@ export class Psbt {
       keyVals: [
         {
           key: Buffer.from([GlobalTypes.UNSIGNED_TX]),
+          // version 1, locktime 0, 0 ins, 0 outs
           value: Buffer.from('01000000000000000000', 'hex'),
         },
       ],
@@ -58,8 +59,7 @@ export class Psbt {
   }
 
   toBuffer(): Buffer {
-    const { globalMap, inputs, outputs } = this;
-    return psbtToBuffer({ globalMap, inputs, outputs });
+    return psbtToBuffer(this);
   }
 
   // TODO:
@@ -69,17 +69,7 @@ export class Psbt {
   combine(...those: Psbt[]): Psbt {
     // Combine this with those.
     // Return self for chaining.
-    let self: PsbtAttributes;
-    {
-      const { globalMap, inputs, outputs } = this;
-      self = { globalMap, inputs, outputs };
-    }
-    const dataToJoin: PsbtAttributes[] = [];
-    those.forEach(psbt => {
-      const { globalMap, inputs, outputs } = psbt;
-      dataToJoin.push({ globalMap, inputs, outputs });
-    });
-    const result = combine([self].concat(dataToJoin));
+    const result = combine([this as Psbt].concat(those));
     Object.assign(this, result);
     return this;
   }

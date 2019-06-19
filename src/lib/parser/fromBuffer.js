@@ -50,26 +50,20 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
       'Format Error: Magic Number must be followed by 0xff separator',
     );
   }
-  // Global fields (Currently only UNSIGNED_TX)
-  const globalMap = { keyVals: [] };
-  {
-    // closing scope for const variables
-    const globalMapKeyVals = [];
-    globalMap.keyVals = globalMapKeyVals;
-    const globalKeyIndex = {};
-    while (!checkEndOfKeyValPairs()) {
-      const keyVal = getKeyValue();
-      const hexKey = keyVal.key.toString('hex');
-      if (globalKeyIndex[hexKey]) {
-        throw new Error(
-          'Format Error: Keys must be unique for global keymap: key ' + hexKey,
-        );
-      }
-      globalKeyIndex[hexKey] = 1;
-      globalMapKeyVals.push(keyVal);
+  const globalMapKeyVals = [];
+  const globalKeyIndex = {};
+  while (!checkEndOfKeyValPairs()) {
+    const keyVal = getKeyValue();
+    const hexKey = keyVal.key.toString('hex');
+    if (globalKeyIndex[hexKey]) {
+      throw new Error(
+        'Format Error: Keys must be unique for global keymap: key ' + hexKey,
+      );
     }
+    globalKeyIndex[hexKey] = 1;
+    globalMapKeyVals.push(keyVal);
   }
-  const unsignedTxMaps = globalMap.keyVals.filter(
+  const unsignedTxMaps = globalMapKeyVals.filter(
     keyVal => keyVal.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
   );
   if (unsignedTxMaps.length !== 1) {
@@ -79,14 +73,12 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
   // Get input and output counts to loop the respective fields
   const inputCount = unsignedTx.inputCount;
   const outputCount = unsignedTx.outputCount;
-  const inputs = [];
-  const outputs = [];
+  const inputKeyVals = [];
+  const outputKeyVals = [];
   // Get input fields
   for (const index of tools_1.range(inputCount)) {
     const inputKeyIndex = {};
-    const input = {
-      keyVals: [],
-    };
+    const input = [];
     while (!checkEndOfKeyValPairs()) {
       const keyVal = getKeyValue();
       const hexKey = keyVal.key.toString('hex');
@@ -100,7 +92,49 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
         );
       }
       inputKeyIndex[hexKey] = 1;
-      input.keyVals.push(keyVal);
+      input.push(keyVal);
+    }
+    inputKeyVals.push(input);
+  }
+  for (const index of tools_1.range(outputCount)) {
+    const outputKeyIndex = {};
+    const output = [];
+    while (!checkEndOfKeyValPairs()) {
+      const keyVal = getKeyValue();
+      const hexKey = keyVal.key.toString('hex');
+      if (outputKeyIndex[hexKey]) {
+        throw new Error(
+          'Format Error: Keys must be unique for each output: ' +
+            'output index ' +
+            index +
+            ' key ' +
+            hexKey,
+        );
+      }
+      outputKeyIndex[hexKey] = 1;
+      output.push(keyVal);
+    }
+    outputKeyVals.push(output);
+  }
+  return psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals });
+}
+exports.psbtFromBuffer = psbtFromBuffer;
+function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
+  // That was easy :-)
+  const globalMap = {
+    keyVals: globalMapKeyVals,
+  };
+  // Get input and output counts to loop the respective fields
+  const inputCount = inputKeyVals.length;
+  const outputCount = outputKeyVals.length;
+  const inputs = [];
+  const outputs = [];
+  // Get input fields
+  for (const index of tools_1.range(inputCount)) {
+    const input = {
+      keyVals: [],
+    };
+    for (const keyVal of inputKeyVals[index]) {
       let pubkey;
       if (
         [
@@ -130,7 +164,6 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
             );
           }
           input.nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.WITNESS_UTXO:
           if (
@@ -142,7 +175,6 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
             );
           }
           input.witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.PARTIAL_SIG:
           if (pubkey === undefined) {
@@ -154,28 +186,24 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
             input.partialSig = [];
           }
           input.partialSig.push(convert.inputs.partialSig.decode(keyVal));
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.SIGHASH_TYPE:
           if (input.sighashType !== undefined) {
             throw new Error('Format Error: Input has multiple SIGHASH_TYPE');
           }
           input.sighashType = convert.inputs.sighashType.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.REDEEM_SCRIPT:
           if (input.redeemScript !== undefined) {
             throw new Error('Format Error: Input has multiple REDEEM_SCRIPT');
           }
           input.redeemScript = convert.inputs.redeemScript.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.WITNESS_SCRIPT:
           if (input.witnessScript !== undefined) {
             throw new Error('Format Error: Input has multiple WITNESS_SCRIPT');
           }
           input.witnessScript = convert.inputs.witnessScript.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {
@@ -189,50 +217,32 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
           input.bip32Derivation.push(
             convert.inputs.bip32Derivation.decode(keyVal),
           );
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTSIG:
           input.finalScriptSig = convert.inputs.finalScriptSig.decode(keyVal);
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTWITNESS:
           input.finalScriptWitness = convert.inputs.finalScriptWitness.decode(
             keyVal,
           );
-          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.POR_COMMITMENT:
           input.porCommitment = convert.inputs.porCommitment.decode(keyVal);
-          input.keyVals.pop();
           break;
         default:
-        // default is to do nothing and not pop the keyVal.
-        // This will allow inclusion during serialization.
+          // This will allow inclusion during serialization.
+          input.keyVals.push(keyVal);
       }
     }
     inputs.push(input);
   }
   for (const index of tools_1.range(outputCount)) {
-    const outputKeyIndex = {};
     const output = {
       keyVals: [],
     };
-    while (!checkEndOfKeyValPairs()) {
-      const keyVal = getKeyValue();
-      const hexKey = keyVal.key.toString('hex');
-      if (outputKeyIndex[hexKey]) {
-        throw new Error(
-          'Format Error: Keys must be unique for each output: ' +
-            'output index ' +
-            index +
-            ' key ' +
-            hexKey,
-        );
-      }
-      outputKeyIndex[hexKey] = 1;
-      output.keyVals.push(keyVal);
+    for (const keyVal of outputKeyVals[index]) {
       let pubkey;
-      if (typeFields_1.InputTypes.BIP32_DERIVATION === keyVal.key[0]) {
+      if (typeFields_1.OutputTypes.BIP32_DERIVATION === keyVal.key[0]) {
         pubkey = keyVal.key.slice(1);
       }
       switch (keyVal.key[0]) {
@@ -241,14 +251,12 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
             throw new Error('Format Error: Output has multiple REDEEM_SCRIPT');
           }
           output.redeemScript = convert.outputs.redeemScript.decode(keyVal);
-          output.keyVals.pop();
           break;
         case typeFields_1.OutputTypes.WITNESS_SCRIPT:
           if (output.witnessScript !== undefined) {
             throw new Error('Format Error: Output has multiple WITNESS_SCRIPT');
           }
           output.witnessScript = convert.outputs.witnessScript.decode(keyVal);
-          output.keyVals.pop();
           break;
         case typeFields_1.OutputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {
@@ -262,13 +270,13 @@ function psbtFromBuffer(buffer, txCountGetter = countGetter) {
           output.bip32Derivation.push(
             convert.outputs.bip32Derivation.decode(keyVal),
           );
-          output.keyVals.pop();
           break;
         default:
+          output.keyVals.push(keyVal);
       }
     }
     outputs.push(output);
   }
   return { globalMap, inputs, outputs };
 }
-exports.psbtFromBuffer = psbtFromBuffer;
+exports.psbtFromKeyVals = psbtFromKeyVals;
