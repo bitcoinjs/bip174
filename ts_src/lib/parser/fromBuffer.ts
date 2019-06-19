@@ -1,5 +1,5 @@
-import * as convert from '../convert';
-import { range } from '../convert/tools';
+import * as convert from '../converter';
+import { range } from '../converter/tools';
 import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from '../interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
 import { PsbtAttributes } from './index';

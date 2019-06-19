@@ -1,5 +1,5 @@
-import * as convert from '../convert';
-import { keyValsToBuffer, range } from '../convert/tools';
+import * as convert from '../converter';
+import { keyValsToBuffer, range } from '../converter/tools';
 import { KeyValue } from '../interfaces';
 import { PsbtAttributes } from './index';
 
