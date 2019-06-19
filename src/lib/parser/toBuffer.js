@@ -9,17 +9,10 @@ const sortKeyVals = (_a, _b) => {
   else if (a > b) return 1;
   else return 0;
 };
-function psbtToBuffer({ unsignedTx, globalMap, inputs, outputs }) {
+function psbtToBuffer({ globalMap, inputs, outputs }) {
   // First parse the global keyVals
-  // Since we only support UNSIGNED_TX now, do it manually.
-  const unsignedTxKeyVal = convert.globals.unsignedTx.encode(unsignedTx);
   // Get any extra keyvals to pass along
-  const otherGlobals = globalMap.keyVals.filter(
-    keyVal => !keyVal.key.equals(Buffer.from([0])),
-  );
-  const globalKeyVals = [unsignedTxKeyVal]
-    .concat(otherGlobals)
-    .sort(sortKeyVals);
+  const globalKeyVals = globalMap.keyVals.sort(sortKeyVals);
   // Global buffer of the KeyValue map with a 0x00 at the end
   const globalBuffer = tools_1.keyValsToBuffer(globalKeyVals);
   const inputBuffers = [];

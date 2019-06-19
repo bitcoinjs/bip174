@@ -3,7 +3,10 @@ export declare const fixtures: {
     input: string;
     output: {
         globalMap: {
-            keyVals: never[];
+            keyVals: {
+                key: string;
+                value: string;
+            }[];
         };
         inputs: {
             keyVals: never[];
@@ -26,20 +29,5 @@ export declare const fixtures: {
         outputs: {
             keyVals: never[];
         }[];
-        unsignedTx: {
-            version: number;
-            locktime: number;
-            ins: {
-                hash: string;
-                index: number;
-                script: string;
-                sequence: number;
-                witness: never[];
-            }[];
-            outs: {
-                value: number;
-                script: string;
-            }[];
-        };
     };
 }[];

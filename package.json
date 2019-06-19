@@ -28,7 +28,6 @@
     "url": "git+https://github.com/bitcoinjs/bip174.git"
   },
   "dependencies": {
-    "bitcoinjs-lib": "^5.0.5",
     "varuint-bitcoin": "^1.1.0"
   },
   "devDependencies": {

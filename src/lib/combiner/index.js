@@ -1,11 +1,15 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 /*
-
 Possible outcomes:
 1. Update TX with new inputs or outputs. Keep as much as possible never remove.
+  - Check sigs and sighashes on self, depending on state, reject merge (Don't want to invalidate sigs)
   - New inputs must have WITNESS_TXOUT or NON_WITNESS_TXOUT
-  - New outputs must have
+    - If prevoutScript is PS2H must have RedeemScript, P2WSH must have WitnessScript
+    - If Redeemscript is P2WSH, must have WitnessScript
+    - If no sighashType is explicitly shown, add SIGHASH_ALL
+  - New outputs are copied over as-is
+  - Before adding
 2.
 
 TODO:
@@ -26,21 +30,8 @@ function combine(psbts) {
     const txKeyVal = other.globalMap.keyVals.filter(kv =>
       kv.key.equals(Buffer.from([0])),
     )[0];
-    if (!checkTxWithKeyVal(other.unsignedTx, txKeyVal)) {
-      continue;
-    }
+    txKeyVal.key = Buffer.from([]);
   }
   return self;
 }
 exports.combine = combine;
-function checkTxWithKeyVal(tx, kv) {
-  const txBuf = tx.toBuffer();
-  return txBuf.equals(kv.value);
-}
-exports.checkTxWithKeyVal = checkTxWithKeyVal;
-function checkTxWithTx(tx1, tx2) {
-  const txBuf1 = tx1.toBuffer();
-  const txBuf2 = tx2.toBuffer();
-  return txBuf1.equals(txBuf2);
-}
-exports.checkTxWithTx = checkTxWithTx;

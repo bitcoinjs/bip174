@@ -12,21 +12,13 @@ const sortKeyVals = (_a: KeyValue, _b: KeyValue): number => {
 };
 
 export function psbtToBuffer({
-  unsignedTx,
   globalMap,
   inputs,
   outputs,
 }: PsbtAttributes): Buffer {
   // First parse the global keyVals
-  // Since we only support UNSIGNED_TX now, do it manually.
-  const unsignedTxKeyVal = convert.globals.unsignedTx.encode(unsignedTx);
   // Get any extra keyvals to pass along
-  const otherGlobals = globalMap.keyVals.filter(
-    keyVal => !keyVal.key.equals(Buffer.from([0])),
-  );
-  const globalKeyVals = [unsignedTxKeyVal]
-    .concat(otherGlobals)
-    .sort(sortKeyVals);
+  const globalKeyVals = globalMap.keyVals.sort(sortKeyVals);
   // Global buffer of the KeyValue map with a 0x00 at the end
   const globalBuffer: Buffer = keyValsToBuffer(globalKeyVals);
   const inputBuffers = [] as Buffer[];

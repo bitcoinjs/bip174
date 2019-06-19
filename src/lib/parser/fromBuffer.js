@@ -4,7 +4,8 @@ const convert = require('../converter');
 const tools_1 = require('../converter/tools');
 const typeFields_1 = require('../typeFields');
 const varuint = require('varuint-bitcoin');
-function psbtFromBuffer(buffer) {
+const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
+function psbtFromBuffer(buffer, txCountGetter = countGetter) {
   let offset = 0;
   function varSlice() {
     const keyLen = varuint.decode(buffer, offset);
@@ -74,23 +75,10 @@ function psbtFromBuffer(buffer) {
   if (unsignedTxMaps.length !== 1) {
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
-  const unsignedTx = convert.globals.unsignedTx.decode(unsignedTxMaps[0]);
-  // We know there is exactly one, so remove it
-  globalMap.keyVals = globalMap.keyVals.filter(
-    keyVal => keyVal.key[0] !== typeFields_1.GlobalTypes.UNSIGNED_TX,
-  );
-  if (
-    !unsignedTx.ins.every(
-      input => input.script.length === 0 && input.witness.length === 0,
-    )
-  ) {
-    throw new Error(
-      'Format Error: Encoded transaction must have no scriptSigs or witnessStacks',
-    );
-  }
+  const unsignedTx = txCountGetter(unsignedTxMaps[0].value);
   // Get input and output counts to loop the respective fields
-  const inputCount = unsignedTx.ins.length;
-  const outputCount = unsignedTx.outs.length;
+  const inputCount = unsignedTx.inputCount;
+  const outputCount = unsignedTx.outputCount;
   const inputs = [];
   const outputs = [];
   // Get input fields
@@ -281,6 +269,6 @@ function psbtFromBuffer(buffer) {
     }
     outputs.push(output);
   }
-  return { unsignedTx, globalMap, inputs, outputs };
+  return { globalMap, inputs, outputs };
 }
 exports.psbtFromBuffer = psbtFromBuffer;

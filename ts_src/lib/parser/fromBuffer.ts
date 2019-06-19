@@ -1,12 +1,23 @@
 import * as convert from '../converter';
 import { range } from '../converter/tools';
-import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from '../interfaces';
+import {
+  KeyValue,
+  PsbtGlobal,
+  PsbtInput,
+  PsbtOutput,
+  TransactionIOCountGetter,
+} from '../interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
 import { PsbtAttributes } from './index';
 
 const varuint = require('varuint-bitcoin');
 
-export function psbtFromBuffer(buffer: Buffer): PsbtAttributes {
+const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
+
+export function psbtFromBuffer(
+  buffer: Buffer,
+  txCountGetter: TransactionIOCountGetter = countGetter,
+): PsbtAttributes {
   let offset = 0;
 
   function varSlice(): Buffer {
@@ -86,26 +97,11 @@ export function psbtFromBuffer(buffer: Buffer): PsbtAttributes {
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
 
-  const unsignedTx = convert.globals.unsignedTx.decode(unsignedTxMaps[0]);
-
-  // We know there is exactly one, so remove it
-  globalMap.keyVals = globalMap.keyVals.filter(
-    keyVal => keyVal.key[0] !== GlobalTypes.UNSIGNED_TX,
-  );
-
-  if (
-    !unsignedTx.ins.every(
-      input => input.script.length === 0 && input.witness.length === 0,
-    )
-  ) {
-    throw new Error(
-      'Format Error: Encoded transaction must have no scriptSigs or witnessStacks',
-    );
-  }
+  const unsignedTx = txCountGetter(unsignedTxMaps[0].value);
 
   // Get input and output counts to loop the respective fields
-  const inputCount = unsignedTx.ins.length;
-  const outputCount = unsignedTx.outs.length;
+  const inputCount = unsignedTx.inputCount;
+  const outputCount = unsignedTx.outputCount;
   const inputs: PsbtInput[] = [];
   const outputs: PsbtOutput[] = [];
 
@@ -302,5 +298,5 @@ export function psbtFromBuffer(buffer: Buffer): PsbtAttributes {
     outputs.push(output);
   }
 
-  return { unsignedTx, globalMap, inputs, outputs };
+  return { globalMap, inputs, outputs };
 }

@@ -1,14 +1,15 @@
-import { Transaction } from 'bitcoinjs-lib';
-// import { globals } from '../converter';
-import { KeyValue } from '../interfaces';
 import { PsbtAttributes } from '../parser';
 
 /*
-
 Possible outcomes:
 1. Update TX with new inputs or outputs. Keep as much as possible never remove.
+  - Check sigs and sighashes on self, depending on state, reject merge (Don't want to invalidate sigs)
   - New inputs must have WITNESS_TXOUT or NON_WITNESS_TXOUT
-  - New outputs must have
+    - If prevoutScript is PS2H must have RedeemScript, P2WSH must have WitnessScript
+    - If Redeemscript is P2WSH, must have WitnessScript
+    - If no sighashType is explicitly shown, add SIGHASH_ALL
+  - New outputs are copied over as-is
+  - Before adding
 2.
 
 TODO:
@@ -31,20 +32,7 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
     const txKeyVal = other.globalMap.keyVals.filter(kv =>
       kv.key.equals(Buffer.from([0])),
     )[0];
-    if (!checkTxWithKeyVal(other.unsignedTx, txKeyVal)) {
-      continue;
-    }
+    txKeyVal.key = Buffer.from([]);
   }
   return self;
-}
-
-export function checkTxWithKeyVal(tx: Transaction, kv: KeyValue): boolean {
-  const txBuf = tx.toBuffer();
-  return txBuf.equals(kv.value);
-}
-
-export function checkTxWithTx(tx1: Transaction, tx2: Transaction): boolean {
-  const txBuf1 = tx1.toBuffer();
-  const txBuf2 = tx2.toBuffer();
-  return txBuf1.equals(txBuf2);
 }

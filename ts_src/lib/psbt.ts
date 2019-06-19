@@ -1,20 +1,31 @@
-import { Transaction } from 'bitcoinjs-lib';
 import { combine } from './combiner';
-import { PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
+import {
+  PsbtGlobal,
+  PsbtInput,
+  PsbtOutput,
+  TransactionIOCountGetter,
+} from './interfaces';
 import { PsbtAttributes, psbtFromBuffer, psbtToBuffer } from './parser';
+import { GlobalTypes } from './typeFields';
 
 export class Psbt {
-  static fromBase64(data: string): Psbt {
+  static fromBase64(
+    data: string,
+    txCountGetter?: TransactionIOCountGetter,
+  ): Psbt {
     const buffer = Buffer.from(data, 'base64');
-    return Psbt.fromBuffer(buffer);
+    return Psbt.fromBuffer(buffer, txCountGetter);
   }
-  static fromHex(data: string): Psbt {
+  static fromHex(data: string, txCountGetter?: TransactionIOCountGetter): Psbt {
     const buffer = Buffer.from(data, 'hex');
-    return Psbt.fromBuffer(buffer);
+    return Psbt.fromBuffer(buffer, txCountGetter);
   }
-  static fromBuffer(buffer: Buffer): Psbt {
+  static fromBuffer(
+    buffer: Buffer,
+    txCountGetter?: TransactionIOCountGetter,
+  ): Psbt {
     const psbt = new Psbt();
-    const results = psbtFromBuffer(buffer);
+    const results = psbtFromBuffer(buffer, txCountGetter);
     Object.assign(psbt, results);
     return psbt;
   }
@@ -22,17 +33,18 @@ export class Psbt {
   inputs: PsbtInput[];
   outputs: PsbtOutput[];
   globalMap: PsbtGlobal;
-  unsignedTx: Transaction;
 
   constructor() {
-    this.globalMap = { keyVals: [] };
+    this.globalMap = {
+      keyVals: [
+        {
+          key: Buffer.from([GlobalTypes.UNSIGNED_TX]),
+          value: Buffer.from('01000000000000000000', 'hex'),
+        },
+      ],
+    };
     this.inputs = [];
     this.outputs = [];
-    this.unsignedTx = new Transaction();
-    this.globalMap.keyVals.push({
-      key: Buffer.from([0]),
-      value: this.unsignedTx.toBuffer(),
-    });
   }
 
   toBase64(): string {
@@ -46,8 +58,8 @@ export class Psbt {
   }
 
   toBuffer(): Buffer {
-    const { unsignedTx, globalMap, inputs, outputs } = this;
-    return psbtToBuffer({ unsignedTx, globalMap, inputs, outputs });
+    const { globalMap, inputs, outputs } = this;
+    return psbtToBuffer({ globalMap, inputs, outputs });
   }
 
   // TODO:
@@ -59,13 +71,13 @@ export class Psbt {
     // Return self for chaining.
     let self: PsbtAttributes;
     {
-      const { unsignedTx, globalMap, inputs, outputs } = this;
-      self = { unsignedTx, globalMap, inputs, outputs };
+      const { globalMap, inputs, outputs } = this;
+      self = { globalMap, inputs, outputs };
     }
     const dataToJoin: PsbtAttributes[] = [];
     those.forEach(psbt => {
-      const { unsignedTx, globalMap, inputs, outputs } = psbt;
-      dataToJoin.push({ unsignedTx, globalMap, inputs, outputs });
+      const { globalMap, inputs, outputs } = psbt;
+      dataToJoin.push({ globalMap, inputs, outputs });
     });
     const result = combine([self].concat(dataToJoin));
     Object.assign(this, result);
@@ -78,7 +90,7 @@ export class Psbt {
     return this;
   }
 
-  extractTransaction(): Transaction {
-    return new Transaction();
+  extractTransaction(): Buffer {
+    return Buffer.from([]);
   }
 }

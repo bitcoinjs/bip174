@@ -1,5 +1,4 @@
 /// <reference types="node" />
-import { Transaction, TxOutput } from 'bitcoinjs-lib';
 export interface KeyValue {
     key: Buffer;
     value: Buffer;
@@ -35,11 +34,18 @@ export interface Bip32Derivation {
     pubkey: Buffer;
     path: string;
 }
-export declare type WitnessUtxo = TxOutput;
-export declare type NonWitnessUtxo = Transaction;
+export interface WitnessUtxo {
+    script: Buffer;
+    value: number;
+}
+export declare type NonWitnessUtxo = Buffer;
 export declare type SighashType = number;
 export declare type RedeemScript = Buffer;
 export declare type WitnessScript = Buffer;
 export declare type FinalScriptSig = Buffer;
 export declare type FinalScriptWitness = Buffer;
 export declare type PorCommitment = string;
+export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
+    inputCount: number;
+    outputCount: number;
+};

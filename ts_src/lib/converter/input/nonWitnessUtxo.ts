@@ -1,4 +1,3 @@
-import { Transaction } from 'bitcoinjs-lib';
 import { KeyValue, NonWitnessUtxo } from '../../interfaces';
 import { InputTypes } from '../../typeFields';
 
@@ -9,18 +8,12 @@ export function decode(keyVal: KeyValue): NonWitnessUtxo {
         keyVal.key.toString('hex'),
     );
   }
-  try {
-    return Transaction.fromBuffer(keyVal.value);
-  } catch (err) {
-    throw new Error(
-      'Decode Error: Error parsing NON_WITNESS_UTXO: ' + err.message,
-    );
-  }
+  return keyVal.value;
 }
 
 export function encode(data: NonWitnessUtxo): KeyValue {
   return {
     key: Buffer.from([InputTypes.NON_WITNESS_UTXO]),
-    value: data.toBuffer(),
+    value: data,
   };
 }
