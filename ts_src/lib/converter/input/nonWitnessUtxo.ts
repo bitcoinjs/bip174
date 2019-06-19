@@ -10,10 +10,7 @@ export function decode(keyVal: KeyValue): NonWitnessUtxo {
     );
   }
   try {
-    return {
-      tx: Transaction.fromBuffer(keyVal.value),
-      index: 0,
-    };
+    return Transaction.fromBuffer(keyVal.value);
   } catch (err) {
     throw new Error(
       'Decode Error: Error parsing NON_WITNESS_UTXO: ' + err.message,
@@ -24,6 +21,6 @@ export function decode(keyVal: KeyValue): NonWitnessUtxo {
 export function encode(data: NonWitnessUtxo): KeyValue {
   return {
     key: Buffer.from([InputTypes.NON_WITNESS_UTXO]),
-    value: data.tx.toBuffer(),
+    value: data.toBuffer(),
   };
 }

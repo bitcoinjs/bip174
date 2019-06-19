@@ -4,10 +4,10 @@ import { fixtures } from './fixtures/first';
 
 for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
-    const parsed = Psbt.fromBuffer(Buffer.from(f.input, 'hex'));
+    const parsed = Psbt.fromHex(f.input);
     const hex = parsed.toHex();
     const parsed2 = Psbt.fromHex(hex);
-    const hex2 = parsed.toHex();
+    const hex2 = parsed2.toHex();
     const parsed3 = Psbt.fromHex(hex2);
     const bufHexxedString = jsonify(parsed);
     const bufHexxedString2 = jsonify(parsed2);

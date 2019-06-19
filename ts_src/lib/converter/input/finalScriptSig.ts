@@ -8,16 +8,13 @@ export function decode(keyVal: KeyValue): FinalScriptSig {
         keyVal.key.toString('hex'),
     );
   }
-  return {
-    index: 0,
-    data: keyVal.value,
-  };
+  return keyVal.value;
 }
 
 export function encode(data: FinalScriptSig): KeyValue {
   const key = Buffer.from([InputTypes.FINAL_SCRIPTSIG]);
   return {
     key,
-    value: data.data,
+    value: data,
   };
 }

@@ -8,16 +8,13 @@ export function decode(keyVal: KeyValue): FinalScriptWitness {
         keyVal.key.toString('hex'),
     );
   }
-  return {
-    index: 0,
-    data: keyVal.value,
-  };
+  return keyVal.value;
 }
 
 export function encode(data: FinalScriptWitness): KeyValue {
   const key = Buffer.from([InputTypes.FINAL_SCRIPTWITNESS]);
   return {
     key,
-    value: data.data,
+    value: data,
   };
 }

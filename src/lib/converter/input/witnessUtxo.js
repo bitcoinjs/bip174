@@ -21,16 +21,13 @@ function decode(keyVal) {
     throw new Error('Decode Error: WITNESS_UTXO script is not proper length');
   }
   return {
-    index: 0,
-    data: {
-      script,
-      value,
-    },
+    script,
+    value,
   };
 }
 exports.decode = decode;
 function encode(data) {
-  const { script, value } = data.data;
+  const { script, value } = data;
   const varintLen = varuint.encodingLength(script.length);
   const valueBuf = Buffer.from(
     ('0'.repeat(16) + value.toString(16)).slice(-16),

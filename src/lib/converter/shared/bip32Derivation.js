@@ -29,7 +29,6 @@ function makeConverter(TYPE_BYTE) {
     }
     const pubkey = keyVal.key.slice(1);
     const data = {
-      index: 0,
       masterFingerprint: keyVal.value.slice(0, 4),
       pubkey,
       path: 'm',

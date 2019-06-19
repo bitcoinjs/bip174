@@ -1,6 +1,7 @@
 import { Transaction } from 'bitcoinjs-lib';
+import { combine } from './combiner';
 import { PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
-import { psbtFromBuffer, psbtToBuffer } from './parser';
+import { PsbtAttributes, psbtFromBuffer, psbtToBuffer } from './parser';
 
 export class Psbt {
   static fromBase64(data: string): Psbt {
@@ -56,8 +57,21 @@ export class Psbt {
   combine(...those: Psbt[]): Psbt {
     // Combine this with those.
     // Return self for chaining.
-    return those[0];
+    let self: PsbtAttributes;
+    {
+      const { unsignedTx, globalMap, inputs, outputs } = this;
+      self = { unsignedTx, globalMap, inputs, outputs };
+    }
+    const dataToJoin: PsbtAttributes[] = [];
+    those.forEach(psbt => {
+      const { unsignedTx, globalMap, inputs, outputs } = psbt;
+      dataToJoin.push({ unsignedTx, globalMap, inputs, outputs });
+    });
+    const result = combine([self].concat(dataToJoin));
+    Object.assign(this, result);
+    return this;
   }
+
   finalize(): Psbt {
     // Finalize all inputs, default throw if can not
     // Return self for chaining.

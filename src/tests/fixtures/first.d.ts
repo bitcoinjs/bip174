@@ -3,38 +3,21 @@ export declare const fixtures: {
     input: string;
     output: {
         globalMap: {
-            keyVals: {
-                key: string;
-                value: string;
-            }[];
+            keyVals: never[];
         };
         inputs: {
-            keyVals: {
-                key: string;
-                value: string;
-            }[];
+            keyVals: never[];
             witnessUtxo: {
-                index: number;
-                data: {
-                    script: string;
-                    value: number;
-                };
+                script: string;
+                value: number;
             };
-            partialSigs: {
-                index: number;
+            partialSig: {
                 pubkey: string;
                 signature: string;
             }[];
-            redeemScript: {
-                index: number;
-                data: string;
-            };
-            witnessScript: {
-                index: number;
-                data: string;
-            };
+            redeemScript: string;
+            witnessScript: string;
             bip32Derivation: {
-                index: number;
                 masterFingerprint: string;
                 pubkey: string;
                 path: string;

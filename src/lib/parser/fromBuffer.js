@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-const convert = require('../convert');
-const tools_1 = require('../convert/tools');
+const convert = require('../converter');
+const tools_1 = require('../converter/tools');
 const typeFields_1 = require('../typeFields');
 const varuint = require('varuint-bitcoin');
 function psbtFromBuffer(buffer) {
@@ -75,6 +75,10 @@ function psbtFromBuffer(buffer) {
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
   const unsignedTx = convert.globals.unsignedTx.decode(unsignedTxMaps[0]);
+  // We know there is exactly one, so remove it
+  globalMap.keyVals = globalMap.keyVals.filter(
+    keyVal => keyVal.key[0] !== typeFields_1.GlobalTypes.UNSIGNED_TX,
+  );
   if (
     !unsignedTx.ins.every(
       input => input.script.length === 0 && input.witness.length === 0,
@@ -109,7 +113,6 @@ function psbtFromBuffer(buffer) {
       }
       inputKeyIndex[hexKey] = 1;
       input.keyVals.push(keyVal);
-      const keyValPos = input.keyVals.length - 1;
       let pubkey;
       if (
         [
@@ -138,9 +141,8 @@ function psbtFromBuffer(buffer) {
               'Format Error: Input has multiple [NON_]WITNESS_UTXO',
             );
           }
-          const nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
-          nonWitnessUtxo.index = keyValPos;
-          input.nonWitnessUtxo = nonWitnessUtxo;
+          input.nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.WITNESS_UTXO:
           if (
@@ -151,9 +153,8 @@ function psbtFromBuffer(buffer) {
               'Format Error: Input has multiple [NON_]WITNESS_UTXO',
             );
           }
-          const witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
-          witnessUtxo.index = keyValPos;
-          input.witnessUtxo = witnessUtxo;
+          input.witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.PARTIAL_SIG:
           if (pubkey === undefined) {
@@ -161,42 +162,32 @@ function psbtFromBuffer(buffer) {
               'Format Error: PARTIAL_SIG requires pubkey in the key of KeyValue',
             );
           }
-          if (input.partialSigs === undefined) {
-            input.partialSigs = [];
+          if (input.partialSig === undefined) {
+            input.partialSig = [];
           }
-          const partialSig = convert.inputs.partialSig.decode(keyVal);
-          partialSig.index = keyValPos;
-          input.partialSigs.push(partialSig);
+          input.partialSig.push(convert.inputs.partialSig.decode(keyVal));
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.SIGHASH_TYPE:
           if (input.sighashType !== undefined) {
             throw new Error('Format Error: Input has multiple SIGHASH_TYPE');
           }
-          input.sighashType = Object.assign(
-            {},
-            convert.inputs.sighashType.decode(keyVal),
-            { index: keyValPos },
-          );
+          input.sighashType = convert.inputs.sighashType.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.REDEEM_SCRIPT:
           if (input.redeemScript !== undefined) {
             throw new Error('Format Error: Input has multiple REDEEM_SCRIPT');
           }
-          input.redeemScript = Object.assign(
-            {},
-            convert.inputs.redeemScript.decode(keyVal),
-            { index: keyValPos },
-          );
+          input.redeemScript = convert.inputs.redeemScript.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.WITNESS_SCRIPT:
           if (input.witnessScript !== undefined) {
             throw new Error('Format Error: Input has multiple WITNESS_SCRIPT');
           }
-          input.witnessScript = Object.assign(
-            {},
-            convert.inputs.witnessScript.decode(keyVal),
-            { index: keyValPos },
-          );
+          input.witnessScript = convert.inputs.witnessScript.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {
@@ -207,32 +198,28 @@ function psbtFromBuffer(buffer) {
           if (input.bip32Derivation === undefined) {
             input.bip32Derivation = [];
           }
-          const bip32Derivation = convert.inputs.bip32Derivation.decode(keyVal);
-          bip32Derivation.index = keyValPos;
-          input.bip32Derivation.push(bip32Derivation);
+          input.bip32Derivation.push(
+            convert.inputs.bip32Derivation.decode(keyVal),
+          );
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTSIG:
-          input.finalScriptSig = Object.assign(
-            {},
-            convert.inputs.finalScriptSig.decode(keyVal),
-            { index: keyValPos },
-          );
+          input.finalScriptSig = convert.inputs.finalScriptSig.decode(keyVal);
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.FINAL_SCRIPTWITNESS:
-          input.finalScriptWitness = Object.assign(
-            {},
-            convert.inputs.finalScriptWitness.decode(keyVal),
-            { index: keyValPos },
+          input.finalScriptWitness = convert.inputs.finalScriptWitness.decode(
+            keyVal,
           );
+          input.keyVals.pop();
           break;
         case typeFields_1.InputTypes.POR_COMMITMENT:
-          input.porCommitment = Object.assign(
-            {},
-            convert.inputs.porCommitment.decode(keyVal),
-            { index: keyValPos },
-          );
+          input.porCommitment = convert.inputs.porCommitment.decode(keyVal);
+          input.keyVals.pop();
           break;
         default:
+        // default is to do nothing and not pop the keyVal.
+        // This will allow inclusion during serialization.
       }
     }
     inputs.push(input);
@@ -256,7 +243,6 @@ function psbtFromBuffer(buffer) {
       }
       outputKeyIndex[hexKey] = 1;
       output.keyVals.push(keyVal);
-      const keyValPos = output.keyVals.length - 1;
       let pubkey;
       if (typeFields_1.InputTypes.BIP32_DERIVATION === keyVal.key[0]) {
         pubkey = keyVal.key.slice(1);
@@ -266,21 +252,15 @@ function psbtFromBuffer(buffer) {
           if (output.redeemScript !== undefined) {
             throw new Error('Format Error: Output has multiple REDEEM_SCRIPT');
           }
-          output.redeemScript = Object.assign(
-            {},
-            convert.outputs.redeemScript.decode(keyVal),
-            { index: keyValPos },
-          );
+          output.redeemScript = convert.outputs.redeemScript.decode(keyVal);
+          output.keyVals.pop();
           break;
         case typeFields_1.OutputTypes.WITNESS_SCRIPT:
           if (output.witnessScript !== undefined) {
             throw new Error('Format Error: Output has multiple WITNESS_SCRIPT');
           }
-          output.witnessScript = Object.assign(
-            {},
-            convert.outputs.witnessScript.decode(keyVal),
-            { index: keyValPos },
-          );
+          output.witnessScript = convert.outputs.witnessScript.decode(keyVal);
+          output.keyVals.pop();
           break;
         case typeFields_1.OutputTypes.BIP32_DERIVATION:
           if (pubkey === undefined) {
@@ -291,11 +271,10 @@ function psbtFromBuffer(buffer) {
           if (output.bip32Derivation === undefined) {
             output.bip32Derivation = [];
           }
-          const bip32Derivation = convert.outputs.bip32Derivation.decode(
-            keyVal,
+          output.bip32Derivation.push(
+            convert.outputs.bip32Derivation.decode(keyVal),
           );
-          bip32Derivation.index = keyValPos;
-          output.bip32Derivation.push(bip32Derivation);
+          output.keyVals.pop();
           break;
         default:
       }

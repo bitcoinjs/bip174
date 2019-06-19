@@ -5,10 +5,10 @@ const psbt_1 = require('../lib/psbt');
 const first_1 = require('./fixtures/first');
 for (const f of first_1.fixtures) {
   tape('Test: ' + f.description, t => {
-    const parsed = psbt_1.Psbt.fromBuffer(Buffer.from(f.input, 'hex'));
+    const parsed = psbt_1.Psbt.fromHex(f.input);
     const hex = parsed.toHex();
     const parsed2 = psbt_1.Psbt.fromHex(hex);
-    const hex2 = parsed.toHex();
+    const hex2 = parsed2.toHex();
     const parsed3 = psbt_1.Psbt.fromHex(hex2);
     const bufHexxedString = jsonify(parsed);
     const bufHexxedString2 = jsonify(parsed2);

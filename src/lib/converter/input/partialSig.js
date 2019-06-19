@@ -19,7 +19,6 @@ function decode(keyVal) {
   }
   const pubkey = keyVal.key.slice(1);
   return {
-    index: 0,
     pubkey,
     signature: keyVal.value,
   };

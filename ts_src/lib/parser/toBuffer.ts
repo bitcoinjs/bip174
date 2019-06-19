@@ -37,7 +37,7 @@ export function psbtToBuffer({
     const attributes = Object.keys(input).filter(k => k !== 'keyVals');
     const keyVals = [] as KeyValue[];
     const keyHexes: Set<string> = new Set();
-    for (const attrKey of attributes.sort()) {
+    for (const attrKey of attributes) {
       // We are checking for undefined anyways. So ignore TS error
       // @ts-ignore
       const converter = convert.inputs[attrKey];
@@ -86,7 +86,7 @@ export function psbtToBuffer({
     const attributes = Object.keys(output).filter(k => k !== 'keyVals');
     const keyVals = [] as KeyValue[];
     const keyHexes: Set<string> = new Set();
-    for (const attrKey of attributes.sort()) {
+    for (const attrKey of attributes) {
       // We are checking for undefined anyways. So ignore TS error
       // @ts-ignore
       const converter = convert.outputs[attrKey];

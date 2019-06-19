@@ -8,16 +8,13 @@ export function decode(keyVal: KeyValue): PorCommitment {
         keyVal.key.toString('hex'),
     );
   }
-  return {
-    index: 0,
-    data: keyVal.value.toString('utf8'),
-  };
+  return keyVal.value.toString('utf8');
 }
 
 export function encode(data: PorCommitment): KeyValue {
   const key = Buffer.from([InputTypes.POR_COMMITMENT]);
   return {
     key,
-    value: Buffer.from(data.data, 'utf8'),
+    value: Buffer.from(data, 'utf8'),
   };
 }

@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const bitcoinjs_lib_1 = require('bitcoinjs-lib');
+const combiner_1 = require('./combiner');
 const parser_1 = require('./parser');
 class Psbt {
   static fromBase64(data) {
@@ -45,7 +46,19 @@ class Psbt {
   combine(...those) {
     // Combine this with those.
     // Return self for chaining.
-    return those[0];
+    let self;
+    {
+      const { unsignedTx, globalMap, inputs, outputs } = this;
+      self = { unsignedTx, globalMap, inputs, outputs };
+    }
+    const dataToJoin = [];
+    those.forEach(psbt => {
+      const { unsignedTx, globalMap, inputs, outputs } = psbt;
+      dataToJoin.push({ unsignedTx, globalMap, inputs, outputs });
+    });
+    const result = combiner_1.combine([self].concat(dataToJoin));
+    Object.assign(this, result);
+    return this;
   }
   finalize() {
     // Finalize all inputs, default throw if can not

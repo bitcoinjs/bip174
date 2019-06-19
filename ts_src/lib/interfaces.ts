@@ -5,9 +5,13 @@ export interface KeyValue {
   value: Buffer;
 }
 
+export interface PsbtGlobal {
+  keyVals: KeyValue[];
+}
+
 export interface PsbtInput {
   keyVals: KeyValue[];
-  partialSigs?: PartialSig[];
+  partialSig?: PartialSig[];
   nonWitnessUtxo?: NonWitnessUtxo;
   witnessUtxo?: WitnessUtxo;
   sighashType?: SighashType;
@@ -27,58 +31,28 @@ export interface PsbtOutput {
 }
 
 export interface PartialSig {
-  index: number;
   pubkey: Buffer;
   signature: Buffer;
 }
 
-export interface WitnessUtxo {
-  index: number;
-  data: TxOutput;
-}
-
-export interface NonWitnessUtxo {
-  index: number;
-  tx: Transaction;
-}
-
-export interface SighashType {
-  index: number;
-  data: number;
-}
-
-export interface RedeemScript {
-  index: number;
-  data: Buffer;
-}
-
-export interface WitnessScript {
-  index: number;
-  data: Buffer;
-}
-
-export interface FinalScriptSig {
-  index: number;
-  data: Buffer;
-}
-
-export interface FinalScriptWitness {
-  index: number;
-  data: Buffer;
-}
-
-export interface PorCommitment {
-  index: number;
-  data: string;
-}
-
 export interface Bip32Derivation {
-  index: number;
   masterFingerprint: Buffer;
   pubkey: Buffer;
   path: string;
 }
 
-export interface PsbtGlobal {
-  keyVals: KeyValue[];
-}
+export type WitnessUtxo = TxOutput;
+
+export type NonWitnessUtxo = Transaction;
+
+export type SighashType = number;
+
+export type RedeemScript = Buffer;
+
+export type WitnessScript = Buffer;
+
+export type FinalScriptSig = Buffer;
+
+export type FinalScriptWitness = Buffer;
+
+export type PorCommitment = string;

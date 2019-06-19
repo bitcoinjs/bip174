@@ -8,20 +8,17 @@ function makeConverter(TYPE_BYTE) {
   function decode(keyVal) {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
-        'Decode Error: could not decode redeemScript with key 0x' +
+        'Decode Error: could not decode witnessScript with key 0x' +
           keyVal.key.toString('hex'),
       );
     }
-    return {
-      index: 0,
-      data: keyVal.value,
-    };
+    return keyVal.value;
   }
   function encode(data) {
     const key = Buffer.from([TYPE_BYTE]);
     return {
       key,
-      value: data.data,
+      value: data,
     };
   }
 }

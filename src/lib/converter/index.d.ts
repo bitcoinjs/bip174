@@ -1,3 +1,4 @@
+/// <reference types="node" />
 import * as unsignedTx from './global/unsignedTx';
 import * as finalScriptSig from './input/finalScriptSig';
 import * as finalScriptWitness from './input/finalScriptWitness';
@@ -22,12 +23,12 @@ declare const inputs: {
         encode: (data: import("../interfaces").Bip32Derivation) => import("../interfaces").KeyValue;
     };
     redeemScript: {
-        decode: (keyVal: import("../interfaces").KeyValue) => import("../interfaces").RedeemScript;
-        encode: (data: import("../interfaces").RedeemScript) => import("../interfaces").KeyValue;
+        decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
+        encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
     witnessScript: {
-        decode: (keyVal: import("../interfaces").KeyValue) => import("../interfaces").WitnessScript;
-        encode: (data: import("../interfaces").WitnessScript) => import("../interfaces").KeyValue;
+        decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
+        encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
 };
 declare const outputs: {
@@ -36,12 +37,12 @@ declare const outputs: {
         encode: (data: import("../interfaces").Bip32Derivation) => import("../interfaces").KeyValue;
     };
     redeemScript: {
-        decode: (keyVal: import("../interfaces").KeyValue) => import("../interfaces").RedeemScript;
-        encode: (data: import("../interfaces").RedeemScript) => import("../interfaces").KeyValue;
+        decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
+        encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
     witnessScript: {
-        decode: (keyVal: import("../interfaces").KeyValue) => import("../interfaces").WitnessScript;
-        encode: (data: import("../interfaces").WitnessScript) => import("../interfaces").KeyValue;
+        decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
+        encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
 };
 export { globals, inputs, outputs };

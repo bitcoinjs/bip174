@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
-const convert = require('../convert');
-const tools_1 = require('../convert/tools');
+const convert = require('../converter');
+const tools_1 = require('../converter/tools');
 const sortKeyVals = (_a, _b) => {
   const a = _a.key.toString('hex');
   const b = _b.key.toString('hex');
@@ -29,7 +29,7 @@ function psbtToBuffer({ unsignedTx, globalMap, inputs, outputs }) {
     const attributes = Object.keys(input).filter(k => k !== 'keyVals');
     const keyVals = [];
     const keyHexes = new Set();
-    for (const attrKey of attributes.sort()) {
+    for (const attrKey of attributes) {
       // We are checking for undefined anyways. So ignore TS error
       // @ts-ignore
       const converter = convert.inputs[attrKey];
@@ -73,7 +73,7 @@ function psbtToBuffer({ unsignedTx, globalMap, inputs, outputs }) {
     const attributes = Object.keys(output).filter(k => k !== 'keyVals');
     const keyVals = [];
     const keyHexes = new Set();
-    for (const attrKey of attributes.sort()) {
+    for (const attrKey of attributes) {
       // We are checking for undefined anyways. So ignore TS error
       // @ts-ignore
       const converter = convert.outputs[attrKey];

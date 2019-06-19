@@ -17,17 +17,14 @@ export function makeConverter(
           keyVal.key.toString('hex'),
       );
     }
-    return {
-      index: 0,
-      data: keyVal.value,
-    };
+    return keyVal.value;
   }
 
   function encode(data: RedeemScript): KeyValue {
     const key = Buffer.from([TYPE_BYTE]);
     return {
       key,
-      value: data.data,
+      value: data,
     };
   }
 }

@@ -10,10 +10,7 @@ function decode(keyVal) {
     );
   }
   try {
-    return {
-      tx: bitcoinjs_lib_1.Transaction.fromBuffer(keyVal.value),
-      index: 0,
-    };
+    return bitcoinjs_lib_1.Transaction.fromBuffer(keyVal.value);
   } catch (err) {
     throw new Error(
       'Decode Error: Error parsing NON_WITNESS_UTXO: ' + err.message,
@@ -24,7 +21,7 @@ exports.decode = decode;
 function encode(data) {
   return {
     key: Buffer.from([typeFields_1.InputTypes.NON_WITNESS_UTXO]),
-    value: data.tx.toBuffer(),
+    value: data.toBuffer(),
   };
 }
 exports.encode = encode;
