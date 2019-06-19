@@ -15,6 +15,9 @@ for (const f of first_1.fixtures) {
     const bufHexxedString3 = jsonify(parsed3);
     const strippedParsed = stripIndices(parsed);
     const strippedParsed2 = stripIndices(parsed2);
+    // console.log(bufHexxedString);
+    // console.log(bufHexxedString2);
+    // console.log(bufHexxedString3);
     t.deepEqual(JSON.parse(bufHexxedString), f.output);
     t.deepEqual(JSON.parse(bufHexxedString2), JSON.parse(bufHexxedString3));
     t.deepEqual(strippedParsed, strippedParsed2);

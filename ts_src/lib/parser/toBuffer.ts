@@ -3,6 +3,14 @@ import { keyValsToBuffer, range } from '../convert/tools';
 import { KeyValue } from '../interfaces';
 import { PsbtAttributes } from './index';
 
+const sortKeyVals = (_a: KeyValue, _b: KeyValue): number => {
+  const a = _a.key.toString('hex');
+  const b = _b.key.toString('hex');
+  if (a < b) return -1;
+  else if (a > b) return 1;
+  else return 0;
+};
+
 export function psbtToBuffer({
   unsignedTx,
   globalMap,
@@ -16,7 +24,9 @@ export function psbtToBuffer({
   const otherGlobals = globalMap.keyVals.filter(
     keyVal => !keyVal.key.equals(Buffer.from([0])),
   );
-  const globalKeyVals = [unsignedTxKeyVal].concat(otherGlobals);
+  const globalKeyVals = [unsignedTxKeyVal]
+    .concat(otherGlobals)
+    .sort(sortKeyVals);
   // Global buffer of the KeyValue map with a 0x00 at the end
   const globalBuffer: Buffer = keyValsToBuffer(globalKeyVals);
   const inputBuffers = [] as Buffer[];
@@ -61,7 +71,7 @@ export function psbtToBuffer({
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
 
-    const inputKeyVals = keyVals.concat(otherInputKeyVals);
+    const inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
     const isEmpty = inputKeyVals.length === 0;
     // buffer of the KeyValue map with a 0x00 at the end for one input
     if (isEmpty) {
@@ -110,7 +120,7 @@ export function psbtToBuffer({
       return !keyHexes.has(keyVal.key.toString('hex'));
     });
 
-    const outputKeyVals = keyVals.concat(otherOutputKeyVals);
+    const outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
     const isEmpty = outputKeyVals.length === 0;
     // buffer of the KeyValue map with a 0x00 at the end for one output
     if (isEmpty) {
