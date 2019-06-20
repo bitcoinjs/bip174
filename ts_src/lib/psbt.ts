@@ -4,7 +4,11 @@ import {
   PsbtGlobal,
   PsbtInput,
   PsbtOutput,
+  TransactionInput,
+  TransactionInputAdder,
   TransactionIOCountGetter,
+  TransactionOutput,
+  TransactionOutputAdder,
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes } from './typeFields';
@@ -90,6 +94,39 @@ export class Psbt {
   // Add methods to update various parts. (ie. "updater" responsibility)
   // Return self for chaining.
 
+  addInput(
+    inputData: TransactionInput,
+    transactionInputAdder: TransactionInputAdder = convert.globals.unsignedTx
+      .addInput,
+  ): Psbt {
+    const txBuf = this.extractTransaction();
+    const newTxBuf = transactionInputAdder(inputData, txBuf);
+    insertTxInGlobalMap(newTxBuf, this.globalMap);
+    this.inputs.push({
+      keyVals: [],
+    });
+    return this;
+  }
+
+  addOutput(
+    outputData: TransactionOutput,
+    transactionInputAdder: TransactionOutputAdder = convert.globals.unsignedTx
+      .addOutput,
+  ): Psbt {
+    if (this.inputs.length === 0) {
+      throw new Error(
+        'Add Output: can not add an output before adding an input.',
+      );
+    }
+    const txBuf = this.extractTransaction();
+    const newTxBuf = transactionInputAdder(outputData, txBuf);
+    insertTxInGlobalMap(newTxBuf, this.globalMap);
+    this.outputs.push({
+      keyVals: [],
+    });
+    return this;
+  }
+
   combine(...those: Psbt[]): Psbt {
     // Combine this with those.
     // Return self for chaining.
@@ -98,13 +135,29 @@ export class Psbt {
     return this;
   }
 
-  finalize(): Psbt {
-    // Finalize all inputs, default throw if can not
-    // Return self for chaining.
-    return this;
-  }
-
   extractTransaction(): Buffer {
-    return Buffer.from([]);
+    const txKeyVals = this.globalMap.keyVals.filter(
+      kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
+    );
+    const len = txKeyVals.length;
+    if (len !== 1) {
+      throw new Error(
+        `Extract Transaction: Expected one Transaction, got ${len}`,
+      );
+    }
+    return txKeyVals[0].value;
   }
+}
+
+function insertTxInGlobalMap(txBuf: Buffer, globalMap: PsbtGlobal): void {
+  const txKeyVals = globalMap.keyVals.filter(
+    kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
+  );
+  const len = txKeyVals.length;
+  if (len !== 1) {
+    throw new Error(
+      `Extract Transaction: Expected one Transaction, got ${len}`,
+    );
+  }
+  txKeyVals[0].value = txBuf;
 }

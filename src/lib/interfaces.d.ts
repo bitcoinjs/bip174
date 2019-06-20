@@ -49,3 +49,14 @@ export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
     inputCount: number;
     outputCount: number;
 };
+export interface TransactionInput {
+    hashHex: string;
+    index: number;
+    sequence?: number;
+}
+export declare type TransactionInputAdder = (input: TransactionInput, txBuffer: Buffer) => Buffer;
+export interface TransactionOutput {
+    script: Buffer;
+    value: number;
+}
+export declare type TransactionOutputAdder = (output: TransactionOutput, txBuffer: Buffer) => Buffer;
