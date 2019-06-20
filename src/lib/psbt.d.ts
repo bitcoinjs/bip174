@@ -13,7 +13,7 @@ export declare class Psbt {
     toHex(): string;
     toBuffer(): Buffer;
     addInput(inputData: TransactionInput, transactionInputAdder?: TransactionInputAdder): Psbt;
-    addOutput(outputData: TransactionOutput, transactionInputAdder?: TransactionOutputAdder): Psbt;
+    addOutput(outputData: TransactionOutput, allowNoInput?: boolean, transactionInputAdder?: TransactionOutputAdder): Psbt;
     combine(...those: Psbt[]): Psbt;
     extractTransaction(): Buffer;
 }

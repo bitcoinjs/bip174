@@ -80,9 +80,10 @@ class Psbt {
   }
   addOutput(
     outputData,
+    allowNoInput = false,
     transactionInputAdder = convert.globals.unsignedTx.addOutput,
   ) {
-    if (this.inputs.length === 0) {
+    if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
         'Add Output: can not add an output before adding an input.',
       );
