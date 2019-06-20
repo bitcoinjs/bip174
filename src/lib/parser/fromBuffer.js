@@ -2,8 +2,8 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const convert = require('../converter');
 const tools_1 = require('../converter/tools');
+const varuint = require('../converter/varint');
 const typeFields_1 = require('../typeFields');
-const varuint = require('varuint-bitcoin');
 const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
 function psbtFromBuffer(buffer, txCountGetter = countGetter) {
   let offset = 0;

@@ -1,6 +1,6 @@
 import { KeyValue } from '../interfaces';
+import * as varuint from './varint';
 
-const varuint = require('varuint-bitcoin');
 export const range = (n: number): number[] => [...Array(n).keys()];
 
 export function reverseBuffer(buffer: Buffer): Buffer {

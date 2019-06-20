@@ -1,8 +1,7 @@
 import { KeyValue, WitnessUtxo } from '../../interfaces';
 import { InputTypes } from '../../typeFields';
 import { reverseBuffer } from '../tools';
-
-const varuint = require('varuint-bitcoin');
+import * as varuint from '../varint';
 
 export function decode(keyVal: KeyValue): WitnessUtxo {
   if (keyVal.key[0] !== InputTypes.WITNESS_UTXO) {

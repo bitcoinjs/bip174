@@ -1,7 +1,6 @@
 import { TransactionInput, TransactionOutput } from '../../interfaces';
 import { reverseBuffer } from '../tools';
-
-const varuint = require('varuint-bitcoin');
+import * as varuint from '../varint';
 
 export function getInputOutputCounts(
   txBuffer: Buffer,
@@ -30,7 +29,7 @@ export function getInputOutputCounts(
         'input/output count getter, and passing it in.',
     );
   }
-  const inputCount = varuint.decode(txBuffer, offset) as number;
+  const inputCount = varuint.decode(txBuffer, offset);
   offset += varuint.encodingLength(inputCount);
 
   let countDown = inputCount;
@@ -39,7 +38,7 @@ export function getInputOutputCounts(
     countDown--;
   }
 
-  const outputCount = varuint.decode(txBuffer, offset) as number;
+  const outputCount = varuint.decode(txBuffer, offset);
 
   return {
     inputCount,
@@ -81,7 +80,7 @@ export function addInput(input: TransactionInput, txBuffer: Buffer): Buffer {
     );
   }
 
-  const inputCount = varuint.decode(txBuffer, offset) as number;
+  const inputCount = varuint.decode(txBuffer, offset);
 
   const oldInputLenByteLen = varuint.encodingLength(inputCount);
   offset += oldInputLenByteLen;
@@ -159,7 +158,7 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
     );
   }
 
-  const inputCount = varuint.decode(txBuffer, offset) as number;
+  const inputCount = varuint.decode(txBuffer, offset);
   offset += varuint.encodingLength(inputCount);
 
   let countDown = inputCount;
@@ -170,7 +169,7 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
 
   const endInputs = offset;
 
-  const outputCount = varuint.decode(txBuffer, offset) as number;
+  const outputCount = varuint.decode(txBuffer, offset);
 
   const oldOutputLenByteLen = varuint.encodingLength(outputCount);
   offset += oldOutputLenByteLen;

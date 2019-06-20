@@ -1,5 +1,6 @@
 import * as convert from '../converter';
 import { range } from '../converter/tools';
+import * as varuint from '../converter/varint';
 import {
   KeyValue,
   PsbtGlobal,
@@ -9,8 +10,6 @@ import {
 } from '../interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
 import { PsbtAttributes } from './index';
-
-const varuint = require('varuint-bitcoin');
 
 const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
 

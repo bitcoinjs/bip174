@@ -1,7 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const tools_1 = require('../tools');
-const varuint = require('varuint-bitcoin');
+const varuint = require('../varint');
 function getInputOutputCounts(txBuffer) {
   // Skip version(4)
   let offset = 4;
