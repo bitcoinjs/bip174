@@ -10,8 +10,38 @@ export declare const fixtures: {
             script: Buffer;
             value: number;
         }[];
-        updateInputData: never[];
-        updateOutputData: never[];
+        updateInputData: ({
+            nonWitnessUtxo: Buffer;
+            redeemScript: Buffer;
+            bip32Derivation: {
+                masterFingerprint: Buffer;
+                pubkey: Buffer;
+                path: string;
+            }[];
+            witnessUtxo?: undefined;
+            witnessScript?: undefined;
+        } | {
+            witnessUtxo: {
+                script: Buffer;
+                value: number;
+            };
+            redeemScript: Buffer;
+            witnessScript: Buffer;
+            bip32Derivation: {
+                masterFingerprint: Buffer;
+                pubkey: Buffer;
+                path: string;
+            }[];
+            nonWitnessUtxo?: undefined;
+        })[];
+        updateOutputData: {
+            bip32Derivation: {
+                masterFingerprint: Buffer;
+                pubkey: Buffer;
+                path: string;
+            }[];
+        }[];
     };
-    expected: string;
+    expectedBeforeUpdate: string;
+    expectedAfterUpdate: string;
 }[];
