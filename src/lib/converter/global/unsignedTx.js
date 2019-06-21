@@ -65,6 +65,14 @@ function inputToBuffer(input) {
   result.writeUInt32LE(sequence, 37);
   return result;
 }
+function isTransactionInput(data) {
+  return (
+    typeof data.hashHex === 'string' &&
+    typeof data.index === 'number' &&
+    (data.sequence === undefined || typeof data.sequence === 'number')
+  );
+}
+exports.isTransactionInput = isTransactionInput;
 function addInput(input, txBuffer) {
   // Skip version(4)
   let offset = 4;
@@ -130,6 +138,10 @@ function outputToBuffer(output) {
   output.script.copy(result, 8 + varLen);
   return result;
 }
+function isTransactionOutput(data) {
+  return Buffer.isBuffer(data.script) && typeof data.value === 'number';
+}
+exports.isTransactionOutput = isTransactionOutput;
 function addOutput(output, txBuffer) {
   // Skip version(4)
   let offset = 4;

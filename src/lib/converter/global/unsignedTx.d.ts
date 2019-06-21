@@ -6,5 +6,7 @@ export declare function getInputOutputCounts(txBuffer: Buffer): {
     inputCount: number;
     outputCount: number;
 };
+export declare function isTransactionInput(data: any): data is TransactionInput;
 export declare function addInput(input: TransactionInput, txBuffer: Buffer): Buffer;
+export declare function isTransactionOutput(data: any): data is TransactionOutput;
 export declare function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer;

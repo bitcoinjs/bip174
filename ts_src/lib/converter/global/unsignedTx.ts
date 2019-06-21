@@ -81,6 +81,14 @@ function inputToBuffer(input: TransactionInput): Buffer {
   return result;
 }
 
+export function isTransactionInput(data: any): data is TransactionInput {
+  return (
+    typeof data.hashHex === 'string' &&
+    typeof data.index === 'number' &&
+    (data.sequence === undefined || typeof data.sequence === 'number')
+  );
+}
+
 export function addInput(input: TransactionInput, txBuffer: Buffer): Buffer {
   // Skip version(4)
   let offset = 4;
@@ -157,6 +165,10 @@ function outputToBuffer(output: TransactionOutput): Buffer {
   varuint.encode(output.script.length, result, 8);
   output.script.copy(result, 8 + varLen);
   return result;
+}
+
+export function isTransactionOutput(data: any): data is TransactionOutput {
+  return Buffer.isBuffer(data.script) && typeof data.value === 'number';
 }
 
 export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
