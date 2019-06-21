@@ -1,12 +1,25 @@
 import { combine } from './combiner';
 import * as convert from './converter';
 import {
+  Bip32Derivation,
+  FinalScriptSig,
+  FinalScriptWitness,
+  isBip32Derivation,
+  isPartialSig,
+  isWitnessUtxo,
+  NonWitnessUtxo,
+  PartialSig,
+  PorCommitment,
   PsbtGlobal,
   PsbtInput,
   PsbtOutput,
+  RedeemScript,
+  SighashType,
   TransactionInput,
   TransactionIOCountGetter,
   TransactionOutput,
+  WitnessScript,
+  WitnessUtxo,
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes } from './typeFields';
@@ -92,6 +105,169 @@ export class Psbt {
   // TODO:
   // Add methods to update various parts. (ie. "updater" responsibility)
   // Return self for chaining.
+
+  addNonWitnessUtxoToInput(
+    inputIndex: number,
+    nonWitnessUtxo: NonWitnessUtxo,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (input.nonWitnessUtxo || input.witnessUtxo) {
+      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
+    }
+    if (!Buffer.isBuffer(nonWitnessUtxo)) {
+      throw new Error('nonWitnessUtxo should be a Buffer of a Transaction');
+    }
+    input.nonWitnessUtxo = nonWitnessUtxo;
+    return this;
+  }
+
+  addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (input.nonWitnessUtxo || input.witnessUtxo) {
+      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
+    }
+    if (!isWitnessUtxo(witnessUtxo)) {
+      throw new Error(
+        'witnessUtxo should be { script: Buffer; value: number; }',
+      );
+    }
+    input.witnessUtxo = witnessUtxo;
+    return this;
+  }
+
+  addPartialSigToInput(inputIndex: number, partialSig: PartialSig): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!isPartialSig(partialSig)) {
+      throw new Error(
+        'partialSig should be { pubkey: Buffer; signature: Buffer; }',
+      );
+    }
+    if (input.partialSig === undefined) input.partialSig = [];
+    input.partialSig.push(partialSig);
+    return this;
+  }
+
+  addSighashTypeToInput(inputIndex: number, sighashType: SighashType): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (typeof sighashType !== 'number') {
+      throw new Error('sighashType should be a number');
+    }
+    input.sighashType = sighashType;
+    return this;
+  }
+
+  addRedeemScriptToInput(inputIndex: number, redeemScript: RedeemScript): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(redeemScript)) {
+      throw new Error('redeemScript should be a Buffer');
+    }
+    input.redeemScript = redeemScript;
+    return this;
+  }
+
+  addWitnessScriptToInput(
+    inputIndex: number,
+    witnessScript: WitnessScript,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(witnessScript)) {
+      throw new Error('witnessScript should be a Buffer');
+    }
+    input.witnessScript = witnessScript;
+    return this;
+  }
+
+  addBip32DerivationToInput(
+    inputIndex: number,
+    bip32Derivation: Bip32Derivation,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!isBip32Derivation(bip32Derivation)) {
+      throw new Error(
+        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    if (input.bip32Derivation === undefined) input.bip32Derivation = [];
+    input.bip32Derivation.push(bip32Derivation);
+    return this;
+  }
+
+  addFinalScriptSigToInput(
+    inputIndex: number,
+    finalScriptSig: FinalScriptSig,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(finalScriptSig)) {
+      throw new Error('finalScriptSig should be a Buffer');
+    }
+    input.finalScriptSig = finalScriptSig;
+    return this;
+  }
+
+  addFinalScriptWitnessToInput(
+    inputIndex: number,
+    finalScriptWitness: FinalScriptWitness,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(finalScriptWitness)) {
+      throw new Error('finalScriptWitness should be a Buffer');
+    }
+    input.finalScriptWitness = finalScriptWitness;
+    return this;
+  }
+
+  addPorCommitmentToInput(
+    inputIndex: number,
+    porCommitment: PorCommitment,
+  ): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (typeof porCommitment !== 'string') {
+      throw new Error('porCommitment should be a string');
+    }
+    input.porCommitment = porCommitment;
+    return this;
+  }
+
+  addRedeemScriptToOutput(
+    outputIndex: number,
+    redeemScript: RedeemScript,
+  ): Psbt {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!Buffer.isBuffer(redeemScript)) {
+      throw new Error('redeemScript should be a Buffer');
+    }
+    output.redeemScript = redeemScript;
+    return this;
+  }
+
+  addWitnessScriptToOutput(
+    outputIndex: number,
+    witnessScript: WitnessScript,
+  ): Psbt {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!Buffer.isBuffer(witnessScript)) {
+      throw new Error('witnessScript should be a Buffer');
+    }
+    output.witnessScript = witnessScript;
+    return this;
+  }
+
+  addBip32DerivationToOutput(
+    outputIndex: number,
+    bip32Derivation: Bip32Derivation,
+  ): Psbt {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!isBip32Derivation(bip32Derivation)) {
+      throw new Error(
+        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    if (output.bip32Derivation === undefined) output.bip32Derivation = [];
+    output.bip32Derivation.push(bip32Derivation);
+    return this;
+  }
 
   addInput(inputData: TransactionInput): Psbt;
   addInput<T>(
@@ -202,4 +378,19 @@ function insertTxInGlobalMap(txBuf: Buffer, globalMap: PsbtGlobal): void {
   }
   if (tx !== undefined) globalMap.unsignedTx = txBuf;
   else txKeyVals[0].value = txBuf;
+}
+
+function checkForInput(inputs: PsbtInput[], inputIndex: number): PsbtInput {
+  const input = inputs[inputIndex];
+  if (input === undefined) throw new Error(`No input #${inputIndex}`);
+  return input;
+}
+
+function checkForOutput(
+  outputs: PsbtOutput[],
+  outputIndex: number,
+): PsbtOutput {
+  const output = outputs[outputIndex];
+  if (output === undefined) throw new Error(`No output #${outputIndex}`);
+  return output;
 }

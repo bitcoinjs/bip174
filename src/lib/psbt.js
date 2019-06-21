@@ -2,6 +2,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const combiner_1 = require('./combiner');
 const convert = require('./converter');
+const interfaces_1 = require('./interfaces');
 const parser_1 = require('./parser');
 const typeFields_1 = require('./typeFields');
 const {
@@ -63,6 +64,132 @@ class Psbt {
   }
   toBuffer() {
     return parser_1.psbtToBuffer(this);
+  }
+  // TODO:
+  // Add methods to update various parts. (ie. "updater" responsibility)
+  // Return self for chaining.
+  addNonWitnessUtxoToInput(inputIndex, nonWitnessUtxo) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (input.nonWitnessUtxo || input.witnessUtxo) {
+      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
+    }
+    if (!Buffer.isBuffer(nonWitnessUtxo)) {
+      throw new Error('nonWitnessUtxo should be a Buffer of a Transaction');
+    }
+    input.nonWitnessUtxo = nonWitnessUtxo;
+    return this;
+  }
+  addWitnessUtxoToInput(inputIndex, witnessUtxo) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (input.nonWitnessUtxo || input.witnessUtxo) {
+      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
+    }
+    if (!interfaces_1.isWitnessUtxo(witnessUtxo)) {
+      throw new Error(
+        'witnessUtxo should be { script: Buffer; value: number; }',
+      );
+    }
+    input.witnessUtxo = witnessUtxo;
+    return this;
+  }
+  addPartialSigToInput(inputIndex, partialSig) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!interfaces_1.isPartialSig(partialSig)) {
+      throw new Error(
+        'partialSig should be { pubkey: Buffer; signature: Buffer; }',
+      );
+    }
+    if (input.partialSig === undefined) input.partialSig = [];
+    input.partialSig.push(partialSig);
+    return this;
+  }
+  addSighashTypeToInput(inputIndex, sighashType) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (typeof sighashType !== 'number') {
+      throw new Error('sighashType should be a number');
+    }
+    input.sighashType = sighashType;
+    return this;
+  }
+  addRedeemScriptToInput(inputIndex, redeemScript) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(redeemScript)) {
+      throw new Error('redeemScript should be a Buffer');
+    }
+    input.redeemScript = redeemScript;
+    return this;
+  }
+  addWitnessScriptToInput(inputIndex, witnessScript) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(witnessScript)) {
+      throw new Error('witnessScript should be a Buffer');
+    }
+    input.witnessScript = witnessScript;
+    return this;
+  }
+  addBip32DerivationToInput(inputIndex, bip32Derivation) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!interfaces_1.isBip32Derivation(bip32Derivation)) {
+      throw new Error(
+        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    if (input.bip32Derivation === undefined) input.bip32Derivation = [];
+    input.bip32Derivation.push(bip32Derivation);
+    return this;
+  }
+  addFinalScriptSigToInput(inputIndex, finalScriptSig) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(finalScriptSig)) {
+      throw new Error('finalScriptSig should be a Buffer');
+    }
+    input.finalScriptSig = finalScriptSig;
+    return this;
+  }
+  addFinalScriptWitnessToInput(inputIndex, finalScriptWitness) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!Buffer.isBuffer(finalScriptWitness)) {
+      throw new Error('finalScriptWitness should be a Buffer');
+    }
+    input.finalScriptWitness = finalScriptWitness;
+    return this;
+  }
+  addPorCommitmentToInput(inputIndex, porCommitment) {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (typeof porCommitment !== 'string') {
+      throw new Error('porCommitment should be a string');
+    }
+    input.porCommitment = porCommitment;
+    return this;
+  }
+  addRedeemScriptToOutput(outputIndex, redeemScript) {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!Buffer.isBuffer(redeemScript)) {
+      throw new Error('redeemScript should be a Buffer');
+    }
+    output.redeemScript = redeemScript;
+    return this;
+  }
+  addWitnessScriptToOutput(outputIndex, witnessScript) {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!Buffer.isBuffer(witnessScript)) {
+      throw new Error('witnessScript should be a Buffer');
+    }
+    output.witnessScript = witnessScript;
+    return this;
+  }
+  addBip32DerivationToOutput(outputIndex, bip32Derivation) {
+    const output = checkForOutput(this.outputs, outputIndex);
+    if (!interfaces_1.isBip32Derivation(bip32Derivation)) {
+      throw new Error(
+        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    if (output.bip32Derivation === undefined) output.bip32Derivation = [];
+    output.bip32Derivation.push(bip32Derivation);
+    return this;
   }
   addInput(inputData, transactionInputAdder) {
     const txBuf = this.extractTransaction();
@@ -146,4 +273,14 @@ function insertTxInGlobalMap(txBuf, globalMap) {
   }
   if (tx !== undefined) globalMap.unsignedTx = txBuf;
   else txKeyVals[0].value = txBuf;
+}
+function checkForInput(inputs, inputIndex) {
+  const input = inputs[inputIndex];
+  if (input === undefined) throw new Error(`No input #${inputIndex}`);
+  return input;
+}
+function checkForOutput(outputs, outputIndex) {
+  const output = outputs[outputIndex];
+  if (output === undefined) throw new Error(`No output #${outputIndex}`);
+  return output;
 }

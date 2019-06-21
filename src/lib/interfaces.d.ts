@@ -31,15 +31,18 @@ export interface PartialSig {
     pubkey: Buffer;
     signature: Buffer;
 }
+export declare function isPartialSig(data: any): data is PartialSig;
 export interface Bip32Derivation {
     masterFingerprint: Buffer;
     pubkey: Buffer;
     path: string;
 }
+export declare function isBip32Derivation(data: any): data is Bip32Derivation;
 export interface WitnessUtxo {
     script: Buffer;
     value: number;
 }
+export declare function isWitnessUtxo(data: any): data is WitnessUtxo;
 export declare type NonWitnessUtxo = Buffer;
 export declare type SighashType = number;
 export declare type RedeemScript = Buffer;

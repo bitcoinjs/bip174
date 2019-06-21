@@ -36,15 +36,31 @@ export interface PartialSig {
   signature: Buffer;
 }
 
+export function isPartialSig(data: any): data is PartialSig {
+  return Buffer.isBuffer(data.pubkey) && Buffer.isBuffer(data.signature);
+}
+
 export interface Bip32Derivation {
   masterFingerprint: Buffer;
   pubkey: Buffer;
   path: string;
 }
 
+export function isBip32Derivation(data: any): data is Bip32Derivation {
+  return (
+    Buffer.isBuffer(data.pubkey) &&
+    Buffer.isBuffer(data.masterFingerprint) &&
+    typeof data.path === 'string'
+  );
+}
+
 export interface WitnessUtxo {
   script: Buffer;
   value: number;
+}
+
+export function isWitnessUtxo(data: any): data is WitnessUtxo {
+  return Buffer.isBuffer(data.script) && typeof data.value === 'number';
 }
 
 export type NonWitnessUtxo = Buffer;
