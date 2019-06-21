@@ -82,7 +82,7 @@ export class Psbt {
     this.globalMap = {
       keyVals: [],
       // version 1, locktime 0, 0 ins, 0 outs
-      unsignedTx: Buffer.from('01000000000000000000', 'hex'),
+      unsignedTx: Buffer.from('02000000000000000000', 'hex'),
     };
     this.inputs = [];
     this.outputs = [];
