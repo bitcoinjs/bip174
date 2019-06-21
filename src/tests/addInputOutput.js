@@ -11,11 +11,11 @@ tape('Test: add Input Output', t => {
     });
   }, 'Add Output: can not add an output before adding an input.');
   psbt.addInput({
-    hashHex: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
     index: 3,
   });
   psbt.addInput({
-    hashHex: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    hash: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
     index: 1,
   });
   psbt.addOutput({

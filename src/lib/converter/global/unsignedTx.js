@@ -57,7 +57,9 @@ function getInputOutputCounts(txBuffer) {
 exports.getInputOutputCounts = getInputOutputCounts;
 function inputToBuffer(input) {
   const result = Buffer.allocUnsafe(41);
-  const prevHash = tools_1.reverseBuffer(Buffer.from(input.hashHex, 'hex'));
+  const prevHash = Buffer.isBuffer(input.hash)
+    ? input.hash
+    : tools_1.reverseBuffer(Buffer.from(input.hash, 'hex'));
   prevHash.copy(result, 0);
   result.writeUInt32LE(input.index, 32);
   result.writeUInt8(0, 36);
@@ -67,7 +69,7 @@ function inputToBuffer(input) {
 }
 function isTransactionInput(data) {
   return (
-    typeof data.hashHex === 'string' &&
+    (typeof data.hash === 'string' || Buffer.isBuffer(data.hash)) &&
     typeof data.index === 'number' &&
     (data.sequence === undefined || typeof data.sequence === 'number')
   );

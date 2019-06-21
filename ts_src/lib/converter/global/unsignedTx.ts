@@ -72,7 +72,9 @@ export function getInputOutputCounts(
 
 function inputToBuffer(input: TransactionInput): Buffer {
   const result = Buffer.allocUnsafe(41);
-  const prevHash = reverseBuffer(Buffer.from(input.hashHex, 'hex'));
+  const prevHash = Buffer.isBuffer(input.hash)
+    ? input.hash
+    : reverseBuffer(Buffer.from(input.hash, 'hex'));
   prevHash.copy(result, 0);
   result.writeUInt32LE(input.index, 32);
   result.writeUInt8(0, 36);
@@ -83,7 +85,7 @@ function inputToBuffer(input: TransactionInput): Buffer {
 
 export function isTransactionInput(data: any): data is TransactionInput {
   return (
-    typeof data.hashHex === 'string' &&
+    (typeof data.hash === 'string' || Buffer.isBuffer(data.hash)) &&
     typeof data.index === 'number' &&
     (data.sequence === undefined || typeof data.sequence === 'number')
   );

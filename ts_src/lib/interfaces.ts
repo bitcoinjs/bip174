@@ -69,7 +69,7 @@ export type TransactionIOCountGetter = (
 };
 
 export interface TransactionInput {
-  hashHex: string;
+  hash: string | Buffer;
   index: number;
   sequence?: number;
 }

@@ -52,7 +52,7 @@ export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
     outputCount: number;
 };
 export interface TransactionInput {
-    hashHex: string;
+    hash: string | Buffer;
     index: number;
     sequence?: number;
 }
