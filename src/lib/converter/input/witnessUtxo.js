@@ -10,9 +10,7 @@ function decode(keyVal) {
         keyVal.key.toString('hex'),
     );
   }
-  const valBuf = keyVal.value.slice(0, 8);
-  const revBuf = tools_1.reverseBuffer(Buffer.from(valBuf));
-  const value = parseInt(revBuf.toString('hex'), 16);
+  const value = tools_1.readUInt64LE(keyVal.value, 0);
   let _offset = 8;
   const scriptLen = varuint.decode(keyVal.value, _offset);
   _offset += varuint.encodingLength(scriptLen);
@@ -29,13 +27,8 @@ exports.decode = decode;
 function encode(data) {
   const { script, value } = data;
   const varintLen = varuint.encodingLength(script.length);
-  const valueBuf = Buffer.from(
-    ('0'.repeat(16) + value.toString(16)).slice(-16),
-    'hex',
-  );
-  const reversed = tools_1.reverseBuffer(valueBuf);
   const result = Buffer.allocUnsafe(8 + varintLen + script.length);
-  reversed.copy(result, 0);
+  tools_1.writeUInt64LE(result, value, 0);
   varuint.encode(script.length, result, 8);
   script.copy(result, 8 + varintLen);
   return {

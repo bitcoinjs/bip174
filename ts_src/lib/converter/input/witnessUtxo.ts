@@ -1,6 +1,6 @@
 import { KeyValue, WitnessUtxo } from '../../interfaces';
 import { InputTypes } from '../../typeFields';
-import { reverseBuffer } from '../tools';
+import { readUInt64LE, writeUInt64LE } from '../tools';
 import * as varuint from '../varint';
 
 export function decode(keyVal: KeyValue): WitnessUtxo {
@@ -10,9 +10,7 @@ export function decode(keyVal: KeyValue): WitnessUtxo {
         keyVal.key.toString('hex'),
     );
   }
-  const valBuf = keyVal.value.slice(0, 8);
-  const revBuf = reverseBuffer(Buffer.from(valBuf));
-  const value = parseInt(revBuf.toString('hex'), 16);
+  const value = readUInt64LE(keyVal.value, 0);
   let _offset = 8;
   const scriptLen = varuint.decode(keyVal.value, _offset);
   _offset += varuint.encodingLength(scriptLen);
@@ -29,15 +27,10 @@ export function decode(keyVal: KeyValue): WitnessUtxo {
 export function encode(data: WitnessUtxo): KeyValue {
   const { script, value } = data;
   const varintLen = varuint.encodingLength(script.length);
-  const valueBuf = Buffer.from(
-    ('0'.repeat(16) + value.toString(16)).slice(-16),
-    'hex',
-  );
-  const reversed = reverseBuffer(valueBuf);
 
   const result = Buffer.allocUnsafe(8 + varintLen + script.length);
 
-  reversed.copy(result, 0);
+  writeUInt64LE(result, value, 0);
   varuint.encode(script.length, result, 8);
   script.copy(result, 8 + varintLen);
 

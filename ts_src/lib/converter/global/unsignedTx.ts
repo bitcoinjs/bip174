@@ -5,7 +5,7 @@ import {
   UnsignedTx,
 } from '../../interfaces';
 import { GlobalTypes } from '../../typeFields';
-import { reverseBuffer } from '../tools';
+import { reverseBuffer, writeUInt64LE } from '../tools';
 import * as varuint from '../varint';
 
 export function decode(keyVal: KeyValue): UnsignedTx {
@@ -157,13 +157,7 @@ export function addInput(input: TransactionInput, txBuffer: Buffer): Buffer {
 function outputToBuffer(output: TransactionOutput): Buffer {
   const varLen = varuint.encodingLength(output.script.length);
   const result = Buffer.allocUnsafe(8 + varLen + output.script.length);
-  const satBuf = reverseBuffer(
-    Buffer.from(
-      ('0000000000000000' + output.value.toString(16)).slice(-16),
-      'hex',
-    ),
-  );
-  satBuf.copy(result, 0);
+  writeUInt64LE(result, output.value, 0);
   varuint.encode(output.script.length, result, 8);
   output.script.copy(result, 8 + varLen);
   return result;

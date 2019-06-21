@@ -129,13 +129,7 @@ exports.addInput = addInput;
 function outputToBuffer(output) {
   const varLen = varuint.encodingLength(output.script.length);
   const result = Buffer.allocUnsafe(8 + varLen + output.script.length);
-  const satBuf = tools_1.reverseBuffer(
-    Buffer.from(
-      ('0000000000000000' + output.value.toString(16)).slice(-16),
-      'hex',
-    ),
-  );
-  satBuf.copy(result, 0);
+  tools_1.writeUInt64LE(result, output.value, 0);
   varuint.encode(output.script.length, result, 8);
   output.script.copy(result, 8 + varLen);
   return result;
