@@ -1,29 +1,47 @@
 {
   "name": "bip174",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
-  "main": "index.js",
+  "main": "src/lib/psbt.js",
+  "types": "src/lib/psbt.d.ts",
+  "files": [
+    "src/lib"
+  ],
   "engines": {
-    "node": ">=4.0.0"
+    "node": ">=8.0.0"
   },
   "scripts": {
-    "standard": "standard",
-    "test": "npm run standard && npm run unit",
-    "unit": "tape tests/*.js"
+    "build": "npm run clean && tsc -p ./tsconfig.json ; npm run formatjs",
+    "clean": "rimraf src types",
+    "coverage": "nyc --check-coverage --reporter=lcov --reporter=text --branches 40 --functions 70 --lines 60 npm run unit",
+    "format": "npm run prettier -- --write",
+    "formatjs": "npm run prettierjs -- --write > /dev/null 2>&1",
+    "format:ci": "npm run prettier -- --check && npm run prettierjs -- --check",
+    "gitdiff:ci": "npm run build && git diff --exit-code",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
+    "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
+    "prettierjs": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
+    "test": "npm run format:ci && npm run lint && npm run build && npm run unit",
+    "unit": "tape src/tests/*.js"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bitcoinjs/bip174.git"
   },
-  "dependencies": {},
   "devDependencies": {
-    "standard": "^10.0.3"
+    "@types/node": "12.0.8",
+    "@types/tape": "4.2.33",
+    "nyc": "^14.1.1",
+    "prettier": "^1.18.2",
+    "rimraf": "^2.6.3",
+    "tape": "^4.10.2",
+    "tslint": "5.17.0",
+    "typescript": "3.5.2"
   },
-  "author": "Daniel Cousens",
+  "author": "Jonathan Underwood",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/bitcoinjs/bip174/issues"
   },
   "homepage": "https://github.com/bitcoinjs/bip174#readme"
 }
-
