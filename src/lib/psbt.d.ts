@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { PsbtGlobal, PsbtInput, PsbtOutput, TransactionInput, TransactionInputAdder, TransactionIOCountGetter, TransactionOutput, TransactionOutputAdder } from './interfaces';
+import { PsbtGlobal, PsbtInput, PsbtOutput, TransactionInput, TransactionIOCountGetter, TransactionOutput } from './interfaces';
 export declare class Psbt {
     static fromTransaction(txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;
     static fromBase64(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
@@ -12,8 +12,10 @@ export declare class Psbt {
     toBase64(): string;
     toHex(): string;
     toBuffer(): Buffer;
-    addInput(inputData: TransactionInput, transactionInputAdder?: TransactionInputAdder): Psbt;
-    addOutput(outputData: TransactionOutput, allowNoInput?: boolean, transactionInputAdder?: TransactionOutputAdder): Psbt;
+    addInput(inputData: TransactionInput): Psbt;
+    addInput<T>(inputData: T, transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer): Psbt;
+    addOutput(outputData: TransactionOutput, allowNoInput?: boolean): Psbt;
+    addOutput<T>(outputData: T, allowNoInput?: boolean, transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer): Psbt;
     combine(...those: Psbt[]): Psbt;
     extractTransaction(): Buffer;
 }

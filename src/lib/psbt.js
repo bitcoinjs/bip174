@@ -4,6 +4,11 @@ const combiner_1 = require('./combiner');
 const convert = require('./converter');
 const parser_1 = require('./parser');
 const typeFields_1 = require('./typeFields');
+const {
+  globals: {
+    unsignedTx: { isTransactionInput, isTransactionOutput },
+  },
+} = convert;
 class Psbt {
   static fromTransaction(txBuf, txCountGetter) {
     if (txCountGetter === undefined)
@@ -59,33 +64,45 @@ class Psbt {
   toBuffer() {
     return parser_1.psbtToBuffer(this);
   }
-  // TODO:
-  // Add methods to update various parts. (ie. "updater" responsibility)
-  // Return self for chaining.
-  addInput(
-    inputData,
-    transactionInputAdder = convert.globals.unsignedTx.addInput,
-  ) {
+  addInput(inputData, transactionInputAdder) {
     const txBuf = this.extractTransaction();
-    const newTxBuf = transactionInputAdder(inputData, txBuf);
+    let newTxBuf;
+    if (isTransactionInput(inputData)) {
+      newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
+    } else {
+      if (transactionInputAdder === undefined) {
+        throw new Error(
+          'If inputData is not a TransactionInput object, you must pass a ' +
+            'function to handle it.',
+        );
+      }
+      newTxBuf = transactionInputAdder(inputData, txBuf);
+    }
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
       keyVals: [],
     });
     return this;
   }
-  addOutput(
-    outputData,
-    allowNoInput = false,
-    transactionInputAdder = convert.globals.unsignedTx.addOutput,
-  ) {
+  addOutput(outputData, allowNoInput = false, transactionOutputAdder) {
     if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
         'Add Output: can not add an output before adding an input.',
       );
     }
     const txBuf = this.extractTransaction();
-    const newTxBuf = transactionInputAdder(outputData, txBuf);
+    let newTxBuf;
+    if (isTransactionOutput(outputData)) {
+      newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
+    } else {
+      if (transactionOutputAdder === undefined) {
+        throw new Error(
+          'If outputData is not a TransactionOutput object, you must pass a ' +
+            'function to handle it.',
+        );
+      }
+      newTxBuf = transactionOutputAdder(outputData, txBuf);
+    }
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
       keyVals: [],

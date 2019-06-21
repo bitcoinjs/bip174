@@ -5,13 +5,16 @@ import {
   PsbtInput,
   PsbtOutput,
   TransactionInput,
-  TransactionInputAdder,
   TransactionIOCountGetter,
   TransactionOutput,
-  TransactionOutputAdder,
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes } from './typeFields';
+const {
+  globals: {
+    unsignedTx: { isTransactionInput, isTransactionOutput },
+  },
+} = convert;
 
 export class Psbt {
   static fromTransaction(
@@ -90,13 +93,31 @@ export class Psbt {
   // Add methods to update various parts. (ie. "updater" responsibility)
   // Return self for chaining.
 
-  addInput(
-    inputData: TransactionInput,
-    transactionInputAdder: TransactionInputAdder = convert.globals.unsignedTx
-      .addInput,
+  addInput(inputData: TransactionInput): Psbt;
+  addInput<T>(
+    inputData: T,
+    transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer,
+  ): Psbt;
+  addInput<T>(
+    inputData: T | TransactionInput,
+    transactionInputAdder?: (
+      input: T | TransactionInput,
+      txBuffer: Buffer,
+    ) => Buffer,
   ): Psbt {
     const txBuf = this.extractTransaction();
-    const newTxBuf = transactionInputAdder(inputData, txBuf);
+    let newTxBuf: Buffer;
+    if (isTransactionInput(inputData)) {
+      newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
+    } else {
+      if (transactionInputAdder === undefined) {
+        throw new Error(
+          'If inputData is not a TransactionInput object, you must pass a ' +
+            'function to handle it.',
+        );
+      }
+      newTxBuf = transactionInputAdder(inputData, txBuf);
+    }
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
       keyVals: [],
@@ -104,11 +125,19 @@ export class Psbt {
     return this;
   }
 
-  addOutput(
-    outputData: TransactionOutput,
+  addOutput(outputData: TransactionOutput, allowNoInput?: boolean): Psbt;
+  addOutput<T>(
+    outputData: T,
+    allowNoInput?: boolean,
+    transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer,
+  ): Psbt;
+  addOutput<T>(
+    outputData: T | TransactionOutput,
     allowNoInput: boolean = false,
-    transactionInputAdder: TransactionOutputAdder = convert.globals.unsignedTx
-      .addOutput,
+    transactionOutputAdder?: (
+      output: T | TransactionOutput,
+      txBuffer: Buffer,
+    ) => Buffer,
   ): Psbt {
     if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
@@ -116,7 +145,18 @@ export class Psbt {
       );
     }
     const txBuf = this.extractTransaction();
-    const newTxBuf = transactionInputAdder(outputData, txBuf);
+    let newTxBuf: Buffer;
+    if (isTransactionOutput(outputData)) {
+      newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
+    } else {
+      if (transactionOutputAdder === undefined) {
+        throw new Error(
+          'If outputData is not a TransactionOutput object, you must pass a ' +
+            'function to handle it.',
+        );
+      }
+      newTxBuf = transactionOutputAdder(outputData, txBuf);
+    }
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
       keyVals: [],
