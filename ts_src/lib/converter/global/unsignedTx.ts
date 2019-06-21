@@ -171,6 +171,13 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
     offset += 41;
   }
 
+  function checkAndSkipOutput(): void {
+    const scriptLen = varuint.decode(txBuffer, offset + 8);
+    const varintLen = varuint.encodingLength(scriptLen);
+    // satoshis(8) + scriptLenVarInty(x) + script(y)
+    offset += 8 + varintLen + scriptLen;
+  }
+
   // Has segwit marker and flag byte
   if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
     throw new Error(
@@ -202,7 +209,7 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
 
   countDown = outputCount;
   while (countDown > 0) {
-    checkAndSkipInput();
+    checkAndSkipOutput();
     countDown--;
   }
 

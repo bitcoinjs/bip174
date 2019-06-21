@@ -140,6 +140,12 @@ function addOutput(output, txBuffer) {
     // hash(32) + vout(4) + varint of 0 (1) + sequence(4)
     offset += 41;
   }
+  function checkAndSkipOutput() {
+    const scriptLen = varuint.decode(txBuffer, offset + 8);
+    const varintLen = varuint.encodingLength(scriptLen);
+    // satoshis(8) + scriptLenVarInty(x) + script(y)
+    offset += 8 + varintLen + scriptLen;
+  }
   // Has segwit marker and flag byte
   if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
     throw new Error(
@@ -164,7 +170,7 @@ function addOutput(output, txBuffer) {
   const startOutputs = offset;
   countDown = outputCount;
   while (countDown > 0) {
-    checkAndSkipInput();
+    checkAndSkipOutput();
     countDown--;
   }
   const endOutputs = offset;
