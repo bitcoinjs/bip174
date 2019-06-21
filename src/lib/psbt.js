@@ -192,7 +192,7 @@ class Psbt {
     return this;
   }
   addInput(inputData, transactionInputAdder) {
-    const txBuf = this.extractTransaction();
+    const txBuf = this.getTransaction();
     let newTxBuf;
     if (isTransactionInput(inputData)) {
       newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
@@ -217,7 +217,7 @@ class Psbt {
         'Add Output: can not add an output before adding an input.',
       );
     }
-    const txBuf = this.extractTransaction();
+    const txBuf = this.getTransaction();
     let newTxBuf;
     if (isTransactionOutput(outputData)) {
       newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
@@ -243,7 +243,7 @@ class Psbt {
     Object.assign(this, result);
     return this;
   }
-  extractTransaction() {
+  getTransaction() {
     const txKeyVals = this.globalMap.keyVals.filter(
       kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
     );

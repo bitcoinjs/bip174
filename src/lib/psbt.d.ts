@@ -30,5 +30,5 @@ export declare class Psbt {
     addOutput(outputData: TransactionOutput, allowNoInput?: boolean): Psbt;
     addOutput<T>(outputData: T, allowNoInput?: boolean, transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer): Psbt;
     combine(...those: Psbt[]): Psbt;
-    extractTransaction(): Buffer;
+    getTransaction(): Buffer;
 }

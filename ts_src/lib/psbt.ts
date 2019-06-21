@@ -281,7 +281,7 @@ export class Psbt {
       txBuffer: Buffer,
     ) => Buffer,
   ): Psbt {
-    const txBuf = this.extractTransaction();
+    const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
     if (isTransactionInput(inputData)) {
       newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
@@ -320,7 +320,7 @@ export class Psbt {
         'Add Output: can not add an output before adding an input.',
       );
     }
-    const txBuf = this.extractTransaction();
+    const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
     if (isTransactionOutput(outputData)) {
       newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
@@ -348,7 +348,7 @@ export class Psbt {
     return this;
   }
 
-  extractTransaction(): Buffer {
+  getTransaction(): Buffer {
     const txKeyVals = this.globalMap.keyVals.filter(
       kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
     );
