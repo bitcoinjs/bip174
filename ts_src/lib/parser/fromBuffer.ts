@@ -150,6 +150,18 @@ interface PsbtFromKeyValsArg {
   outputKeyVals: KeyValue[][];
 }
 
+export function checkKeyBuffer(
+  type: string,
+  keyBuf: Buffer,
+  keyNum: number,
+): void {
+  if (!keyBuf.equals(Buffer.from([keyNum]))) {
+    throw new Error(
+      `Format Error: Invalid ${type} key: ${keyBuf.toString('hex')}`,
+    );
+  }
+}
+
 export function psbtFromKeyVals({
   globalMapKeyVals,
   inputKeyVals,
@@ -165,6 +177,7 @@ export function psbtFromKeyVals({
 
     switch (keyVal.key[0]) {
       case GlobalTypes.UNSIGNED_TX:
+        checkKeyBuffer('global', keyVal.key, GlobalTypes.UNSIGNED_TX);
         if (globalMap.unsignedTx !== undefined) {
           throw new Error('Format Error: GlobalMap has multiple UNSIGNED_TX');
         }
@@ -192,6 +205,7 @@ export function psbtFromKeyVals({
 
       switch (keyVal.key[0]) {
         case InputTypes.NON_WITNESS_UTXO:
+          checkKeyBuffer('input', keyVal.key, InputTypes.NON_WITNESS_UTXO);
           if (
             input.nonWitnessUtxo !== undefined ||
             input.witnessUtxo !== undefined
@@ -203,6 +217,7 @@ export function psbtFromKeyVals({
           input.nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
           break;
         case InputTypes.WITNESS_UTXO:
+          checkKeyBuffer('input', keyVal.key, InputTypes.WITNESS_UTXO);
           if (
             input.nonWitnessUtxo !== undefined ||
             input.witnessUtxo !== undefined
@@ -225,18 +240,21 @@ export function psbtFromKeyVals({
           input.partialSig.push(convert.inputs.partialSig.decode(keyVal));
           break;
         case InputTypes.SIGHASH_TYPE:
+          checkKeyBuffer('input', keyVal.key, InputTypes.SIGHASH_TYPE);
           if (input.sighashType !== undefined) {
             throw new Error('Format Error: Input has multiple SIGHASH_TYPE');
           }
           input.sighashType = convert.inputs.sighashType.decode(keyVal);
           break;
         case InputTypes.REDEEM_SCRIPT:
+          checkKeyBuffer('input', keyVal.key, InputTypes.REDEEM_SCRIPT);
           if (input.redeemScript !== undefined) {
             throw new Error('Format Error: Input has multiple REDEEM_SCRIPT');
           }
           input.redeemScript = convert.inputs.redeemScript.decode(keyVal);
           break;
         case InputTypes.WITNESS_SCRIPT:
+          checkKeyBuffer('input', keyVal.key, InputTypes.WITNESS_SCRIPT);
           if (input.witnessScript !== undefined) {
             throw new Error('Format Error: Input has multiple WITNESS_SCRIPT');
           }
@@ -256,14 +274,17 @@ export function psbtFromKeyVals({
           );
           break;
         case InputTypes.FINAL_SCRIPTSIG:
+          checkKeyBuffer('input', keyVal.key, InputTypes.FINAL_SCRIPTSIG);
           input.finalScriptSig = convert.inputs.finalScriptSig.decode(keyVal);
           break;
         case InputTypes.FINAL_SCRIPTWITNESS:
+          checkKeyBuffer('input', keyVal.key, InputTypes.FINAL_SCRIPTWITNESS);
           input.finalScriptWitness = convert.inputs.finalScriptWitness.decode(
             keyVal,
           );
           break;
         case InputTypes.POR_COMMITMENT:
+          checkKeyBuffer('input', keyVal.key, InputTypes.POR_COMMITMENT);
           input.porCommitment = convert.inputs.porCommitment.decode(keyVal);
           break;
         default:
@@ -283,12 +304,14 @@ export function psbtFromKeyVals({
 
       switch (keyVal.key[0]) {
         case OutputTypes.REDEEM_SCRIPT:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.REDEEM_SCRIPT);
           if (output.redeemScript !== undefined) {
             throw new Error('Format Error: Output has multiple REDEEM_SCRIPT');
           }
           output.redeemScript = convert.outputs.redeemScript.decode(keyVal);
           break;
         case OutputTypes.WITNESS_SCRIPT:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.WITNESS_SCRIPT);
           if (output.witnessScript !== undefined) {
             throw new Error('Format Error: Output has multiple WITNESS_SCRIPT');
           }

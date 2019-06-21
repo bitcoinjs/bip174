@@ -7,5 +7,6 @@ interface PsbtFromKeyValsArg {
     inputKeyVals: KeyValue[][];
     outputKeyVals: KeyValue[][];
 }
+export declare function checkKeyBuffer(type: string, keyBuf: Buffer, keyNum: number): void;
 export declare function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals, }: PsbtFromKeyValsArg): PsbtAttributes;
 export {};
