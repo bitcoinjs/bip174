@@ -35,32 +35,11 @@ export function getInputOutputCounts(
   // Skip version(4)
   let offset = 4;
 
-  function checkAndSkipInput(): void {
-    if (txBuffer[offset + 36] !== 0) {
-      throw new Error('Format Error: Transaction ScriptSigs are not empty');
-    }
-    // hash(32) + vout(4) + varint of 0 (1) + sequence(4)
-    offset += 41;
-  }
+  checkSegwit(txBuffer, offset);
 
-  // Has segwit marker and flag byte
-  if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
-    throw new Error(
-      'Format Error: Transaction must not be segwit serialization.\n' +
-        'This error also appears if the transaction has no inputs but ' +
-        'has outputs. (Since it looks like the marker and flag byte)\n' +
-        'To override this error, please implement a Transaction ' +
-        'input/output count getter, and passing it in.',
-    );
-  }
-  const inputCount = varuint.decode(txBuffer, offset);
-  offset += varuint.encodingLength(inputCount);
-
-  let countDown = inputCount;
-  while (countDown > 0) {
-    checkAndSkipInput();
-    countDown--;
-  }
+  const parsedIn = parseInputs(txBuffer, offset);
+  const { inputCount } = parsedIn;
+  ({ offset } = parsedIn);
 
   const outputCount = varuint.decode(txBuffer, offset);
 
@@ -95,39 +74,11 @@ export function addInput(input: TransactionInput, txBuffer: Buffer): Buffer {
   // Skip version(4)
   let offset = 4;
 
-  function checkAndSkipInput(): void {
-    if (txBuffer[offset + 36] !== 0) {
-      throw new Error('Format Error: Transaction ScriptSigs are not empty');
-    }
-    // hash(32) + vout(4) + varint of 0 (1) + sequence(4)
-    offset += 41;
-  }
+  checkSegwit(txBuffer, offset);
 
-  // Has segwit marker and flag byte
-  if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
-    throw new Error(
-      'Format Error: Transaction must not be segwit serialization.\n' +
-        'This error also appears if the transaction has no inputs but ' +
-        'has outputs. (Since it looks like the marker and flag byte)\n' +
-        'To override this error, please implement a Transaction ' +
-        'input/output count getter, and passing it in.',
-    );
-  }
-
-  const inputCount = varuint.decode(txBuffer, offset);
-
-  const oldInputLenByteLen = varuint.encodingLength(inputCount);
-  offset += oldInputLenByteLen;
-
-  const startInputs = offset;
-
-  let countDown = inputCount;
-  while (countDown > 0) {
-    checkAndSkipInput();
-    countDown--;
-  }
-
-  const endInputs = offset;
+  const parsed = parseInputs(txBuffer, offset);
+  const { inputCount, startInputs, endInputs } = parsed;
+  ({ offset } = parsed);
 
   const newInputLenByteLen = varuint.encodingLength(inputCount + 1);
 
@@ -171,57 +122,16 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
   // Skip version(4)
   let offset = 4;
 
-  function checkAndSkipInput(): void {
-    if (txBuffer[offset + 36] !== 0) {
-      throw new Error('Format Error: Transaction ScriptSigs are not empty');
-    }
-    // hash(32) + vout(4) + varint of 0 (1) + sequence(4)
-    offset += 41;
-  }
+  checkSegwit(txBuffer, offset);
 
-  function checkAndSkipOutput(): void {
-    const scriptLen = varuint.decode(txBuffer, offset + 8);
-    const varintLen = varuint.encodingLength(scriptLen);
-    // satoshis(8) + scriptLenVarInty(x) + script(y)
-    offset += 8 + varintLen + scriptLen;
-  }
+  const parsedIn = parseInputs(txBuffer, offset);
+  const { endInputs } = parsedIn;
+  ({ offset } = parsedIn);
 
-  // Has segwit marker and flag byte
-  if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
-    throw new Error(
-      'Format Error: Transaction must not be segwit serialization.\n' +
-        'This error also appears if the transaction has no inputs but ' +
-        'has outputs. (Since it looks like the marker and flag byte)\n' +
-        'To override this error, please implement a Transaction ' +
-        'input/output count getter, and passing it in.',
-    );
-  }
+  const parsedOut = parseOutputs(txBuffer, offset);
+  const { outputCount, startOutputs, endOutputs } = parsedOut;
+  ({ offset } = parsedOut);
 
-  const inputCount = varuint.decode(txBuffer, offset);
-  offset += varuint.encodingLength(inputCount);
-
-  let countDown = inputCount;
-  while (countDown > 0) {
-    checkAndSkipInput();
-    countDown--;
-  }
-
-  const endInputs = offset;
-
-  const outputCount = varuint.decode(txBuffer, offset);
-
-  const oldOutputLenByteLen = varuint.encodingLength(outputCount);
-  offset += oldOutputLenByteLen;
-
-  const startOutputs = offset;
-
-  countDown = outputCount;
-  while (countDown > 0) {
-    checkAndSkipOutput();
-    countDown--;
-  }
-
-  const endOutputs = offset;
   const newOutputLenByteLen = varuint.encodingLength(outputCount + 1);
 
   const versionAndInputs = txBuffer.slice(0, endInputs);
@@ -250,4 +160,100 @@ export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
   restOfTxBuf.copy(newTxBuf, offset);
 
   return newTxBuf;
+}
+
+function parseInputs(
+  txBuffer: Buffer,
+  offset: number,
+): {
+  startInputs: number;
+  endInputs: number;
+  offset: number;
+  inputCount: number;
+  oldInputLenByteLen: number;
+} {
+  const inputCount = varuint.decode(txBuffer, offset);
+
+  const oldInputLenByteLen = varuint.encodingLength(inputCount);
+  offset += oldInputLenByteLen;
+
+  const startInputs = offset;
+
+  let countDown = inputCount;
+  while (countDown > 0) {
+    offset = checkAndSkipInput(txBuffer, offset);
+    countDown--;
+  }
+
+  const endInputs = offset;
+  return {
+    startInputs,
+    endInputs,
+    offset,
+    inputCount,
+    oldInputLenByteLen,
+  };
+}
+
+function parseOutputs(
+  txBuffer: Buffer,
+  offset: number,
+): {
+  startOutputs: number;
+  endOutputs: number;
+  offset: number;
+  outputCount: number;
+  oldOutputLenByteLen: number;
+} {
+  const outputCount = varuint.decode(txBuffer, offset);
+
+  const oldOutputLenByteLen = varuint.encodingLength(outputCount);
+  offset += oldOutputLenByteLen;
+
+  const startOutputs = offset;
+
+  let countDown = outputCount;
+  while (countDown > 0) {
+    offset = checkAndSkipOutput(txBuffer, offset);
+    countDown--;
+  }
+
+  const endOutputs = offset;
+  return {
+    startOutputs,
+    endOutputs,
+    offset,
+    outputCount,
+    oldOutputLenByteLen,
+  };
+}
+
+function checkAndSkipInput(txBuffer: Buffer, offset: number): number {
+  if (txBuffer[offset + 36] !== 0) {
+    throw new Error('Format Error: Transaction ScriptSigs are not empty');
+  }
+  // hash(32) + vout(4) + varint of 0 (1) + sequence(4)
+  offset += 41;
+  return offset;
+}
+
+function checkAndSkipOutput(txBuffer: Buffer, offset: number): number {
+  const scriptLen = varuint.decode(txBuffer, offset + 8);
+  const varintLen = varuint.encodingLength(scriptLen);
+  // satoshis(8) + scriptLenVarInty(x) + script(y)
+  offset += 8 + varintLen + scriptLen;
+  return offset;
+}
+
+function checkSegwit(txBuffer: Buffer, offset: number): void {
+  // Has segwit marker and flag byte
+  if (txBuffer[offset] === 0 && txBuffer[offset + 1] > 0) {
+    throw new Error(
+      'Format Error: Transaction must not be segwit serialization.\n' +
+        'This error also appears if the transaction has no inputs but ' +
+        'has outputs. (Since it looks like the marker and flag byte)\n' +
+        'To override this error, please implement a Transaction ' +
+        'input/output count getter, and passing it in.',
+    );
+  }
 }
