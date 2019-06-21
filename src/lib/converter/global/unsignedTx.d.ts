@@ -1,5 +1,7 @@
 /// <reference types="node" />
-import { TransactionInput, TransactionOutput } from '../../interfaces';
+import { KeyValue, TransactionInput, TransactionOutput, UnsignedTx } from '../../interfaces';
+export declare function decode(keyVal: KeyValue): UnsignedTx;
+export declare function encode(data: UnsignedTx): KeyValue;
 export declare function getInputOutputCounts(txBuffer: Buffer): {
     inputCount: number;
     outputCount: number;

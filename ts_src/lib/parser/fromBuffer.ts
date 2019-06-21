@@ -157,8 +157,24 @@ export function psbtFromKeyVals({
 }: PsbtFromKeyValsArg): PsbtAttributes {
   // That was easy :-)
   const globalMap: PsbtGlobal = {
-    keyVals: globalMapKeyVals,
+    keyVals: [] as KeyValue[],
   };
+  for (const keyVal of globalMapKeyVals) {
+    // If a globalMap item needs pubkey, uncomment
+    // const pubkey = convert.globals.checkPubkey(keyVal);
+
+    switch (keyVal.key[0]) {
+      case GlobalTypes.UNSIGNED_TX:
+        if (globalMap.unsignedTx !== undefined) {
+          throw new Error('Format Error: GlobalMap has multiple UNSIGNED_TX');
+        }
+        globalMap.unsignedTx = convert.globals.unsignedTx.decode(keyVal);
+        break;
+      default:
+        // This will allow inclusion during serialization.
+        globalMap.keyVals.push(keyVal);
+    }
+  }
 
   // Get input and output counts to loop the respective fields
   const inputCount = inputKeyVals.length;
@@ -172,23 +188,7 @@ export function psbtFromKeyVals({
       keyVals: [] as KeyValue[],
     };
     for (const keyVal of inputKeyVals[index]) {
-      let pubkey: Buffer | undefined;
-      if (
-        [InputTypes.PARTIAL_SIG, InputTypes.BIP32_DERIVATION].includes(
-          keyVal.key[0],
-        )
-      ) {
-        pubkey = keyVal.key.slice(1);
-        if (
-          !(pubkey.length === 33 || pubkey.length === 65) ||
-          ![2, 3, 4].includes(pubkey[0])
-        ) {
-          throw new Error(
-            'Format Error: invalid pubkey in key 0x' +
-              keyVal.key.toString('hex'),
-          );
-        }
-      }
+      const pubkey = convert.inputs.checkPubkey(keyVal);
 
       switch (keyVal.key[0]) {
         case InputTypes.NON_WITNESS_UTXO:
@@ -279,10 +279,7 @@ export function psbtFromKeyVals({
       keyVals: [] as KeyValue[],
     };
     for (const keyVal of outputKeyVals[index]) {
-      let pubkey: Buffer | undefined;
-      if (OutputTypes.BIP32_DERIVATION === keyVal.key[0]) {
-        pubkey = keyVal.key.slice(1);
-      }
+      const pubkey = convert.outputs.checkPubkey(keyVal);
 
       switch (keyVal.key[0]) {
         case OutputTypes.REDEEM_SCRIPT:

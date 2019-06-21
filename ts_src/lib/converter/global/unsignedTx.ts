@@ -1,6 +1,30 @@
-import { TransactionInput, TransactionOutput } from '../../interfaces';
+import {
+  KeyValue,
+  TransactionInput,
+  TransactionOutput,
+  UnsignedTx,
+} from '../../interfaces';
+import { GlobalTypes } from '../../typeFields';
 import { reverseBuffer } from '../tools';
 import * as varuint from '../varint';
+
+export function decode(keyVal: KeyValue): UnsignedTx {
+  if (keyVal.key[0] !== GlobalTypes.UNSIGNED_TX) {
+    throw new Error(
+      'Decode Error: could not decode redeemScript with key 0x' +
+        keyVal.key.toString('hex'),
+    );
+  }
+  return keyVal.value;
+}
+
+export function encode(data: UnsignedTx): KeyValue {
+  const key = Buffer.from([GlobalTypes.UNSIGNED_TX]);
+  return {
+    key,
+    value: data,
+  };
+}
 
 export function getInputOutputCounts(
   txBuffer: Buffer,

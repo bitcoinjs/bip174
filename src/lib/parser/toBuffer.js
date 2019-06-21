@@ -34,86 +34,56 @@ const sortKeyVals = (_a, _b) => {
   else if (a > b) return 1;
   else return 0;
 };
+function keyValsFromMap(keyValMap, converterFactory) {
+  const attributes = Object.keys(keyValMap).filter(k => k !== 'keyVals');
+  const keyVals = [];
+  const keyHexes = new Set();
+  for (const attrKey of attributes) {
+    // We are checking for undefined anyways. So ignore TS error
+    // @ts-ignore
+    const converter = converterFactory[attrKey];
+    if (converter === undefined) continue;
+    // @ts-ignore
+    const data = keyValMap[attrKey];
+    const keyVal = Array.isArray(data)
+      ? data.map(converter.encode)
+      : converter.encode(data);
+    if (Array.isArray(keyVal)) {
+      const hexes = keyVal.map(kv => kv.key.toString('hex'));
+      hexes.forEach(hex => {
+        if (keyHexes.has(hex))
+          throw new Error('Serialize Error: Duplicate key: ' + hex);
+        keyHexes.add(hex);
+      });
+      keyVals.push(...keyVal);
+    } else {
+      const hex = keyVal.key.toString('hex');
+      if (keyHexes.has(hex))
+        throw new Error('Serialize Error: Duplicate key: ' + hex);
+      keyHexes.add(hex);
+      keyVals.push(keyVal);
+    }
+  }
+  // Get other keyVals that have not yet been gotten
+  const otherKeyVals = keyValMap.keyVals.filter(keyVal => {
+    return !keyHexes.has(keyVal.key.toString('hex'));
+  });
+  return keyVals.concat(otherKeyVals).sort(sortKeyVals);
+}
 function psbtToKeyVals({ globalMap, inputs, outputs }) {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
-  const globalKeyVals = globalMap.keyVals.sort(sortKeyVals);
+  const globalKeyVals = keyValsFromMap(globalMap, convert.globals);
   const inputKeyVals = [];
   const outputKeyVals = [];
   for (const index of tools_1.range(inputs.length)) {
     const input = inputs[index];
-    const attributes = Object.keys(input).filter(k => k !== 'keyVals');
-    const keyVals = [];
-    const keyHexes = new Set();
-    for (const attrKey of attributes) {
-      // We are checking for undefined anyways. So ignore TS error
-      // @ts-ignore
-      const converter = convert.inputs[attrKey];
-      if (converter === undefined) continue;
-      // @ts-ignore
-      const data = input[attrKey];
-      const keyVal = Array.isArray(data)
-        ? data.map(converter.encode)
-        : converter.encode(data);
-      if (Array.isArray(keyVal)) {
-        keyVals.push(...keyVal);
-        const hexes = keyVal.map(kv => kv.key.toString('hex'));
-        hexes.forEach(hex => {
-          if (keyHexes.has(hex))
-            throw new Error('Serialize Error: Duplicate key: ' + hex);
-          keyHexes.add(hex);
-        });
-      } else {
-        keyVals.push(keyVal);
-        const hex = keyVal.key.toString('hex');
-        if (keyHexes.has(hex))
-          throw new Error('Serialize Error: Duplicate key: ' + hex);
-        keyHexes.add(hex);
-      }
-    }
-    // Get other keyVals that have not yet been gotten
-    const otherInputKeyVals = input.keyVals.filter(keyVal => {
-      return !keyHexes.has(keyVal.key.toString('hex'));
-    });
-    const _inputKeyVals = keyVals.concat(otherInputKeyVals).sort(sortKeyVals);
+    const _inputKeyVals = keyValsFromMap(input, convert.inputs);
     inputKeyVals.push(_inputKeyVals);
   }
   for (const index of tools_1.range(outputs.length)) {
     const output = outputs[index];
-    const attributes = Object.keys(output).filter(k => k !== 'keyVals');
-    const keyVals = [];
-    const keyHexes = new Set();
-    for (const attrKey of attributes) {
-      // We are checking for undefined anyways. So ignore TS error
-      // @ts-ignore
-      const converter = convert.outputs[attrKey];
-      if (converter === undefined) continue;
-      // @ts-ignore
-      const data = output[attrKey];
-      const keyVal = Array.isArray(data)
-        ? data.map(converter.encode)
-        : converter.encode(data);
-      if (Array.isArray(keyVal)) {
-        keyVals.push(...keyVal);
-        const hexes = keyVal.map(kv => kv.key.toString('hex'));
-        hexes.forEach(hex => {
-          if (keyHexes.has(hex))
-            throw new Error('Serialize Error: Duplicate key: ' + hex);
-          keyHexes.add(hex);
-        });
-      } else {
-        keyVals.push(keyVal);
-        const hex = keyVal.key.toString('hex');
-        if (keyHexes.has(hex))
-          throw new Error('Serialize Error: Duplicate key: ' + hex);
-        keyHexes.add(hex);
-      }
-    }
-    // Get other keyVals that have not yet been gotten
-    const otherOutputKeyVals = output.keyVals.filter(keyVal => {
-      return !keyHexes.has(keyVal.key.toString('hex'));
-    });
-    const _outputKeyVals = keyVals.concat(otherOutputKeyVals).sort(sortKeyVals);
+    const _outputKeyVals = keyValsFromMap(output, convert.outputs);
     outputKeyVals.push(_outputKeyVals);
   }
   return {

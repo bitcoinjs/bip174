@@ -1,6 +1,5 @@
-import { KeyValue } from '../interfaces';
+import { KeyValue, UnsignedTx } from '../interfaces';
 import { PsbtAttributes, psbtFromKeyVals, psbtToKeyVals } from '../parser';
-import { GlobalTypes } from '../typeFields';
 
 /*
 Possible outcomes:
@@ -31,8 +30,8 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
   const others = psbts.slice(1);
   if (others.length === 0) throw new Error('Combine: Nothing to combine');
 
-  const selfTxKeyVal = getTx(self);
-  if (selfTxKeyVal === undefined) {
+  const selfTx = getTx(self);
+  if (selfTx === undefined) {
     throw new Error('Combine: Self missing transaction');
   }
   const selfGlobalSet = getKeySet(selfKeyVals.globalKeyVals);
@@ -42,11 +41,8 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
   );
 
   for (const other of others) {
-    const otherTxKeyVal = getTx(other);
-    if (
-      otherTxKeyVal === undefined ||
-      !otherTxKeyVal.value.equals(selfTxKeyVal.value)
-    ) {
+    const otherTx = getTx(other);
+    if (otherTx === undefined || !otherTx.equals(selfTx)) {
       throw new Error(
         'Combine: One of the Psbts does not have the same transaction.',
       );
@@ -109,10 +105,8 @@ function keyPusher(
   };
 }
 
-function getTx(psbt: PsbtAttributes): KeyValue | undefined {
-  return psbt.globalMap.keyVals.filter(kv =>
-    kv.key.equals(Buffer.from([GlobalTypes.UNSIGNED_TX])),
-  )[0];
+function getTx(psbt: PsbtAttributes): UnsignedTx | undefined {
+  return psbt.globalMap.unsignedTx;
 }
 
 function getKeySet(keyVals: KeyValue[]): Set<string> {

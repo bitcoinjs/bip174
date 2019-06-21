@@ -10,10 +10,13 @@ const porCommitment = require('./input/porCommitment');
 const sighashType = require('./input/sighashType');
 const witnessUtxo = require('./input/witnessUtxo');
 const bip32Derivation = require('./shared/bip32Derivation');
+const checkPubkey = require('./shared/checkPubkey');
 const redeemScript = require('./shared/redeemScript');
 const witnessScript = require('./shared/witnessScript');
 const globals = {
   unsignedTx,
+  // pass an Array of key bytes that require pubkey beside the key
+  checkPubkey: checkPubkey.makeChecker([]),
 };
 exports.globals = globals;
 const inputs = {
@@ -33,6 +36,10 @@ const inputs = {
   witnessScript: witnessScript.makeConverter(
     typeFields_1.InputTypes.WITNESS_SCRIPT,
   ),
+  checkPubkey: checkPubkey.makeChecker([
+    typeFields_1.InputTypes.PARTIAL_SIG,
+    typeFields_1.InputTypes.BIP32_DERIVATION,
+  ]),
 };
 exports.inputs = inputs;
 const outputs = {
@@ -45,5 +52,8 @@ const outputs = {
   witnessScript: witnessScript.makeConverter(
     typeFields_1.OutputTypes.WITNESS_SCRIPT,
   ),
+  checkPubkey: checkPubkey.makeChecker([
+    typeFields_1.OutputTypes.BIP32_DERIVATION,
+  ]),
 };
 exports.outputs = outputs;

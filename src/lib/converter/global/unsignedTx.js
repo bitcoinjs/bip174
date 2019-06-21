@@ -1,7 +1,26 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+const typeFields_1 = require('../../typeFields');
 const tools_1 = require('../tools');
 const varuint = require('../varint');
+function decode(keyVal) {
+  if (keyVal.key[0] !== typeFields_1.GlobalTypes.UNSIGNED_TX) {
+    throw new Error(
+      'Decode Error: could not decode redeemScript with key 0x' +
+        keyVal.key.toString('hex'),
+    );
+  }
+  return keyVal.value;
+}
+exports.decode = decode;
+function encode(data) {
+  const key = Buffer.from([typeFields_1.GlobalTypes.UNSIGNED_TX]);
+  return {
+    key,
+    value: data,
+  };
+}
+exports.encode = encode;
 function getInputOutputCounts(txBuffer) {
   // Skip version(4)
   let offset = 4;

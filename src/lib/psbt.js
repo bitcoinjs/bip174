@@ -41,13 +41,9 @@ class Psbt {
   }
   constructor() {
     this.globalMap = {
-      keyVals: [
-        {
-          key: Buffer.from([typeFields_1.GlobalTypes.UNSIGNED_TX]),
-          // version 1, locktime 0, 0 ins, 0 outs
-          value: Buffer.from('01000000000000000000', 'hex'),
-        },
-      ],
+      keyVals: [],
+      // version 1, locktime 0, 0 ins, 0 outs
+      unsignedTx: Buffer.from('01000000000000000000', 'hex'),
     };
     this.inputs = [];
     this.outputs = [];
@@ -108,12 +104,14 @@ class Psbt {
       kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
     );
     const len = txKeyVals.length;
-    if (len !== 1) {
+    const tx = this.globalMap.unsignedTx;
+    const hasTx = tx !== undefined ? 1 : 0;
+    if (len + hasTx !== 1) {
       throw new Error(
-        `Extract Transaction: Expected one Transaction, got ${len}`,
+        `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
       );
     }
-    return txKeyVals[0].value;
+    return tx !== undefined ? tx : txKeyVals[0].value;
   }
 }
 exports.Psbt = Psbt;
@@ -122,10 +120,13 @@ function insertTxInGlobalMap(txBuf, globalMap) {
     kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
   );
   const len = txKeyVals.length;
-  if (len !== 1) {
+  const tx = globalMap.unsignedTx;
+  const hasTx = tx !== undefined ? 1 : 0;
+  if (len + hasTx !== 1) {
     throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len}`,
+      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
     );
   }
-  txKeyVals[0].value = txBuf;
+  if (tx !== undefined) globalMap.unsignedTx = txBuf;
+  else txKeyVals[0].value = txBuf;
 }

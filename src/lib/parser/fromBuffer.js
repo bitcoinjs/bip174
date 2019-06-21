@@ -122,8 +122,23 @@ exports.psbtFromBuffer = psbtFromBuffer;
 function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
   // That was easy :-)
   const globalMap = {
-    keyVals: globalMapKeyVals,
+    keyVals: [],
   };
+  for (const keyVal of globalMapKeyVals) {
+    // If a globalMap item needs pubkey, uncomment
+    // const pubkey = convert.globals.checkPubkey(keyVal);
+    switch (keyVal.key[0]) {
+      case typeFields_1.GlobalTypes.UNSIGNED_TX:
+        if (globalMap.unsignedTx !== undefined) {
+          throw new Error('Format Error: GlobalMap has multiple UNSIGNED_TX');
+        }
+        globalMap.unsignedTx = convert.globals.unsignedTx.decode(keyVal);
+        break;
+      default:
+        // This will allow inclusion during serialization.
+        globalMap.keyVals.push(keyVal);
+    }
+  }
   // Get input and output counts to loop the respective fields
   const inputCount = inputKeyVals.length;
   const outputCount = outputKeyVals.length;
@@ -135,24 +150,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
       keyVals: [],
     };
     for (const keyVal of inputKeyVals[index]) {
-      let pubkey;
-      if (
-        [
-          typeFields_1.InputTypes.PARTIAL_SIG,
-          typeFields_1.InputTypes.BIP32_DERIVATION,
-        ].includes(keyVal.key[0])
-      ) {
-        pubkey = keyVal.key.slice(1);
-        if (
-          !(pubkey.length === 33 || pubkey.length === 65) ||
-          ![2, 3, 4].includes(pubkey[0])
-        ) {
-          throw new Error(
-            'Format Error: invalid pubkey in key 0x' +
-              keyVal.key.toString('hex'),
-          );
-        }
-      }
+      const pubkey = convert.inputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
         case typeFields_1.InputTypes.NON_WITNESS_UTXO:
           if (
@@ -241,10 +239,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
       keyVals: [],
     };
     for (const keyVal of outputKeyVals[index]) {
-      let pubkey;
-      if (typeFields_1.OutputTypes.BIP32_DERIVATION === keyVal.key[0]) {
-        pubkey = keyVal.key.slice(1);
-      }
+      const pubkey = convert.outputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
         case typeFields_1.OutputTypes.REDEEM_SCRIPT:
           if (output.redeemScript !== undefined) {

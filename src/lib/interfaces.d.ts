@@ -5,6 +5,7 @@ export interface KeyValue {
 }
 export interface PsbtGlobal {
     keyVals: KeyValue[];
+    unsignedTx?: UnsignedTx;
 }
 export interface PsbtInput {
     keyVals: KeyValue[];
@@ -25,6 +26,7 @@ export interface PsbtOutput {
     witnessScript?: WitnessScript;
     bip32Derivation?: Bip32Derivation[];
 }
+export declare type UnsignedTx = Buffer;
 export interface PartialSig {
     pubkey: Buffer;
     signature: Buffer;

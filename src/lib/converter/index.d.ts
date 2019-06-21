@@ -9,6 +9,7 @@ import * as sighashType from './input/sighashType';
 import * as witnessUtxo from './input/witnessUtxo';
 declare const globals: {
     unsignedTx: typeof unsignedTx;
+    checkPubkey: (keyVal: import("../interfaces").KeyValue) => Buffer | undefined;
 };
 declare const inputs: {
     nonWitnessUtxo: typeof nonWitnessUtxo;
@@ -30,6 +31,7 @@ declare const inputs: {
         decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
         encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
+    checkPubkey: (keyVal: import("../interfaces").KeyValue) => Buffer | undefined;
 };
 declare const outputs: {
     bip32Derivation: {
@@ -44,5 +46,6 @@ declare const outputs: {
         decode: (keyVal: import("../interfaces").KeyValue) => Buffer;
         encode: (data: Buffer) => import("../interfaces").KeyValue;
     };
+    checkPubkey: (keyVal: import("../interfaces").KeyValue) => Buffer | undefined;
 };
 export { globals, inputs, outputs };

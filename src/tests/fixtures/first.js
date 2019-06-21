@@ -19,15 +19,11 @@ exports.fixtures = [
       'afe127fefca4995f26f82083bd10b4a6ba670000008000000080050000800000',
     output: {
       globalMap: {
-        keyVals: [
-          {
-            key: '00',
-            value:
-              '0200000001279a2323a5dfb51fc45f220fa58b0fc13e1e3342792a85d7e36c' +
-              'd6333b5cbc390000000000ffffffff01a05aea0b000000001976a914ffe9c0' +
-              '061097cc3b636f2cb0460fa4fc427d2b4588ac00000000',
-          },
-        ],
+        keyVals: [],
+        unsignedTx:
+          '0200000001279a2323a5dfb51fc45f220fa58b0fc13e1e3342792a85' +
+          'd7e36cd6333b5cbc390000000000ffffffff01a05aea0b000000001976a914ffe9c0' +
+          '061097cc3b636f2cb0460fa4fc427d2b4588ac00000000',
       },
       inputs: [
         {
