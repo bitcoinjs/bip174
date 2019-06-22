@@ -7,6 +7,7 @@ import {
   isBip32Derivation,
   isPartialSig,
   isWitnessUtxo,
+  KeyValue,
   NonWitnessUtxo,
   PartialSig,
   PorCommitment,
@@ -269,6 +270,26 @@ export class Psbt {
     return this;
   }
 
+  addKeyValToGlobal(keyVal: KeyValue): Psbt {
+    checkHasKey(keyVal, this.globalMap.keyVals);
+    this.globalMap.keyVals.push(keyVal);
+    return this;
+  }
+
+  addKeyValToInput(inputIndex: number, keyVal: KeyValue): Psbt {
+    const input = checkForInput(this.inputs, inputIndex);
+    checkHasKey(keyVal, input.keyVals);
+    input.keyVals.push(keyVal);
+    return this;
+  }
+
+  addKeyValToOutput(outputIndex: number, keyVal: KeyValue): Psbt {
+    const output = checkForOutput(this.outputs, outputIndex);
+    checkHasKey(keyVal, output.keyVals);
+    output.keyVals.push(keyVal);
+    return this;
+  }
+
   addInput(inputData: TransactionInput): Psbt;
   addInput<T>(
     inputData: T,
@@ -393,4 +414,10 @@ function checkForOutput(
   const output = outputs[outputIndex];
   if (output === undefined) throw new Error(`No output #${outputIndex}`);
   return output;
+}
+
+function checkHasKey(checkKeyVal: KeyValue, keyVals: KeyValue[]): void {
+  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
+    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
+  }
 }

@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionOutput, WitnessScript, WitnessUtxo } from './interfaces';
+import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionOutput, WitnessScript, WitnessUtxo } from './interfaces';
 export declare class Psbt {
     static fromTransaction(txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;
     static fromBase64(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
@@ -25,6 +25,9 @@ export declare class Psbt {
     addRedeemScriptToOutput(outputIndex: number, redeemScript: RedeemScript): Psbt;
     addWitnessScriptToOutput(outputIndex: number, witnessScript: WitnessScript): Psbt;
     addBip32DerivationToOutput(outputIndex: number, bip32Derivation: Bip32Derivation): Psbt;
+    addKeyValToGlobal(keyVal: KeyValue): Psbt;
+    addKeyValToInput(inputIndex: number, keyVal: KeyValue): Psbt;
+    addKeyValToOutput(outputIndex: number, keyVal: KeyValue): Psbt;
     addInput(inputData: TransactionInput): Psbt;
     addInput<T>(inputData: T, transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer): Psbt;
     addOutput(outputData: TransactionOutput, allowNoInput?: boolean): Psbt;

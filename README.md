@@ -59,23 +59,25 @@ psbt.addRedeemScriptToInput(0, Buffer.from(
   '00208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',
   'hex',
 ))
-psbt.addWitnessUtxoToInput(0, Buffer.from(
+psbt.addWitnessScriptToInput(0, Buffer.from(
   '522103089dc10c7ac6db54f91329af617333db388cead0c231f723379d1b9903' +
     '0b02dc21023add904f3d6dcf59ddb906b0dee23529b7ffb9ed50e5e861519268' +
     '60221f0e7352ae',
   'hex',
 ))
 psbt.addBip32DerivationToInput(0, {
-  masterFingerprint: b('d90c6a4f'),
-  pubkey: b(
+  masterFingerprint: Buffer.from('d90c6a4f', 'hex'),
+  pubkey: Buffer.from(
     '023add904f3d6dcf59ddb906b0dee23529b7ffb9ed50e5e86151926860221f0e73',
+    'hex',
   ),
   path: "m/0'/0'/3'",
 })
 psbt.addBip32DerivationToInput(0, {
-  masterFingerprint: b('d90c6a4f'),
-  pubkey: b(
+  masterFingerprint: Buffer.from('d90c6a4f', 'hex'),
+  pubkey: Buffer.from(
     '03089dc10c7ac6db54f91329af617333db388cead0c231f723379d1b99030b02dc',
+    'hex',
   ),
   path: "m/0'/0'/2'",
 })

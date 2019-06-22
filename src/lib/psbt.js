@@ -191,6 +191,23 @@ class Psbt {
     output.bip32Derivation.push(bip32Derivation);
     return this;
   }
+  addKeyValToGlobal(keyVal) {
+    checkHasKey(keyVal, this.globalMap.keyVals);
+    this.globalMap.keyVals.push(keyVal);
+    return this;
+  }
+  addKeyValToInput(inputIndex, keyVal) {
+    const input = checkForInput(this.inputs, inputIndex);
+    checkHasKey(keyVal, input.keyVals);
+    input.keyVals.push(keyVal);
+    return this;
+  }
+  addKeyValToOutput(outputIndex, keyVal) {
+    const output = checkForOutput(this.outputs, outputIndex);
+    checkHasKey(keyVal, output.keyVals);
+    output.keyVals.push(keyVal);
+    return this;
+  }
   addInput(inputData, transactionInputAdder) {
     const txBuf = this.getTransaction();
     let newTxBuf;
@@ -283,4 +300,9 @@ function checkForOutput(outputs, outputIndex) {
   const output = outputs[outputIndex];
   if (output === undefined) throw new Error(`No output #${outputIndex}`);
   return output;
+}
+function checkHasKey(checkKeyVal, keyVals) {
+  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
+    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
+  }
 }
