@@ -1,6 +1,6 @@
 {
   "name": "bip174",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "",
   "main": "src/lib/psbt.js",
   "types": "src/lib/psbt.d.ts",
