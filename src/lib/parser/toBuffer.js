@@ -19,20 +19,15 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
   });
   if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
   if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
+  const header = Buffer.allocUnsafe(5);
+  header.writeUIntBE(0x70736274ff, 0, 5);
   return Buffer.concat(
-    [Buffer.from('70736274ff', 'hex'), globalBuffer].concat(
-      inputBuffers,
-      outputBuffers,
-    ),
+    [header, globalBuffer].concat(inputBuffers, outputBuffers),
   );
 }
 exports.psbtToBuffer = psbtToBuffer;
-const sortKeyVals = (_a, _b) => {
-  const a = _a.key.toString('hex');
-  const b = _b.key.toString('hex');
-  if (a < b) return -1;
-  else if (a > b) return 1;
-  else return 0;
+const sortKeyVals = (a, b) => {
+  return a.key.compare(b.key);
 };
 function keyValsFromMap(keyValMap, converterFactory) {
   const attributes = Object.keys(keyValMap).filter(k => k !== 'keyVals');
