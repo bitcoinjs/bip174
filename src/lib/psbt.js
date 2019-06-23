@@ -192,19 +192,27 @@ class Psbt {
     return this;
   }
   addKeyValToGlobal(keyVal) {
-    checkHasKey(keyVal, this.globalMap.keyVals);
+    checkHasKey(
+      keyVal,
+      this.globalMap.keyVals,
+      getEnumLength(typeFields_1.GlobalTypes),
+    );
     this.globalMap.keyVals.push(keyVal);
     return this;
   }
   addKeyValToInput(inputIndex, keyVal) {
     const input = checkForInput(this.inputs, inputIndex);
-    checkHasKey(keyVal, input.keyVals);
+    checkHasKey(keyVal, input.keyVals, getEnumLength(typeFields_1.InputTypes));
     input.keyVals.push(keyVal);
     return this;
   }
   addKeyValToOutput(outputIndex, keyVal) {
     const output = checkForOutput(this.outputs, outputIndex);
-    checkHasKey(keyVal, output.keyVals);
+    checkHasKey(
+      keyVal,
+      output.keyVals,
+      getEnumLength(typeFields_1.OutputTypes),
+    );
     output.keyVals.push(keyVal);
     return this;
   }
@@ -301,8 +309,22 @@ function checkForOutput(outputs, outputIndex) {
   if (output === undefined) throw new Error(`No output #${outputIndex}`);
   return output;
 }
-function checkHasKey(checkKeyVal, keyVals) {
+function checkHasKey(checkKeyVal, keyVals, enumLength) {
+  if (checkKeyVal.key[0] < enumLength) {
+    throw new Error(
+      `Use the method for your specific key instead of addKeyVal*`,
+    );
+  }
   if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
     throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
   }
+}
+function getEnumLength(myenum) {
+  let count = 0;
+  Object.keys(myenum).forEach(val => {
+    if (Number(isNaN(Number(val)))) {
+      count++;
+    }
+  });
+  return count;
 }

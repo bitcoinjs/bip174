@@ -92,16 +92,14 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
 }
 
 function keyPusher(
-  selfGlobalSet: Set<string>,
-  selfGlobalKeyVals: KeyValue[],
-  otherGlobalKeyVals: KeyValue[],
+  selfSet: Set<string>,
+  selfKeyVals: KeyValue[],
+  otherKeyVals: KeyValue[],
 ): (key: string) => void {
   return (key: string): void => {
-    if (selfGlobalSet.has(key)) return;
-    const newKv = otherGlobalKeyVals.filter(
-      kv => kv.key.toString('hex') === key,
-    )[0];
-    selfGlobalKeyVals.push(newKv);
+    if (selfSet.has(key)) return;
+    const newKv = otherKeyVals.filter(kv => kv.key.toString('hex') === key)[0];
+    selfKeyVals.push(newKv);
   };
 }
 
