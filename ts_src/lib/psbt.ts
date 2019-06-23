@@ -23,7 +23,7 @@ import {
   WitnessUtxo,
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
-import { GlobalTypes } from './typeFields';
+import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
 const {
   globals: {
     unsignedTx: { isTransactionInput, isTransactionOutput },
@@ -271,21 +271,21 @@ export class Psbt {
   }
 
   addKeyValToGlobal(keyVal: KeyValue): Psbt {
-    checkHasKey(keyVal, this.globalMap.keyVals);
+    checkHasKey(keyVal, this.globalMap.keyVals, getEnumLength(GlobalTypes));
     this.globalMap.keyVals.push(keyVal);
     return this;
   }
 
   addKeyValToInput(inputIndex: number, keyVal: KeyValue): Psbt {
     const input = checkForInput(this.inputs, inputIndex);
-    checkHasKey(keyVal, input.keyVals);
+    checkHasKey(keyVal, input.keyVals, getEnumLength(InputTypes));
     input.keyVals.push(keyVal);
     return this;
   }
 
   addKeyValToOutput(outputIndex: number, keyVal: KeyValue): Psbt {
     const output = checkForOutput(this.outputs, outputIndex);
-    checkHasKey(keyVal, output.keyVals);
+    checkHasKey(keyVal, output.keyVals, getEnumLength(OutputTypes));
     output.keyVals.push(keyVal);
     return this;
   }
@@ -416,8 +416,27 @@ function checkForOutput(
   return output;
 }
 
-function checkHasKey(checkKeyVal: KeyValue, keyVals: KeyValue[]): void {
+function checkHasKey(
+  checkKeyVal: KeyValue,
+  keyVals: KeyValue[],
+  enumLength: number,
+): void {
+  if (checkKeyVal.key[0] < enumLength) {
+    throw new Error(
+      `Use the method for your specific key instead of addKeyVal*`,
+    );
+  }
   if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
     throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
   }
+}
+
+function getEnumLength(myenum: any): number {
+  let count = 0;
+  Object.keys(myenum).forEach(val => {
+    if (Number(isNaN(Number(val)))) {
+      count++;
+    }
+  });
+  return count;
 }

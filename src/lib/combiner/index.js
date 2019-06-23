@@ -85,13 +85,11 @@ function combine(psbts) {
   });
 }
 exports.combine = combine;
-function keyPusher(selfGlobalSet, selfGlobalKeyVals, otherGlobalKeyVals) {
+function keyPusher(selfSet, selfKeyVals, otherKeyVals) {
   return key => {
-    if (selfGlobalSet.has(key)) return;
-    const newKv = otherGlobalKeyVals.filter(
-      kv => kv.key.toString('hex') === key,
-    )[0];
-    selfGlobalKeyVals.push(newKv);
+    if (selfSet.has(key)) return;
+    const newKv = otherKeyVals.filter(kv => kv.key.toString('hex') === key)[0];
+    selfKeyVals.push(newKv);
   };
 }
 function getTx(psbt) {
