@@ -8,8 +8,8 @@ function checkUInt53(n: number): void {
 
 export function encode(
   _number: number,
-  buffer: Buffer,
-  offset: number,
+  buffer?: Buffer,
+  offset?: number,
 ): Buffer {
   checkUInt53(_number);
 
@@ -46,7 +46,7 @@ export function encode(
   return buffer;
 }
 
-export function decode(buffer: Buffer, offset: number): number {
+export function decode(buffer: Buffer, offset?: number): number {
   if (!Buffer.isBuffer(buffer))
     throw new TypeError('buffer must be a Buffer instance');
   if (!offset) offset = 0;

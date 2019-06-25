@@ -16,7 +16,7 @@ class Psbt {
       txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
     const result = txCountGetter(txBuf);
     const psbt = new Psbt();
-    psbt.globalMap.keyVals[0].value = txBuf;
+    psbt.globalMap.unsignedTx = txBuf;
     while (result.inputCount > 0) {
       psbt.inputs.push({
         keyVals: [],
@@ -65,9 +65,6 @@ class Psbt {
   toBuffer() {
     return parser_1.psbtToBuffer(this);
   }
-  // TODO:
-  // Add methods to update various parts. (ie. "updater" responsibility)
-  // Return self for chaining.
   addNonWitnessUtxoToInput(inputIndex, nonWitnessUtxo) {
     const input = checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {
