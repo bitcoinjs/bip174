@@ -37,7 +37,27 @@ export interface PartialSig {
 }
 
 export function isPartialSig(data: any): data is PartialSig {
-  return Buffer.isBuffer(data.pubkey) && Buffer.isBuffer(data.signature);
+  return (
+    Buffer.isBuffer(data.pubkey) &&
+    Buffer.isBuffer(data.signature) &&
+    [33, 65].includes(data.pubkey.length) &&
+    [2, 3, 4].includes(data.pubkey[0]) &&
+    isDerSigWithSighash(data.signature)
+  );
+}
+
+function isDerSigWithSighash(buf: Buffer): boolean {
+  if (!Buffer.isBuffer(buf) || buf.length < 9) return false;
+  if (buf[0] !== 0x30) return false;
+  if (buf.length !== buf[1] + 3) return false;
+  if (buf[2] !== 0x02) return false;
+  const rLen = buf[3];
+  if (rLen > 33 || rLen < 1) return false;
+  if (buf[3 + rLen + 1] !== 0x02) return false;
+  const sLen = buf[3 + rLen + 2];
+  if (sLen > 33 || sLen < 1) return false;
+  if (buf.length !== 3 + rLen + 2 + sLen + 2) return false;
+  return true;
 }
 
 export interface Bip32Derivation {
@@ -50,7 +70,10 @@ export function isBip32Derivation(data: any): data is Bip32Derivation {
   return (
     Buffer.isBuffer(data.pubkey) &&
     Buffer.isBuffer(data.masterFingerprint) &&
-    typeof data.path === 'string'
+    typeof data.path === 'string' &&
+    [33, 65].includes(data.pubkey.length) &&
+    [2, 3, 4].includes(data.pubkey[0]) &&
+    data.masterFingerprint.length === 4
   );
 }
 

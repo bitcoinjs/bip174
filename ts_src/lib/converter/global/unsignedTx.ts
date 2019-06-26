@@ -54,6 +54,8 @@ function inputToBuffer(input: TransactionInput): Buffer {
   const prevHash = Buffer.isBuffer(input.hash)
     ? input.hash
     : reverseBuffer(Buffer.from(input.hash, 'hex'));
+  if (prevHash.length !== 32)
+    throw new Error('TransactionInput hash must be 32 bytes');
   prevHash.copy(result, 0);
   result.writeUInt32LE(input.index, 32);
   result.writeUInt8(0, 36);
