@@ -9,7 +9,7 @@ function run(f: any, typ: string): void {
     let psbt: Psbt | undefined;
     if (!f.addInputOutput) {
       // @ts-ignore
-      func = Psbt[f.method];
+      func = Psbt[f.method].bind(Psbt);
     } else {
       psbt = new Psbt();
       addInputOutput(psbt);

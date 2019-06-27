@@ -10,7 +10,7 @@ function run(f, typ) {
     let psbt;
     if (!f.addInputOutput) {
       // @ts-ignore
-      func = psbt_1.Psbt[f.method];
+      func = psbt_1.Psbt[f.method].bind(psbt_1.Psbt);
     } else {
       psbt = new psbt_1.Psbt();
       addInputOutput(psbt);

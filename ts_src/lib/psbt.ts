@@ -38,7 +38,7 @@ export class Psbt {
     if (txCountGetter === undefined)
       txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
     const result = txCountGetter(txBuf);
-    const psbt = new Psbt();
+    const psbt = new this();
     psbt.globalMap.unsignedTx = txBuf;
     while (result.inputCount > 0) {
       psbt.inputs.push({
@@ -59,17 +59,17 @@ export class Psbt {
     txCountGetter?: TransactionIOCountGetter,
   ): Psbt {
     const buffer = Buffer.from(data, 'base64');
-    return Psbt.fromBuffer(buffer, txCountGetter);
+    return this.fromBuffer(buffer, txCountGetter);
   }
   static fromHex(data: string, txCountGetter?: TransactionIOCountGetter): Psbt {
     const buffer = Buffer.from(data, 'hex');
-    return Psbt.fromBuffer(buffer, txCountGetter);
+    return this.fromBuffer(buffer, txCountGetter);
   }
   static fromBuffer(
     buffer: Buffer,
     txCountGetter?: TransactionIOCountGetter,
   ): Psbt {
-    const psbt = new Psbt();
+    const psbt = new this();
     const results = psbtFromBuffer(buffer, txCountGetter);
     Object.assign(psbt, results);
     return psbt;
