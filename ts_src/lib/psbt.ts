@@ -31,14 +31,15 @@ const {
 } = convert;
 
 export class Psbt {
-  static fromTransaction(
+  static fromTransaction<T extends typeof Psbt>(
+    this: T,
     txBuf: Buffer,
     txCountGetter?: TransactionIOCountGetter,
-  ): Psbt {
+  ): InstanceType<T> {
     if (txCountGetter === undefined)
       txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
     const result = txCountGetter(txBuf);
-    const psbt = new this();
+    const psbt = new this() as InstanceType<T>;
     psbt.globalMap.unsignedTx = txBuf;
     while (result.inputCount > 0) {
       psbt.inputs.push({
@@ -54,22 +55,28 @@ export class Psbt {
     }
     return psbt;
   }
-  static fromBase64(
+  static fromBase64<T extends typeof Psbt>(
+    this: T,
     data: string,
     txCountGetter?: TransactionIOCountGetter,
-  ): Psbt {
+  ): InstanceType<T> {
     const buffer = Buffer.from(data, 'base64');
     return this.fromBuffer(buffer, txCountGetter);
   }
-  static fromHex(data: string, txCountGetter?: TransactionIOCountGetter): Psbt {
+  static fromHex<T extends typeof Psbt>(
+    this: T,
+    data: string,
+    txCountGetter?: TransactionIOCountGetter,
+  ): InstanceType<T> {
     const buffer = Buffer.from(data, 'hex');
     return this.fromBuffer(buffer, txCountGetter);
   }
-  static fromBuffer(
+  static fromBuffer<T extends typeof Psbt>(
+    this: T,
     buffer: Buffer,
     txCountGetter?: TransactionIOCountGetter,
-  ): Psbt {
-    const psbt = new this();
+  ): InstanceType<T> {
+    const psbt = new this() as InstanceType<T>;
     const results = psbtFromBuffer(buffer, txCountGetter);
     Object.assign(psbt, results);
     return psbt;

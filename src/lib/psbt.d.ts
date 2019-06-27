@@ -1,10 +1,10 @@
 /// <reference types="node" />
 import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionOutput, WitnessScript, WitnessUtxo } from './interfaces';
 export declare class Psbt {
-    static fromTransaction(txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;
-    static fromBase64(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
-    static fromHex(data: string, txCountGetter?: TransactionIOCountGetter): Psbt;
-    static fromBuffer(buffer: Buffer, txCountGetter?: TransactionIOCountGetter): Psbt;
+    static fromTransaction<T extends typeof Psbt>(this: T, txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
+    static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
+    static fromHex<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
+    static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
     inputs: PsbtInput[];
     outputs: PsbtOutput[];
     globalMap: PsbtGlobal;
