@@ -32,6 +32,6 @@ export declare class Psbt {
     addInput<T, V extends InstanceType<typeof Psbt>>(this: V, inputData: T, transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer): V;
     addOutput<V extends InstanceType<typeof Psbt>>(this: V, outputData: TransactionOutput, allowNoInput?: boolean): V;
     addOutput<T, V extends InstanceType<typeof Psbt>>(this: V, outputData: T, allowNoInput?: boolean, transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer): V;
-    combine<T extends InstanceType<typeof Psbt>>(this: T, ...those: Psbt[]): T;
+    combine<T extends InstanceType<typeof Psbt>>(this: T, ...those: T[]): T;
     getTransaction(): Buffer;
 }

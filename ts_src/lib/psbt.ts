@@ -411,10 +411,10 @@ export class Psbt {
     return this;
   }
 
-  combine<T extends InstanceType<typeof Psbt>>(this: T, ...those: Psbt[]): T {
+  combine<T extends InstanceType<typeof Psbt>>(this: T, ...those: T[]): T {
     // Combine this with those.
     // Return self for chaining.
-    const result = combine([this as Psbt].concat(those));
+    const result = combine([this].concat(those));
     Object.assign(this, result);
     return this;
   }
