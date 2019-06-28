@@ -201,7 +201,7 @@ export function psbtFromKeyVals({
       keyVals: [] as KeyValue[],
     };
     for (const keyVal of inputKeyVals[index]) {
-      const pubkey = convert.inputs.checkPubkey(keyVal);
+      convert.inputs.checkPubkey(keyVal);
 
       switch (keyVal.key[0]) {
         case InputTypes.NON_WITNESS_UTXO:
@@ -229,11 +229,6 @@ export function psbtFromKeyVals({
           input.witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
           break;
         case InputTypes.PARTIAL_SIG:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: PARTIAL_SIG requires pubkey in the key of KeyValue',
-            );
-          }
           if (input.partialSig === undefined) {
             input.partialSig = [];
           }
@@ -261,11 +256,6 @@ export function psbtFromKeyVals({
           input.witnessScript = convert.inputs.witnessScript.decode(keyVal);
           break;
         case InputTypes.BIP32_DERIVATION:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: Input BIP32_DERIVATION requires pubkey in the key of KeyValue',
-            );
-          }
           if (input.bip32Derivation === undefined) {
             input.bip32Derivation = [];
           }
@@ -300,7 +290,7 @@ export function psbtFromKeyVals({
       keyVals: [] as KeyValue[],
     };
     for (const keyVal of outputKeyVals[index]) {
-      const pubkey = convert.outputs.checkPubkey(keyVal);
+      convert.outputs.checkPubkey(keyVal);
 
       switch (keyVal.key[0]) {
         case OutputTypes.REDEEM_SCRIPT:
@@ -318,11 +308,6 @@ export function psbtFromKeyVals({
           output.witnessScript = convert.outputs.witnessScript.decode(keyVal);
           break;
         case OutputTypes.BIP32_DERIVATION:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: Output BIP32_DERIVATION requires pubkey in the key of KeyValue',
-            );
-          }
           if (output.bip32Derivation === undefined) {
             output.bip32Derivation = [];
           }

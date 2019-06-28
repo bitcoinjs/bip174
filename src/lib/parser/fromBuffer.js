@@ -163,7 +163,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
       keyVals: [],
     };
     for (const keyVal of inputKeyVals[index]) {
-      const pubkey = convert.inputs.checkPubkey(keyVal);
+      convert.inputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
         case typeFields_1.InputTypes.NON_WITNESS_UTXO:
           checkKeyBuffer(
@@ -198,11 +198,6 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           input.witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
           break;
         case typeFields_1.InputTypes.PARTIAL_SIG:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: PARTIAL_SIG requires pubkey in the key of KeyValue',
-            );
-          }
           if (input.partialSig === undefined) {
             input.partialSig = [];
           }
@@ -242,11 +237,6 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           input.witnessScript = convert.inputs.witnessScript.decode(keyVal);
           break;
         case typeFields_1.InputTypes.BIP32_DERIVATION:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: Input BIP32_DERIVATION requires pubkey in the key of KeyValue',
-            );
-          }
           if (input.bip32Derivation === undefined) {
             input.bip32Derivation = [];
           }
@@ -292,7 +282,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
       keyVals: [],
     };
     for (const keyVal of outputKeyVals[index]) {
-      const pubkey = convert.outputs.checkPubkey(keyVal);
+      convert.outputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
         case typeFields_1.OutputTypes.REDEEM_SCRIPT:
           checkKeyBuffer(
@@ -317,11 +307,6 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           output.witnessScript = convert.outputs.witnessScript.decode(keyVal);
           break;
         case typeFields_1.OutputTypes.BIP32_DERIVATION:
-          if (pubkey === undefined) {
-            throw new Error(
-              'Format Error: Output BIP32_DERIVATION requires pubkey in the key of KeyValue',
-            );
-          }
           if (output.bip32Derivation === undefined) {
             output.bip32Derivation = [];
           }
