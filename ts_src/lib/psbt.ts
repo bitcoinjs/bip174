@@ -110,10 +110,11 @@ export class Psbt {
     return psbtToBuffer(this);
   }
 
-  addNonWitnessUtxoToInput(
+  addNonWitnessUtxoToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     nonWitnessUtxo: NonWitnessUtxo,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {
       throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
@@ -125,7 +126,11 @@ export class Psbt {
     return this;
   }
 
-  addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): Psbt {
+  addWitnessUtxoToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    inputIndex: number,
+    witnessUtxo: WitnessUtxo,
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {
       throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
@@ -139,7 +144,11 @@ export class Psbt {
     return this;
   }
 
-  addPartialSigToInput(inputIndex: number, partialSig: PartialSig): Psbt {
+  addPartialSigToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    inputIndex: number,
+    partialSig: PartialSig,
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!isPartialSig(partialSig)) {
       throw new Error(
@@ -151,7 +160,11 @@ export class Psbt {
     return this;
   }
 
-  addSighashTypeToInput(inputIndex: number, sighashType: SighashType): Psbt {
+  addSighashTypeToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    inputIndex: number,
+    sighashType: SighashType,
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (typeof sighashType !== 'number') {
       throw new Error('sighashType should be a number');
@@ -160,7 +173,11 @@ export class Psbt {
     return this;
   }
 
-  addRedeemScriptToInput(inputIndex: number, redeemScript: RedeemScript): Psbt {
+  addRedeemScriptToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    inputIndex: number,
+    redeemScript: RedeemScript,
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(redeemScript)) {
       throw new Error('redeemScript should be a Buffer');
@@ -169,10 +186,11 @@ export class Psbt {
     return this;
   }
 
-  addWitnessScriptToInput(
+  addWitnessScriptToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     witnessScript: WitnessScript,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(witnessScript)) {
       throw new Error('witnessScript should be a Buffer');
@@ -181,10 +199,11 @@ export class Psbt {
     return this;
   }
 
-  addBip32DerivationToInput(
+  addBip32DerivationToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     bip32Derivation: Bip32Derivation,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!isBip32Derivation(bip32Derivation)) {
       throw new Error(
@@ -197,10 +216,11 @@ export class Psbt {
     return this;
   }
 
-  addFinalScriptSigToInput(
+  addFinalScriptSigToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     finalScriptSig: FinalScriptSig,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(finalScriptSig)) {
       throw new Error('finalScriptSig should be a Buffer');
@@ -209,10 +229,11 @@ export class Psbt {
     return this;
   }
 
-  addFinalScriptWitnessToInput(
+  addFinalScriptWitnessToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     finalScriptWitness: FinalScriptWitness,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(finalScriptWitness)) {
       throw new Error('finalScriptWitness should be a Buffer');
@@ -221,10 +242,11 @@ export class Psbt {
     return this;
   }
 
-  addPorCommitmentToInput(
+  addPorCommitmentToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     inputIndex: number,
     porCommitment: PorCommitment,
-  ): Psbt {
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     if (typeof porCommitment !== 'string') {
       throw new Error('porCommitment should be a string');
@@ -233,10 +255,11 @@ export class Psbt {
     return this;
   }
 
-  addRedeemScriptToOutput(
+  addRedeemScriptToOutput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     outputIndex: number,
     redeemScript: RedeemScript,
-  ): Psbt {
+  ): T {
     const output = checkForOutput(this.outputs, outputIndex);
     if (!Buffer.isBuffer(redeemScript)) {
       throw new Error('redeemScript should be a Buffer');
@@ -245,10 +268,11 @@ export class Psbt {
     return this;
   }
 
-  addWitnessScriptToOutput(
+  addWitnessScriptToOutput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     outputIndex: number,
     witnessScript: WitnessScript,
-  ): Psbt {
+  ): T {
     const output = checkForOutput(this.outputs, outputIndex);
     if (!Buffer.isBuffer(witnessScript)) {
       throw new Error('witnessScript should be a Buffer');
@@ -257,10 +281,11 @@ export class Psbt {
     return this;
   }
 
-  addBip32DerivationToOutput(
+  addBip32DerivationToOutput<T extends InstanceType<typeof Psbt>>(
+    this: T,
     outputIndex: number,
     bip32Derivation: Bip32Derivation,
-  ): Psbt {
+  ): T {
     const output = checkForOutput(this.outputs, outputIndex);
     if (!isBip32Derivation(bip32Derivation)) {
       throw new Error(
@@ -273,38 +298,54 @@ export class Psbt {
     return this;
   }
 
-  addKeyValToGlobal(keyVal: KeyValue): Psbt {
+  addKeyValToGlobal<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    keyVal: KeyValue,
+  ): T {
     checkHasKey(keyVal, this.globalMap.keyVals, getEnumLength(GlobalTypes));
     this.globalMap.keyVals.push(keyVal);
     return this;
   }
 
-  addKeyValToInput(inputIndex: number, keyVal: KeyValue): Psbt {
+  addKeyValToInput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    inputIndex: number,
+    keyVal: KeyValue,
+  ): T {
     const input = checkForInput(this.inputs, inputIndex);
     checkHasKey(keyVal, input.keyVals, getEnumLength(InputTypes));
     input.keyVals.push(keyVal);
     return this;
   }
 
-  addKeyValToOutput(outputIndex: number, keyVal: KeyValue): Psbt {
+  addKeyValToOutput<T extends InstanceType<typeof Psbt>>(
+    this: T,
+    outputIndex: number,
+    keyVal: KeyValue,
+  ): T {
     const output = checkForOutput(this.outputs, outputIndex);
     checkHasKey(keyVal, output.keyVals, getEnumLength(OutputTypes));
     output.keyVals.push(keyVal);
     return this;
   }
 
-  addInput(inputData: TransactionInput): Psbt;
-  addInput<T>(
+  addInput<V extends InstanceType<typeof Psbt>>(
+    this: V,
+    inputData: TransactionInput,
+  ): V;
+  addInput<T, V extends InstanceType<typeof Psbt>>(
+    this: V,
     inputData: T,
     transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer,
-  ): Psbt;
-  addInput<T>(
+  ): V;
+  addInput<T, V extends InstanceType<typeof Psbt>>(
+    this: V,
     inputData: T | TransactionInput,
     transactionInputAdder?: (
       input: T | TransactionInput,
       txBuffer: Buffer,
     ) => Buffer,
-  ): Psbt {
+  ): V {
     const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
     if (isTransactionInput(inputData)) {
@@ -325,20 +366,26 @@ export class Psbt {
     return this;
   }
 
-  addOutput(outputData: TransactionOutput, allowNoInput?: boolean): Psbt;
-  addOutput<T>(
+  addOutput<V extends InstanceType<typeof Psbt>>(
+    this: V,
+    outputData: TransactionOutput,
+    allowNoInput?: boolean,
+  ): V;
+  addOutput<T, V extends InstanceType<typeof Psbt>>(
+    this: V,
     outputData: T,
     allowNoInput?: boolean,
     transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer,
-  ): Psbt;
-  addOutput<T>(
+  ): V;
+  addOutput<T, V extends InstanceType<typeof Psbt>>(
+    this: V,
     outputData: T | TransactionOutput,
     allowNoInput: boolean = false,
     transactionOutputAdder?: (
       output: T | TransactionOutput,
       txBuffer: Buffer,
     ) => Buffer,
-  ): Psbt {
+  ): V {
     if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
         'Add Output: can not add an output before adding an input.',
@@ -364,7 +411,7 @@ export class Psbt {
     return this;
   }
 
-  combine(...those: Psbt[]): Psbt {
+  combine<T extends InstanceType<typeof Psbt>>(this: T, ...those: Psbt[]): T {
     // Combine this with those.
     // Return self for chaining.
     const result = combine([this as Psbt].concat(those));
