@@ -43,7 +43,7 @@ exports.fixtures = [
       ],
       outputKeyVals: [],
     },
-    exception: 'Format Error: Input has multiple [NON_]WITNESS_UTXO',
+    exception: 'Format Error: Input has multiple \\[NON_\\]WITNESS_UTXO',
   },
   {
     data: {
@@ -62,7 +62,7 @@ exports.fixtures = [
       ],
       outputKeyVals: [],
     },
-    exception: 'Format Error: Input has multiple [NON_]WITNESS_UTXO',
+    exception: 'Format Error: Input has multiple \\[NON_\\]WITNESS_UTXO',
   },
   {
     data: {
@@ -157,7 +157,7 @@ exports.fixtures = [
         ],
       ],
     },
-    exception: 'Format Error: Input has multiple REDEEM_SCRIPT',
+    exception: 'Format Error: Output has multiple REDEEM_SCRIPT',
   },
   {
     data: {
@@ -180,6 +180,6 @@ exports.fixtures = [
         ],
       ],
     },
-    exception: 'Format Error: Input has multiple WITNESS_SCRIPT',
+    exception: 'Format Error: Output has multiple WITNESS_SCRIPT',
   },
 ];

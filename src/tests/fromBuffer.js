@@ -12,7 +12,7 @@ for (const f of fromBuffer_1.fixtures) {
           outputCount: tx[1],
         };
       });
-    }, f.exception);
+    }, new RegExp(f.exception));
     t.end();
   });
 }

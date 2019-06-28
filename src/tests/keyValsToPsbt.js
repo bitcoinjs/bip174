@@ -7,7 +7,7 @@ for (const f of keyValsToPsbt_1.fixtures) {
   tape('From Buffer should throw:', t => {
     t.throws(() => {
       fromBuffer_1.psbtFromKeyVals(f.data);
-    }, f.exception);
+    }, new RegExp(f.exception));
     t.end();
   });
 }

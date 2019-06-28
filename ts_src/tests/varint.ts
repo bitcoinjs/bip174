@@ -63,7 +63,7 @@ test('encode', t => {
     _t.throws(() => {
       // @ts-ignore
       varuint.encode(0, []);
-    }, 'buffer must be a Buffer instance');
+    }, new RegExp('buffer must be a Buffer instance'));
     _t.end();
   });
 
@@ -83,7 +83,7 @@ test('decode', t => {
     _t.throws(() => {
       // @ts-ignore
       varuint.decode([]);
-    }, 'buffer must be a Buffer instance');
+    }, new RegExp('buffer must be a Buffer instance'));
     _t.end();
   });
 

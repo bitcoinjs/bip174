@@ -9,7 +9,7 @@ tape('Test: add Input Output', t => {
       script: Buffer.from([]),
       value: 1,
     });
-  }, 'Add Output: can not add an output before adding an input.');
+  }, new RegExp('Add Output: can not add an output before adding an input.'));
   psbt.addInput({
     hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
     index: 3,

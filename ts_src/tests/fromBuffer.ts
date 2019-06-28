@@ -11,7 +11,7 @@ for (const f of fixtures) {
           outputCount: tx[1],
         };
       });
-    }, f.exception);
+    }, new RegExp(f.exception));
     t.end();
   });
 }
