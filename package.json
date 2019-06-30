@@ -23,7 +23,7 @@
     "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "prettierjs": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
     "test": "npm run format:ci && npm run lint && npm run build && npm run unit",
-    "unit": "tape src/tests/*.js"
+    "unit": "tape src/tests/*.js src/tests/fromBIP/*.js"
   },
   "repository": {
     "type": "git",
