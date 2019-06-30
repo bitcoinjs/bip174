@@ -18,6 +18,7 @@ for (const f of fixtures) {
 
     t.notDeepEqual(JSON.parse(jsonA1), JSON.parse(jsonB1));
     t.deepEqual(JSON.parse(jsonA2), JSON.parse(jsonB2));
+    t.equal(psbts[0].toHex(), f.result);
     t.end();
   });
 }

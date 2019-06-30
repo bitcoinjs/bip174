@@ -2,9 +2,12 @@ import * as tape from 'tape';
 import { Psbt } from '../../lib/psbt';
 import { fixtures } from '../fixtures/update';
 
+let lastAfter: any;
+
 for (const f of fixtures) {
   tape(f.description, t => {
-    const psbt = Psbt.fromBase64(f.before);
+    const before = f.before || lastAfter;
+    const psbt = Psbt.fromBase64(before);
     for (const [i, input] of f.inputData.entries()) {
       for (const key of Object.keys(input)) {
         const upperKey = key.replace(/^./, s => s.toUpperCase());
@@ -15,7 +18,12 @@ for (const f of fixtures) {
         if (Array.isArray(data)) {
           data.forEach((d: any) => func(i, d));
         } else {
-          func(i, data);
+          if (data === 'delete') {
+            // @ts-ignore
+            delete psbt.inputs[i][key];
+          } else {
+            func(i, data);
+          }
         }
       }
     }
@@ -29,12 +37,18 @@ for (const f of fixtures) {
         if (Array.isArray(data)) {
           data.forEach((d: any) => func(i, d));
         } else {
-          func(i, data);
+          if (data === 'delete') {
+            // @ts-ignore
+            delete psbt.outputs[i][key];
+          } else {
+            func(i, data);
+          }
         }
       }
     }
     const result = psbt.toBase64();
     t.equal(f.after, result);
+    lastAfter = f.after;
     t.end();
   });
 }

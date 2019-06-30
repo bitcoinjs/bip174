@@ -3,9 +3,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const tape = require('tape');
 const psbt_1 = require('../../lib/psbt');
 const update_1 = require('../fixtures/update');
+let lastAfter;
 for (const f of update_1.fixtures) {
   tape(f.description, t => {
-    const psbt = psbt_1.Psbt.fromBase64(f.before);
+    const before = f.before || lastAfter;
+    const psbt = psbt_1.Psbt.fromBase64(before);
     for (const [i, input] of f.inputData.entries()) {
       for (const key of Object.keys(input)) {
         const upperKey = key.replace(/^./, s => s.toUpperCase());
@@ -16,7 +18,12 @@ for (const f of update_1.fixtures) {
         if (Array.isArray(data)) {
           data.forEach(d => func(i, d));
         } else {
-          func(i, data);
+          if (data === 'delete') {
+            // @ts-ignore
+            delete psbt.inputs[i][key];
+          } else {
+            func(i, data);
+          }
         }
       }
     }
@@ -30,12 +37,18 @@ for (const f of update_1.fixtures) {
         if (Array.isArray(data)) {
           data.forEach(d => func(i, d));
         } else {
-          func(i, data);
+          if (data === 'delete') {
+            // @ts-ignore
+            delete psbt.outputs[i][key];
+          } else {
+            func(i, data);
+          }
         }
       }
     }
     const result = psbt.toBase64();
     t.equal(f.after, result);
+    lastAfter = f.after;
     t.end();
   });
 }
