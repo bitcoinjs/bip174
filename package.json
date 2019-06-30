@@ -13,7 +13,8 @@
   "scripts": {
     "build": "npm run clean && tsc -p ./tsconfig.json && rimraf 'src/tests/**/*.d.ts' && npm run formatjs",
     "clean": "rimraf src types",
-    "coverage": "nyc --check-coverage --exclude='src/tests/**/*.js' --reporter=lcov --reporter=text --branches 75 --functions 90 --lines 90 npm run unit",
+    "coverage": "nyc --check-coverage --exclude='src/tests/**/*.js' --reporter=lcov --reporter=text --branches 90 --functions 90 --lines 90 npm run unit",
+    "flb": "npm run format && npm run lint && npm run build",
     "format": "npm run prettier -- --write",
     "formatjs": "npm run prettierjs -- --write > /dev/null 2>&1",
     "format:ci": "npm run prettier -- --check && npm run prettierjs -- --check",
