@@ -34,19 +34,41 @@ function getEnumLength(myenum) {
   return count;
 }
 exports.getEnumLength = getEnumLength;
-function inputIsUncleanFinalized(input) {
+function getTransactionFromGlobalMap(globalMap) {
+  const txKeyVals = globalMap.keyVals.filter(
+    kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
+  );
+  const len = txKeyVals.length;
+  const tx = globalMap.unsignedTx;
+  const hasTx = tx !== undefined ? 1 : 0;
+  if (len + hasTx !== 1) {
+    throw new Error(
+      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
+    );
+  }
+  return tx !== undefined ? tx : txKeyVals[0].value;
+}
+exports.getTransactionFromGlobalMap = getTransactionFromGlobalMap;
+function inputCheckUncleanFinalized(inputIndex, input) {
+  let result = false;
   const isP2SH = !!input.redeemScript;
   const isP2WSH = !!input.witnessScript;
   const isNonSegwit = !!input.nonWitnessUtxo;
   const isSegwit = !!input.witnessUtxo;
-  if (isSegwit === isNonSegwit) return false;
-  const needScriptSig = isNonSegwit || (isSegwit && isP2SH);
-  const needWitnessScript = isSegwit && isP2WSH;
-  const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
-  const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
-  return scriptSigOK && witnessScriptOK;
+  if (isSegwit !== isNonSegwit) {
+    const needScriptSig = isNonSegwit || (isSegwit && isP2SH);
+    const needWitnessScript = isSegwit && isP2WSH;
+    const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
+    const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
+    result = scriptSigOK && witnessScriptOK;
+  }
+  if (result === false) {
+    throw new Error(
+      `Input #${inputIndex} has too much or too little data to clean`,
+    );
+  }
 }
-exports.inputIsUncleanFinalized = inputIsUncleanFinalized;
+exports.inputCheckUncleanFinalized = inputCheckUncleanFinalized;
 function insertTxInGlobalMap(txBuf, globalMap) {
   const txKeyVals = globalMap.keyVals.filter(
     kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,

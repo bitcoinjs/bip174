@@ -29,7 +29,8 @@ import {
   checkForOutput,
   checkHasKey,
   getEnumLength,
-  inputIsUncleanFinalized,
+  getTransactionFromGlobalMap,
+  inputCheckUncleanFinalized,
   insertTxInGlobalMap,
 } from './utils';
 const {
@@ -374,11 +375,7 @@ export class Psbt {
 
   clearFinalizedInput(inputIndex: number): this {
     const input = checkForInput(this.inputs, inputIndex);
-    if (!inputIsUncleanFinalized(input)) {
-      throw new Error(
-        `Input #${inputIndex} has too much or too little data to clean`,
-      );
-    }
+    inputCheckUncleanFinalized(inputIndex, input);
     for (const key of Object.keys(input)) {
       if (
         ![
@@ -405,17 +402,6 @@ export class Psbt {
   }
 
   getTransaction(): Buffer {
-    const txKeyVals = this.globalMap.keyVals.filter(
-      kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
-    );
-    const len = txKeyVals.length;
-    const tx = this.globalMap.unsignedTx;
-    const hasTx = tx !== undefined ? 1 : 0;
-    if (len + hasTx !== 1) {
-      throw new Error(
-        `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-      );
-    }
-    return tx !== undefined ? tx : txKeyVals[0].value;
+    return getTransactionFromGlobalMap(this.globalMap);
   }
 }

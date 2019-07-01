@@ -265,11 +265,7 @@ class Psbt {
   }
   clearFinalizedInput(inputIndex) {
     const input = utils_1.checkForInput(this.inputs, inputIndex);
-    if (!utils_1.inputIsUncleanFinalized(input)) {
-      throw new Error(
-        `Input #${inputIndex} has too much or too little data to clean`,
-      );
-    }
+    utils_1.inputCheckUncleanFinalized(inputIndex, input);
     for (const key of Object.keys(input)) {
       if (
         ![
@@ -294,18 +290,7 @@ class Psbt {
     return this;
   }
   getTransaction() {
-    const txKeyVals = this.globalMap.keyVals.filter(
-      kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
-    );
-    const len = txKeyVals.length;
-    const tx = this.globalMap.unsignedTx;
-    const hasTx = tx !== undefined ? 1 : 0;
-    if (len + hasTx !== 1) {
-      throw new Error(
-        `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-      );
-    }
-    return tx !== undefined ? tx : txKeyVals[0].value;
+    return utils_1.getTransactionFromGlobalMap(this.globalMap);
   }
 }
 exports.Psbt = Psbt;

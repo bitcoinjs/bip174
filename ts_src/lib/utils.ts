@@ -44,17 +44,42 @@ export function getEnumLength(myenum: any): number {
   return count;
 }
 
-export function inputIsUncleanFinalized(input: PsbtInput): boolean {
+export function getTransactionFromGlobalMap(globalMap: PsbtGlobal): Buffer {
+  const txKeyVals = globalMap.keyVals.filter(
+    kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
+  );
+  const len = txKeyVals.length;
+  const tx = globalMap.unsignedTx;
+  const hasTx = tx !== undefined ? 1 : 0;
+  if (len + hasTx !== 1) {
+    throw new Error(
+      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
+    );
+  }
+  return tx !== undefined ? tx : txKeyVals[0].value;
+}
+
+export function inputCheckUncleanFinalized(
+  inputIndex: number,
+  input: PsbtInput,
+): void {
+  let result: boolean = false;
   const isP2SH = !!input.redeemScript;
   const isP2WSH = !!input.witnessScript;
   const isNonSegwit = !!input.nonWitnessUtxo;
   const isSegwit = !!input.witnessUtxo;
-  if (isSegwit === isNonSegwit) return false;
-  const needScriptSig = isNonSegwit || (isSegwit && isP2SH);
-  const needWitnessScript = isSegwit && isP2WSH;
-  const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
-  const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
-  return scriptSigOK && witnessScriptOK;
+  if (isSegwit !== isNonSegwit) {
+    const needScriptSig = isNonSegwit || (isSegwit && isP2SH);
+    const needWitnessScript = isSegwit && isP2WSH;
+    const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
+    const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
+    result = scriptSigOK && witnessScriptOK;
+  }
+  if (result === false) {
+    throw new Error(
+      `Input #${inputIndex} has too much or too little data to clean`,
+    );
+  }
 }
 
 export function insertTxInGlobalMap(
