@@ -24,6 +24,14 @@ import {
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
+import {
+  checkForInput,
+  checkForOutput,
+  checkHasKey,
+  getEnumLength,
+  inputIsUncleanFinalized,
+  insertTxInGlobalMap,
+} from './utils';
 const {
   globals: {
     unsignedTx: { isTransactionInput, isTransactionOutput },
@@ -364,6 +372,30 @@ export class Psbt {
     return this;
   }
 
+  clearFinalizedInput(inputIndex: number): this {
+    const input = checkForInput(this.inputs, inputIndex);
+    if (!inputIsUncleanFinalized(input)) {
+      throw new Error(
+        `Input #${inputIndex} has too much or too little data to clean`,
+      );
+    }
+    for (const key of Object.keys(input)) {
+      if (
+        ![
+          'witnessUtxo',
+          'nonWitnessUtxo',
+          'finalScriptSig',
+          'finalScriptWitness',
+          'keyVals',
+        ].includes(key)
+      ) {
+        // @ts-ignore
+        delete input[key];
+      }
+    }
+    return this;
+  }
+
   combine(...those: this[]): this {
     // Combine this with those.
     // Return self for chaining.
@@ -386,60 +418,4 @@ export class Psbt {
     }
     return tx !== undefined ? tx : txKeyVals[0].value;
   }
-}
-
-function insertTxInGlobalMap(txBuf: Buffer, globalMap: PsbtGlobal): void {
-  const txKeyVals = globalMap.keyVals.filter(
-    kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  if (tx !== undefined) globalMap.unsignedTx = txBuf;
-  else txKeyVals[0].value = txBuf;
-}
-
-function checkForInput(inputs: PsbtInput[], inputIndex: number): PsbtInput {
-  const input = inputs[inputIndex];
-  if (input === undefined) throw new Error(`No input #${inputIndex}`);
-  return input;
-}
-
-function checkForOutput(
-  outputs: PsbtOutput[],
-  outputIndex: number,
-): PsbtOutput {
-  const output = outputs[outputIndex];
-  if (output === undefined) throw new Error(`No output #${outputIndex}`);
-  return output;
-}
-
-function checkHasKey(
-  checkKeyVal: KeyValue,
-  keyVals: KeyValue[],
-  enumLength: number,
-): void {
-  if (checkKeyVal.key[0] < enumLength) {
-    throw new Error(
-      `Use the method for your specific key instead of addKeyVal*`,
-    );
-  }
-  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
-    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
-  }
-}
-
-function getEnumLength(myenum: any): number {
-  let count = 0;
-  Object.keys(myenum).forEach(val => {
-    if (Number(isNaN(Number(val)))) {
-      count++;
-    }
-  });
-  return count;
 }

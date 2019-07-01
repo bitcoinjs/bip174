@@ -32,6 +32,7 @@ export declare class Psbt {
     addInput<T>(inputData: T, transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer): this;
     addOutput(outputData: TransactionOutput, allowNoInput?: boolean): this;
     addOutput<T>(outputData: T, allowNoInput?: boolean, transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer): this;
+    clearFinalizedInput(inputIndex: number): this;
     combine(...those: this[]): this;
     getTransaction(): Buffer;
 }

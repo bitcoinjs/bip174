@@ -281,6 +281,7 @@ export const fixtures = [
   },
   {
     description: 'Step 5: Finalize inputs (combine step is in combiner tests)',
+    cleanForFinalize: true,
     before:
       'cHNidP8BAJoCAAAAAljoeiG1ba8MI76OcHBFbDNvfLqlyHV5JPVFiHuyq911AAAAAAD///' +
       '//g40EJ9DsZQpoqka7CwmK6kQiwHGyyng1Kgd5WdB86h0BAAAAAP////8CcKrwCAAAAAAW' +
@@ -310,10 +311,6 @@ export const fixtures = [
       'CWENkMak8AAACAAAAAgAUAAIAA',
     inputData: [
       {
-        partialSig: 'delete',
-        sighashType: 'delete',
-        redeemScript: 'delete',
-        bip32Derivation: 'delete',
         finalScriptSig: b(
           '00473044022074018ad4180097b873323c0015720b3684cc8123891048e7dbcd9b' +
             '55ad679c99022073d369b740e3eb53dcefa33823c8070514ca55a7dd9544f157c1' +
@@ -325,11 +322,6 @@ export const fixtures = [
         ),
       },
       {
-        partialSig: 'delete',
-        sighashType: 'delete',
-        redeemScript: 'delete',
-        witnessScript: 'delete',
-        bip32Derivation: 'delete',
         finalScriptSig: b(
           '2200208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',
         ),

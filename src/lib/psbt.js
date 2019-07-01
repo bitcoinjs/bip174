@@ -5,6 +5,7 @@ const convert = require('./converter');
 const interfaces_1 = require('./interfaces');
 const parser_1 = require('./parser');
 const typeFields_1 = require('./typeFields');
+const utils_1 = require('./utils');
 const {
   globals: {
     unsignedTx: { isTransactionInput, isTransactionOutput },
@@ -66,7 +67,7 @@ class Psbt {
     return parser_1.psbtToBuffer(this);
   }
   addNonWitnessUtxoToInput(inputIndex, nonWitnessUtxo) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {
       throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
     }
@@ -77,7 +78,7 @@ class Psbt {
     return this;
   }
   addWitnessUtxoToInput(inputIndex, witnessUtxo) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {
       throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
     }
@@ -90,7 +91,7 @@ class Psbt {
     return this;
   }
   addPartialSigToInput(inputIndex, partialSig) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!interfaces_1.isPartialSig(partialSig)) {
       throw new Error(
         'partialSig should be { pubkey: Buffer; signature: Buffer; }',
@@ -101,7 +102,7 @@ class Psbt {
     return this;
   }
   addSighashTypeToInput(inputIndex, sighashType) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (typeof sighashType !== 'number') {
       throw new Error('sighashType should be a number');
     }
@@ -109,7 +110,7 @@ class Psbt {
     return this;
   }
   addRedeemScriptToInput(inputIndex, redeemScript) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(redeemScript)) {
       throw new Error('redeemScript should be a Buffer');
     }
@@ -117,7 +118,7 @@ class Psbt {
     return this;
   }
   addWitnessScriptToInput(inputIndex, witnessScript) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(witnessScript)) {
       throw new Error('witnessScript should be a Buffer');
     }
@@ -125,7 +126,7 @@ class Psbt {
     return this;
   }
   addBip32DerivationToInput(inputIndex, bip32Derivation) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!interfaces_1.isBip32Derivation(bip32Derivation)) {
       throw new Error(
         'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
@@ -137,7 +138,7 @@ class Psbt {
     return this;
   }
   addFinalScriptSigToInput(inputIndex, finalScriptSig) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(finalScriptSig)) {
       throw new Error('finalScriptSig should be a Buffer');
     }
@@ -145,7 +146,7 @@ class Psbt {
     return this;
   }
   addFinalScriptWitnessToInput(inputIndex, finalScriptWitness) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (!Buffer.isBuffer(finalScriptWitness)) {
       throw new Error('finalScriptWitness should be a Buffer');
     }
@@ -153,7 +154,7 @@ class Psbt {
     return this;
   }
   addPorCommitmentToInput(inputIndex, porCommitment) {
-    const input = checkForInput(this.inputs, inputIndex);
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (typeof porCommitment !== 'string') {
       throw new Error('porCommitment should be a string');
     }
@@ -161,7 +162,7 @@ class Psbt {
     return this;
   }
   addRedeemScriptToOutput(outputIndex, redeemScript) {
-    const output = checkForOutput(this.outputs, outputIndex);
+    const output = utils_1.checkForOutput(this.outputs, outputIndex);
     if (!Buffer.isBuffer(redeemScript)) {
       throw new Error('redeemScript should be a Buffer');
     }
@@ -169,7 +170,7 @@ class Psbt {
     return this;
   }
   addWitnessScriptToOutput(outputIndex, witnessScript) {
-    const output = checkForOutput(this.outputs, outputIndex);
+    const output = utils_1.checkForOutput(this.outputs, outputIndex);
     if (!Buffer.isBuffer(witnessScript)) {
       throw new Error('witnessScript should be a Buffer');
     }
@@ -177,7 +178,7 @@ class Psbt {
     return this;
   }
   addBip32DerivationToOutput(outputIndex, bip32Derivation) {
-    const output = checkForOutput(this.outputs, outputIndex);
+    const output = utils_1.checkForOutput(this.outputs, outputIndex);
     if (!interfaces_1.isBip32Derivation(bip32Derivation)) {
       throw new Error(
         'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
@@ -189,26 +190,30 @@ class Psbt {
     return this;
   }
   addKeyValToGlobal(keyVal) {
-    checkHasKey(
+    utils_1.checkHasKey(
       keyVal,
       this.globalMap.keyVals,
-      getEnumLength(typeFields_1.GlobalTypes),
+      utils_1.getEnumLength(typeFields_1.GlobalTypes),
     );
     this.globalMap.keyVals.push(keyVal);
     return this;
   }
   addKeyValToInput(inputIndex, keyVal) {
-    const input = checkForInput(this.inputs, inputIndex);
-    checkHasKey(keyVal, input.keyVals, getEnumLength(typeFields_1.InputTypes));
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
+    utils_1.checkHasKey(
+      keyVal,
+      input.keyVals,
+      utils_1.getEnumLength(typeFields_1.InputTypes),
+    );
     input.keyVals.push(keyVal);
     return this;
   }
   addKeyValToOutput(outputIndex, keyVal) {
-    const output = checkForOutput(this.outputs, outputIndex);
-    checkHasKey(
+    const output = utils_1.checkForOutput(this.outputs, outputIndex);
+    utils_1.checkHasKey(
       keyVal,
       output.keyVals,
-      getEnumLength(typeFields_1.OutputTypes),
+      utils_1.getEnumLength(typeFields_1.OutputTypes),
     );
     output.keyVals.push(keyVal);
     return this;
@@ -227,7 +232,7 @@ class Psbt {
       }
       newTxBuf = transactionInputAdder(inputData, txBuf);
     }
-    insertTxInGlobalMap(newTxBuf, this.globalMap);
+    utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
       keyVals: [],
     });
@@ -252,10 +257,33 @@ class Psbt {
       }
       newTxBuf = transactionOutputAdder(outputData, txBuf);
     }
-    insertTxInGlobalMap(newTxBuf, this.globalMap);
+    utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
       keyVals: [],
     });
+    return this;
+  }
+  clearFinalizedInput(inputIndex) {
+    const input = utils_1.checkForInput(this.inputs, inputIndex);
+    if (!utils_1.inputIsUncleanFinalized(input)) {
+      throw new Error(
+        `Input #${inputIndex} has too much or too little data to clean`,
+      );
+    }
+    for (const key of Object.keys(input)) {
+      if (
+        ![
+          'witnessUtxo',
+          'nonWitnessUtxo',
+          'finalScriptSig',
+          'finalScriptWitness',
+          'keyVals',
+        ].includes(key)
+      ) {
+        // @ts-ignore
+        delete input[key];
+      }
+    }
     return this;
   }
   combine(...those) {
@@ -281,47 +309,3 @@ class Psbt {
   }
 }
 exports.Psbt = Psbt;
-function insertTxInGlobalMap(txBuf, globalMap) {
-  const txKeyVals = globalMap.keyVals.filter(
-    kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  if (tx !== undefined) globalMap.unsignedTx = txBuf;
-  else txKeyVals[0].value = txBuf;
-}
-function checkForInput(inputs, inputIndex) {
-  const input = inputs[inputIndex];
-  if (input === undefined) throw new Error(`No input #${inputIndex}`);
-  return input;
-}
-function checkForOutput(outputs, outputIndex) {
-  const output = outputs[outputIndex];
-  if (output === undefined) throw new Error(`No output #${outputIndex}`);
-  return output;
-}
-function checkHasKey(checkKeyVal, keyVals, enumLength) {
-  if (checkKeyVal.key[0] < enumLength) {
-    throw new Error(
-      `Use the method for your specific key instead of addKeyVal*`,
-    );
-  }
-  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
-    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
-  }
-}
-function getEnumLength(myenum) {
-  let count = 0;
-  Object.keys(myenum).forEach(val => {
-    if (Number(isNaN(Number(val)))) {
-      count++;
-    }
-  });
-  return count;
-}

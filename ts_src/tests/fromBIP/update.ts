@@ -18,14 +18,10 @@ for (const f of fixtures) {
         if (Array.isArray(data)) {
           data.forEach((d: any) => func(i, d));
         } else {
-          if (data === 'delete') {
-            // @ts-ignore
-            delete psbt.inputs[i][key];
-          } else {
-            func(i, data);
-          }
+          func(i, data);
         }
       }
+      if (f.cleanForFinalize) psbt.clearFinalizedInput(i);
     }
     for (const [i, output] of f.outputData.entries()) {
       for (const key of Object.keys(output)) {
