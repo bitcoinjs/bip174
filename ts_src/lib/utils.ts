@@ -1,5 +1,6 @@
 import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
-import { GlobalTypes } from './typeFields';
+import { Psbt } from './psbt';
+import { GlobalTypes, INPUT_TYPE_NAMES, OUTPUT_TYPE_NAMES } from './typeFields';
 
 export function checkForInput(
   inputs: PsbtInput[],
@@ -99,4 +100,34 @@ export function insertTxInGlobalMap(
   }
   if (tx !== undefined) globalMap.unsignedTx = txBuf;
   else txKeyVals[0].value = txBuf;
+}
+
+export function addInputAttributes<T extends typeof Psbt>(
+  psbt: InstanceType<T>,
+  data: any,
+): void {
+  const inputIndex = psbt.inputs.length - 1;
+  for (const name of INPUT_TYPE_NAMES) {
+    const item = data[name];
+    if (item) {
+      const nameUpper = name.replace(/^\S/, s => s.toUpperCase());
+      // @ts-ignore
+      psbt[`add${nameUpper}ToInput`](inputIndex, item);
+    }
+  }
+}
+
+export function addOutputAttributes<T extends typeof Psbt>(
+  psbt: InstanceType<T>,
+  data: any,
+): void {
+  const outputIndex = psbt.outputs.length - 1;
+  for (const name of OUTPUT_TYPE_NAMES) {
+    const item = data[name];
+    if (item) {
+      const nameUpper = name.replace(/^\S/, s => s.toUpperCase());
+      // @ts-ignore
+      psbt[`add${nameUpper}ToOutput`](outputIndex, item);
+    }
+  }
 }

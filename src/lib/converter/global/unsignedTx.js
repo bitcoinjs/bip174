@@ -93,10 +93,10 @@ function outputToBuffer(output) {
   output.script.copy(result, 8 + varLen);
   return result;
 }
-function isTransactionOutput(data) {
+function isTransactionOutputScript(data) {
   return Buffer.isBuffer(data.script) && typeof data.value === 'number';
 }
-exports.isTransactionOutput = isTransactionOutput;
+exports.isTransactionOutputScript = isTransactionOutputScript;
 function addOutput(output, txBuffer) {
   // Skip version(4)
   let offset = 4;

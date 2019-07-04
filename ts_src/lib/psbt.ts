@@ -25,6 +25,8 @@ import {
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
 import {
+  addInputAttributes,
+  addOutputAttributes,
   checkForInput,
   checkForOutput,
   checkHasKey,
@@ -35,7 +37,7 @@ import {
 } from './utils';
 const {
   globals: {
-    unsignedTx: { isTransactionInput, isTransactionOutput },
+    unsignedTx: { isTransactionInput, isTransactionOutputScript },
   },
 } = convert;
 
@@ -331,6 +333,15 @@ export class Psbt {
     this.inputs.push({
       keyVals: [],
     });
+    const addKeyVals = (inputData as any).keyVals || [];
+    const inputIndex = this.inputs.length - 1;
+    if (!Array.isArray(addKeyVals)) {
+      throw new Error('keyVals must be an Array');
+    }
+    addKeyVals.forEach((keyVal: KeyValue) =>
+      this.addKeyValToInput(inputIndex, keyVal),
+    );
+    addInputAttributes(this, inputData);
     return this;
   }
 
@@ -355,10 +366,15 @@ export class Psbt {
     }
     const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
-    if (isTransactionOutput(outputData)) {
+    if (isTransactionOutputScript(outputData)) {
       newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
     } else {
       if (transactionOutputAdder === undefined) {
+        if (typeof (outputData as any).address === 'string') {
+          throw new Error(
+            'Must use a transactionOutputAdder to parse address.',
+          );
+        }
         throw new Error(
           'If outputData is not a TransactionOutput object, you must pass a ' +
             'function to handle it.',
@@ -370,6 +386,15 @@ export class Psbt {
     this.outputs.push({
       keyVals: [],
     });
+    const addKeyVals = (outputData as any).keyVals || [];
+    const outputIndex = this.outputs.length - 1;
+    if (!Array.isArray(addKeyVals)) {
+      throw new Error('keyVals must be an Array');
+    }
+    addKeyVals.forEach((keyVal: KeyValue) =>
+      this.addKeyValToInput(outputIndex, keyVal),
+    );
+    addOutputAttributes(this, outputData);
     return this;
   }
 

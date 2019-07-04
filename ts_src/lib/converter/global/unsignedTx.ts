@@ -1,7 +1,7 @@
 import {
   KeyValue,
   TransactionInput,
-  TransactionOutput,
+  TransactionOutputScript,
   UnsignedTx,
 } from '../../interfaces';
 import { GlobalTypes } from '../../typeFields';
@@ -107,7 +107,7 @@ export function addInput(input: TransactionInput, txBuffer: Buffer): Buffer {
   return newTxBuf;
 }
 
-function outputToBuffer(output: TransactionOutput): Buffer {
+function outputToBuffer(output: TransactionOutputScript): Buffer {
   const varLen = varuint.encodingLength(output.script.length);
   const result = Buffer.allocUnsafe(8 + varLen + output.script.length);
   writeUInt64LE(result, output.value, 0);
@@ -116,11 +116,16 @@ function outputToBuffer(output: TransactionOutput): Buffer {
   return result;
 }
 
-export function isTransactionOutput(data: any): data is TransactionOutput {
+export function isTransactionOutputScript(
+  data: any,
+): data is TransactionOutputScript {
   return Buffer.isBuffer(data.script) && typeof data.value === 'number';
 }
 
-export function addOutput(output: TransactionOutput, txBuffer: Buffer): Buffer {
+export function addOutput(
+  output: TransactionOutputScript,
+  txBuffer: Buffer,
+): Buffer {
   // Skip version(4)
   let offset = 4;
 

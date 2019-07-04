@@ -85,3 +85,27 @@ function insertTxInGlobalMap(txBuf, globalMap) {
   else txKeyVals[0].value = txBuf;
 }
 exports.insertTxInGlobalMap = insertTxInGlobalMap;
+function addInputAttributes(psbt, data) {
+  const inputIndex = psbt.inputs.length - 1;
+  for (const name of typeFields_1.INPUT_TYPE_NAMES) {
+    const item = data[name];
+    if (item) {
+      const nameUpper = name.replace(/^\S/, s => s.toUpperCase());
+      // @ts-ignore
+      psbt[`add${nameUpper}ToInput`](inputIndex, item);
+    }
+  }
+}
+exports.addInputAttributes = addInputAttributes;
+function addOutputAttributes(psbt, data) {
+  const outputIndex = psbt.outputs.length - 1;
+  for (const name of typeFields_1.OUTPUT_TYPE_NAMES) {
+    const item = data[name];
+    if (item) {
+      const nameUpper = name.replace(/^\S/, s => s.toUpperCase());
+      // @ts-ignore
+      psbt[`add${nameUpper}ToOutput`](outputIndex, item);
+    }
+  }
+}
+exports.addOutputAttributes = addOutputAttributes;

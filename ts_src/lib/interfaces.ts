@@ -111,6 +111,17 @@ export interface TransactionInput {
   hash: string | Buffer;
   index: number;
   sequence?: number;
+  keyVals?: KeyValue[];
+  partialSig?: PartialSig[];
+  nonWitnessUtxo?: NonWitnessUtxo;
+  witnessUtxo?: WitnessUtxo;
+  sighashType?: SighashType;
+  redeemScript?: RedeemScript;
+  witnessScript?: WitnessScript;
+  bip32Derivation?: Bip32Derivation[];
+  finalScriptSig?: FinalScriptSig;
+  finalScriptWitness?: FinalScriptWitness;
+  porCommitment?: PorCommitment;
 }
 
 export type TransactionInputAdder = (
@@ -118,10 +129,25 @@ export type TransactionInputAdder = (
   txBuffer: Buffer,
 ) => Buffer;
 
-export interface TransactionOutput {
-  script: Buffer;
+interface TransactionOutputBase {
   value: number;
+  keyVals?: KeyValue[];
+  redeemScript?: RedeemScript;
+  witnessScript?: WitnessScript;
+  bip32Derivation?: Bip32Derivation[];
 }
+
+export interface TransactionOutputAddress extends TransactionOutputBase {
+  address: string;
+}
+
+export interface TransactionOutputScript extends TransactionOutputBase {
+  script: Buffer;
+}
+
+export type TransactionOutput =
+  | TransactionOutputAddress
+  | TransactionOutputScript;
 
 export type TransactionOutputAdder = (
   output: TransactionOutput,

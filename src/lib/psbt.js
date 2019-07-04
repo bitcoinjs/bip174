@@ -8,7 +8,7 @@ const typeFields_1 = require('./typeFields');
 const utils_1 = require('./utils');
 const {
   globals: {
-    unsignedTx: { isTransactionInput, isTransactionOutput },
+    unsignedTx: { isTransactionInput, isTransactionOutputScript },
   },
 } = convert;
 class Psbt {
@@ -236,6 +236,13 @@ class Psbt {
     this.inputs.push({
       keyVals: [],
     });
+    const addKeyVals = inputData.keyVals || [];
+    const inputIndex = this.inputs.length - 1;
+    if (!Array.isArray(addKeyVals)) {
+      throw new Error('keyVals must be an Array');
+    }
+    addKeyVals.forEach(keyVal => this.addKeyValToInput(inputIndex, keyVal));
+    utils_1.addInputAttributes(this, inputData);
     return this;
   }
   addOutput(outputData, allowNoInput = false, transactionOutputAdder) {
@@ -246,10 +253,15 @@ class Psbt {
     }
     const txBuf = this.getTransaction();
     let newTxBuf;
-    if (isTransactionOutput(outputData)) {
+    if (isTransactionOutputScript(outputData)) {
       newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
     } else {
       if (transactionOutputAdder === undefined) {
+        if (typeof outputData.address === 'string') {
+          throw new Error(
+            'Must use a transactionOutputAdder to parse address.',
+          );
+        }
         throw new Error(
           'If outputData is not a TransactionOutput object, you must pass a ' +
             'function to handle it.',
@@ -261,6 +273,13 @@ class Psbt {
     this.outputs.push({
       keyVals: [],
     });
+    const addKeyVals = outputData.keyVals || [];
+    const outputIndex = this.outputs.length - 1;
+    if (!Array.isArray(addKeyVals)) {
+      throw new Error('keyVals must be an Array');
+    }
+    addKeyVals.forEach(keyVal => this.addKeyValToInput(outputIndex, keyVal));
+    utils_1.addOutputAttributes(this, outputData);
     return this;
   }
   clearFinalizedInput(inputIndex) {
