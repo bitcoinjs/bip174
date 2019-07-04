@@ -243,7 +243,7 @@ class Psbt {
   addInput(inputData, transactionInputAdder) {
     const txBuf = this.getTransaction();
     let newTxBuf;
-    if (isTransactionInput(inputData)) {
+    if (isTransactionInput(inputData) && transactionInputAdder === undefined) {
       newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
     } else {
       if (transactionInputAdder === undefined) {
@@ -275,7 +275,10 @@ class Psbt {
     }
     const txBuf = this.getTransaction();
     let newTxBuf;
-    if (isTransactionOutputScript(outputData)) {
+    if (
+      isTransactionOutputScript(outputData) &&
+      transactionOutputAdder === undefined
+    ) {
       newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
     } else {
       if (transactionOutputAdder === undefined) {
