@@ -86,4 +86,6 @@ export interface TransactionOutputScript extends TransactionOutputBase {
 }
 export declare type TransactionOutput = TransactionOutputAddress | TransactionOutputScript;
 export declare type TransactionOutputAdder = (output: TransactionOutput, txBuffer: Buffer) => Buffer;
+export declare type TransactionVersionSetter = (version: number, txBuffer: Buffer) => Buffer;
+export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Buffer) => Buffer;
 export {};

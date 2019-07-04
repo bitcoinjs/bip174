@@ -131,3 +131,19 @@ export function addOutputAttributes<T extends typeof Psbt>(
     }
   }
 }
+
+export function defaultVersionSetter(version: number, txBuf: Buffer): Buffer {
+  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+    throw new Error('Set Version: Invalid Transaction');
+  }
+  txBuf.writeUInt32LE(version, 0);
+  return txBuf;
+}
+
+export function defaultLocktimeSetter(locktime: number, txBuf: Buffer): Buffer {
+  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+    throw new Error('Set Locktime: Invalid Transaction');
+  }
+  txBuf.writeUInt32LE(locktime, txBuf.length - 4);
+  return txBuf;
+}

@@ -66,6 +66,28 @@ class Psbt {
   toBuffer() {
     return parser_1.psbtToBuffer(this);
   }
+  setVersion(version, transactionVersionSetter) {
+    let func;
+    if (transactionVersionSetter !== undefined) {
+      func = transactionVersionSetter;
+    } else {
+      func = utils_1.defaultVersionSetter;
+    }
+    const updated = func(version, this.globalMap.unsignedTx);
+    utils_1.insertTxInGlobalMap(updated, this.globalMap);
+    return this;
+  }
+  setLocktime(locktime, transactionLocktimeSetter) {
+    let func;
+    if (transactionLocktimeSetter !== undefined) {
+      func = transactionLocktimeSetter;
+    } else {
+      func = utils_1.defaultLocktimeSetter;
+    }
+    const updated = func(locktime, this.globalMap.unsignedTx);
+    utils_1.insertTxInGlobalMap(updated, this.globalMap);
+    return this;
+  }
   addNonWitnessUtxoToInput(inputIndex, nonWitnessUtxo) {
     const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {

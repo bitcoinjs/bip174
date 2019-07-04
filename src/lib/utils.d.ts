@@ -10,3 +10,5 @@ export declare function inputCheckUncleanFinalized(inputIndex: number, input: Ps
 export declare function insertTxInGlobalMap(txBuf: Buffer, globalMap: PsbtGlobal): void;
 export declare function addInputAttributes<T extends typeof Psbt>(psbt: InstanceType<T>, data: any): void;
 export declare function addOutputAttributes<T extends typeof Psbt>(psbt: InstanceType<T>, data: any): void;
+export declare function defaultVersionSetter(version: number, txBuf: Buffer): Buffer;
+export declare function defaultLocktimeSetter(locktime: number, txBuf: Buffer): Buffer;

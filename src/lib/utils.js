@@ -109,3 +109,19 @@ function addOutputAttributes(psbt, data) {
   }
 }
 exports.addOutputAttributes = addOutputAttributes;
+function defaultVersionSetter(version, txBuf) {
+  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+    throw new Error('Set Version: Invalid Transaction');
+  }
+  txBuf.writeUInt32LE(version, 0);
+  return txBuf;
+}
+exports.defaultVersionSetter = defaultVersionSetter;
+function defaultLocktimeSetter(locktime, txBuf) {
+  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+    throw new Error('Set Locktime: Invalid Transaction');
+  }
+  txBuf.writeUInt32LE(locktime, txBuf.length - 4);
+  return txBuf;
+}
+exports.defaultLocktimeSetter = defaultLocktimeSetter;

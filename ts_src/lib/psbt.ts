@@ -18,7 +18,9 @@ import {
   SighashType,
   TransactionInput,
   TransactionIOCountGetter,
+  TransactionLocktimeSetter,
   TransactionOutput,
+  TransactionVersionSetter,
   WitnessScript,
   WitnessUtxo,
 } from './interfaces';
@@ -30,6 +32,8 @@ import {
   checkForInput,
   checkForOutput,
   checkHasKey,
+  defaultLocktimeSetter,
+  defaultVersionSetter,
   getEnumLength,
   getTransactionFromGlobalMap,
   inputCheckUncleanFinalized,
@@ -119,6 +123,36 @@ export class Psbt {
 
   toBuffer(): Buffer {
     return psbtToBuffer(this);
+  }
+
+  setVersion(
+    version: number,
+    transactionVersionSetter?: TransactionVersionSetter,
+  ): this {
+    let func: TransactionVersionSetter;
+    if (transactionVersionSetter !== undefined) {
+      func = transactionVersionSetter;
+    } else {
+      func = defaultVersionSetter;
+    }
+    const updated = func(version, this.globalMap.unsignedTx!);
+    insertTxInGlobalMap(updated, this.globalMap);
+    return this;
+  }
+
+  setLocktime(
+    locktime: number,
+    transactionLocktimeSetter?: TransactionLocktimeSetter,
+  ): this {
+    let func: TransactionLocktimeSetter;
+    if (transactionLocktimeSetter !== undefined) {
+      func = transactionLocktimeSetter;
+    } else {
+      func = defaultLocktimeSetter;
+    }
+    const updated = func(locktime, this.globalMap.unsignedTx!);
+    insertTxInGlobalMap(updated, this.globalMap);
+    return this;
   }
 
   addNonWitnessUtxoToInput(

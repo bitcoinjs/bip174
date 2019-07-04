@@ -153,3 +153,13 @@ export type TransactionOutputAdder = (
   output: TransactionOutput,
   txBuffer: Buffer,
 ) => Buffer;
+
+export type TransactionVersionSetter = (
+  version: number,
+  txBuffer: Buffer,
+) => Buffer;
+
+export type TransactionLocktimeSetter = (
+  locktime: number,
+  txBuffer: Buffer,
+) => Buffer;
