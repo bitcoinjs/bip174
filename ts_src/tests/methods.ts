@@ -1,6 +1,7 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/methods';
+import { addInput, addOutput } from './utils/txTools';
 const BJSON = require('json-buffer');
 
 function run(f: any, typ: string): void {
@@ -57,15 +58,21 @@ for (const f of fixtures.invalid) {
 }
 
 function addInputOutput(psbt: Psbt): void {
-  psbt.addInput({
-    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-    index: 3,
-  });
-  psbt.addOutput({
-    script: Buffer.from(
-      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-      'hex',
-    ),
-    value: 1234567890,
-  });
+  psbt.addInput(
+    {
+      hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+      index: 3,
+    },
+    addInput,
+  );
+  psbt.addOutput(
+    {
+      script: Buffer.from(
+        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+        'hex',
+      ),
+      value: 1234567890,
+    },
+    addOutput,
+  );
 }

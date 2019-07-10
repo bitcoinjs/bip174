@@ -1,14 +1,15 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/first';
+import { getInputOutputCounts as ioGet } from './utils/txTools';
 
 for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
-    const parsed = Psbt.fromHex(f.input);
+    const parsed = Psbt.fromHex(f.input, ioGet);
     const hex = parsed.toHex();
-    const parsed2 = Psbt.fromHex(hex);
+    const parsed2 = Psbt.fromHex(hex, ioGet);
     const hex2 = parsed2.toHex();
-    const parsed3 = Psbt.fromHex(hex2);
+    const parsed3 = Psbt.fromHex(hex2, ioGet);
     const bufHexxedString = jsonify(parsed);
     const bufHexxedString2 = jsonify(parsed2);
     const bufHexxedString3 = jsonify(parsed3);

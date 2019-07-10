@@ -1,6 +1,7 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/create';
+import { addInput, addOutput } from './utils/txTools';
 
 const getNewPsbt = (): Psbt => {
   const psbt = new Psbt();
@@ -12,10 +13,10 @@ for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
     const psbt = getNewPsbt();
     for (const input of f.input.addInputs) {
-      psbt.addInput(input);
+      psbt.addInput(input, addInput);
     }
     for (const output of f.input.addOutputs) {
-      psbt.addOutput(output);
+      psbt.addOutput(output, addOutput);
     }
     t.equal(psbt.toBase64(), f.expectedBeforeUpdate);
     for (const [i, input] of f.input.updateInputData.entries()) {

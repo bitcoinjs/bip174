@@ -4,8 +4,7 @@ const convert = require('../converter');
 const tools_1 = require('../converter/tools');
 const varuint = require('../converter/varint');
 const typeFields_1 = require('../typeFields');
-const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
-function psbtFromBuffer(buffer, txCountGetter = countGetter) {
+function psbtFromBuffer(buffer, txCountGetter) {
   let offset = 0;
   function varSlice() {
     const keyLen = varuint.decode(buffer, offset);

@@ -1,10 +1,10 @@
 /// <reference types="node" />
-import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionOutput, TransactionVersionSetter, WitnessScript, WitnessUtxo } from './interfaces';
+import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionVersionSetter, WitnessScript, WitnessUtxo } from './interfaces';
 export declare class Psbt {
-    static fromTransaction<T extends typeof Psbt>(this: T, txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
-    static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
-    static fromHex<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
-    static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
+    static fromTransaction<T extends typeof Psbt>(this: T, txBuf: Buffer, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
+    static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
+    static fromHex<T extends typeof Psbt>(this: T, data: string, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
+    static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
     readonly inputs: PsbtInput[];
     readonly outputs: PsbtOutput[];
     readonly globalMap: PsbtGlobal;
@@ -30,10 +30,8 @@ export declare class Psbt {
     addKeyValToGlobal(keyVal: KeyValue): this;
     addKeyValToInput(inputIndex: number, keyVal: KeyValue): this;
     addKeyValToOutput(outputIndex: number, keyVal: KeyValue): this;
-    addInput(inputData: TransactionInput): this;
-    addInput<T>(inputData: T, transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer): this;
-    addOutput(outputData: TransactionOutput, allowNoInput?: boolean): this;
-    addOutput<T>(outputData: T, allowNoInput?: boolean, transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer): this;
+    addInput<T>(inputData: T, transactionInputAdder: (input: T, txBuffer: Buffer) => Buffer): this;
+    addOutput<T>(outputData: T, transactionOutputAdder: (output: T, txBuffer: Buffer) => Buffer, allowNoInput?: boolean): this;
     clearFinalizedInput(inputIndex: number): this;
     combine(...those: this[]): this;
     getTransaction(): Buffer;

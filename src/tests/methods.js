@@ -3,6 +3,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const tape = require('tape');
 const psbt_1 = require('../lib/psbt');
 const methods_1 = require('./fixtures/methods');
+const txTools_1 = require('./utils/txTools');
 const BJSON = require('json-buffer');
 function run(f, typ) {
   tape(`check ${typ} method: ${f.method}`, t => {
@@ -55,15 +56,21 @@ for (const f of methods_1.fixtures.invalid) {
   run(f, 'invalid');
 }
 function addInputOutput(psbt) {
-  psbt.addInput({
-    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-    index: 3,
-  });
-  psbt.addOutput({
-    script: Buffer.from(
-      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-      'hex',
-    ),
-    value: 1234567890,
-  });
+  psbt.addInput(
+    {
+      hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+      index: 3,
+    },
+    txTools_1.addInput,
+  );
+  psbt.addOutput(
+    {
+      script: Buffer.from(
+        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+        'hex',
+      ),
+      value: 1234567890,
+    },
+    txTools_1.addOutput,
+  );
 }

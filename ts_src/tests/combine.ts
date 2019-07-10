@@ -1,10 +1,11 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/combine';
+import { getInputOutputCounts as ioGet } from './utils/txTools';
 
 for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
-    const psbts = f.psbts.map(p => Psbt.fromHex(p));
+    const psbts = f.psbts.map(p => Psbt.fromHex(p, ioGet));
     const jsonA1 = jsonify(psbts[0]);
     const jsonA2 = jsonify(psbts[1]);
     psbts[0].combine(psbts[1]);
