@@ -4,7 +4,9 @@ import {
   Bip32Derivation,
   FinalScriptSig,
   FinalScriptWitness,
+  GlobalXpub,
   isBip32Derivation,
+  isGlobalXpub,
   isPartialSig,
   isWitnessUtxo,
   KeyValue,
@@ -152,6 +154,17 @@ export class Psbt {
     }
     const updated = func(locktime, this.globalMap.unsignedTx!);
     insertTxInGlobalMap(updated, this.globalMap);
+    return this;
+  }
+
+  addGlobalXpubToGlobal(globalXpub: GlobalXpub): this {
+    if (!isGlobalXpub(globalXpub)) {
+      throw new Error(
+        'globalXpub should be { masterFingerprint: Buffer; extendedPubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    this.globalMap.globalXpub = globalXpub;
     return this;
   }
 

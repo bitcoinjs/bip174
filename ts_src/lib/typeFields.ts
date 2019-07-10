@@ -1,7 +1,8 @@
 export enum GlobalTypes {
   UNSIGNED_TX,
+  GLOBAL_XPUB,
 }
-export const GLOBAL_TYPE_NAMES = ['unsignedTx'];
+export const GLOBAL_TYPE_NAMES = ['unsignedTx', 'globalXpub'];
 
 export enum InputTypes {
   NON_WITNESS_UTXO,

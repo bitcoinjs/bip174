@@ -1,5 +1,6 @@
 export declare enum GlobalTypes {
-    UNSIGNED_TX = 0
+    UNSIGNED_TX = 0,
+    GLOBAL_XPUB = 1
 }
 export declare const GLOBAL_TYPE_NAMES: string[];
 export declare enum InputTypes {

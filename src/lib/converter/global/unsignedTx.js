@@ -6,7 +6,7 @@ const varuint = require('../varint');
 function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_1.GlobalTypes.UNSIGNED_TX) {
     throw new Error(
-      'Decode Error: could not decode redeemScript with key 0x' +
+      'Decode Error: could not decode unsignedTx with key 0x' +
         keyVal.key.toString('hex'),
     );
   }

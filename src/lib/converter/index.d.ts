@@ -1,4 +1,5 @@
 /// <reference types="node" />
+import * as globalXpub from './global/globalXpub';
 import * as unsignedTx from './global/unsignedTx';
 import * as finalScriptSig from './input/finalScriptSig';
 import * as finalScriptWitness from './input/finalScriptWitness';
@@ -9,6 +10,7 @@ import * as sighashType from './input/sighashType';
 import * as witnessUtxo from './input/witnessUtxo';
 declare const globals: {
     unsignedTx: typeof unsignedTx;
+    globalXpub: typeof globalXpub;
     checkPubkey: (keyVal: import("../interfaces").KeyValue) => Buffer | undefined;
 };
 declare const inputs: {

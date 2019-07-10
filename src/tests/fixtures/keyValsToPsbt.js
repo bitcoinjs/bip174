@@ -23,6 +23,46 @@ exports.fixtures = [
     data: {
       globalMapKeyVals: [
         {
+          key: b('00'),
+          value: b('fb'),
+        },
+        {
+          key: b('01'),
+          value: b('fb'),
+        },
+      ],
+      inputKeyVals: [],
+      outputKeyVals: [],
+    },
+    exception:
+      'Decode Error: globalXpub has invalid extended pubkey in key 0x01',
+  },
+  {
+    data: {
+      globalMapKeyVals: [
+        {
+          key: b('00'),
+          value: b('fb'),
+        },
+        {
+          key: b(
+            '010488b21e034a346d9880000000032e6467810075260ee7a831189d814e656a' +
+              '300ab7f9a151b7377efffe91051103b034ec32baa6c3c05481a9d15c6ee6c48a' +
+              '9692e18285c174d414718f85670e22',
+          ),
+          value: b('fb'),
+        },
+      ],
+      inputKeyVals: [],
+      outputKeyVals: [],
+    },
+    exception:
+      'Decode Error: Global GLOBAL_XPUB value length should be multiple of 4',
+  },
+  {
+    data: {
+      globalMapKeyVals: [
+        {
           key: b('ef'),
           value: b('fb'),
         },
@@ -181,5 +221,29 @@ exports.fixtures = [
       ],
     },
     exception: 'Format Error: Output has multiple WITNESS_SCRIPT',
+  },
+  {
+    data: {
+      globalMapKeyVals: [
+        {
+          key: b('00'),
+          value: b('fb'),
+        },
+        {
+          key: b(
+            '010488b21e034a346d9880000000032e6467810075260ee7a831189d814e656a' +
+              '300ab7f9a151b7377efffe91051103b034ec32baa6c3c05481a9d15c6ee6c48a' +
+              '9692e18285c174d414718f85670e22',
+          ),
+          value: b('01020304040000800500008006000000'),
+        },
+      ],
+      inputKeyVals: [],
+      outputKeyVals: [],
+    },
+    expected:
+      'cHNidP8BAAH7TwEEiLIeA0o0bZiAAAAAAy5kZ4EAdSYO56gxGJ2BTmVqMAq3+aFRtzd+' +
+      '//6RBREDsDTsMrqmw8BUganRXG7mxIqWkuGChcF01BRxj4VnDiIQAQIDBAQAAIAFAA' +
+      'CABgAAAAAAAA==',
   },
 ];

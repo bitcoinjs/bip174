@@ -3,8 +3,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
 var GlobalTypes;
 (function(GlobalTypes) {
   GlobalTypes[(GlobalTypes['UNSIGNED_TX'] = 0)] = 'UNSIGNED_TX';
+  GlobalTypes[(GlobalTypes['GLOBAL_XPUB'] = 1)] = 'GLOBAL_XPUB';
 })((GlobalTypes = exports.GlobalTypes || (exports.GlobalTypes = {})));
-exports.GLOBAL_TYPE_NAMES = ['unsignedTx'];
+exports.GLOBAL_TYPE_NAMES = ['unsignedTx', 'globalXpub'];
 var InputTypes;
 (function(InputTypes) {
   InputTypes[(InputTypes['NON_WITNESS_UTXO'] = 0)] = 'NON_WITNESS_UTXO';

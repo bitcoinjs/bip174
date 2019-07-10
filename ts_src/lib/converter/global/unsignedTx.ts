@@ -11,7 +11,7 @@ import * as varuint from '../varint';
 export function decode(keyVal: KeyValue): UnsignedTx {
   if (keyVal.key[0] !== GlobalTypes.UNSIGNED_TX) {
     throw new Error(
-      'Decode Error: could not decode redeemScript with key 0x' +
+      'Decode Error: could not decode unsignedTx with key 0x' +
         keyVal.key.toString('hex'),
     );
   }

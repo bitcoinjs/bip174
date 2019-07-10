@@ -147,6 +147,9 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
         }
         globalMap.unsignedTx = convert.globals.unsignedTx.decode(keyVal);
         break;
+      case typeFields_1.GlobalTypes.GLOBAL_XPUB:
+        globalMap.globalXpub = convert.globals.globalXpub.decode(keyVal);
+        break;
       default:
         // This will allow inclusion during serialization.
         globalMap.keyVals.push(keyVal);
