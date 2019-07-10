@@ -39,6 +39,9 @@ import {
   insertTxInGlobalMap,
 } from './utils';
 
+// version 1, locktime 0, 0 ins, 0 outs
+const DEFAULT_UNSIGNED_TX = Buffer.from('01000000000000000000', 'hex');
+
 export class Psbt {
   static fromTransaction<T extends typeof Psbt>(
     this: T,
@@ -89,19 +92,12 @@ export class Psbt {
     return psbt;
   }
 
-  inputs: PsbtInput[];
-  outputs: PsbtOutput[];
-  globalMap: PsbtGlobal;
-
-  constructor() {
-    this.globalMap = {
-      keyVals: [],
-      // version 1, locktime 0, 0 ins, 0 outs
-      unsignedTx: Buffer.from('01000000000000000000', 'hex'),
-    };
-    this.inputs = [];
-    this.outputs = [];
-  }
+  readonly inputs: PsbtInput[] = [];
+  readonly outputs: PsbtOutput[] = [];
+  readonly globalMap: PsbtGlobal = {
+    keyVals: [],
+    unsignedTx: Buffer.from(DEFAULT_UNSIGNED_TX),
+  };
 
   toBase64(): string {
     const buffer = this.toBuffer();
