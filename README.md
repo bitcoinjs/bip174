@@ -28,33 +28,42 @@ In order to keep this library as separate from Bitcoin logic as possible, This l
 2. Extractor: This class has minimal knowledge of Bitcoin transactions, so creating a full transaction from a PSBT must be done with a bitcoin aware extended class.
 3. Input Finalizer: This class, again, has no knowledge of whether an input is finished.
 
+## Static methods and addInput / addOutput require function parameters
+
+* Static methods: They require a Transaction input/output count getter. The function is `(txBuffer: Buffer) => { inputCount: number; outputCount: number; }` and takes in the Buffer of the value in the 0x00 key of the globalMap.
+* addInput/addOutput methods: They require a function to modify the Buffer of the Transaction and return it. `(input: T, txBuffer: Buffer) => Buffer` where T is the same type you passed in the first argument.
+  * **WARNING** If `T` type has attributes that are named the same as any corresponding input or output types (`witnessUtxo` etc.) the addOutput and addInput functions will try to add them. This allows you to add the input/output attributes to your `T` type and it will automatically add them all in one try.
+
 ## Example
 ```javascript
 const { Psbt } = require('bip174')
+const { inputAdder, outputAdder } = require('./someImplementation')
+// See tests/utils/txTools file for an example of a simple Bitcoin Transaction parser.
+// Also see BitcoinJS-lib for an extended class that uses the Transaction class internally.
 
 const psbt = new Psbt()
 psbt.addInput({
   hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
   index: 3,
-})
+}, inputAdder)
 psbt.addInput({
   hash: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
   index: 1,
-})
+}, inputAdder)
 psbt.addOutput({
   script: Buffer.from(
     'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
     'hex',
   ),
   value: 1234567890,
-})
+}, outputAdder)
 psbt.addOutput({
   script: Buffer.from(
     'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
     'hex',
   ),
   value: 987654321,
-})
+}, outputAdder)
 psbt.addRedeemScriptToInput(0, Buffer.from(
   '00208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',
   'hex',
