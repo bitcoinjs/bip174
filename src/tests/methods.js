@@ -16,7 +16,7 @@ function run(f, typ) {
       psbt = new psbt_1.Psbt();
       addInputOutput(psbt);
       if (f.switchTx || f.dupeTx) {
-        psbt.globalMap.keyVals.push({
+        psbt.globalMap.unknownKeyVals.push({
           key: Buffer.from([0]),
           value: psbt.globalMap.unsignedTx,
         });

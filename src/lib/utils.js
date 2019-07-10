@@ -16,7 +16,7 @@ exports.checkForOutput = checkForOutput;
 function checkHasKey(checkKeyVal, keyVals, enumLength) {
   if (checkKeyVal.key[0] < enumLength) {
     throw new Error(
-      `Use the method for your specific key instead of addKeyVal*`,
+      `Use the method for your specific key instead of addUnknownKeyVal*`,
     );
   }
   if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
@@ -35,7 +35,7 @@ function getEnumLength(myenum) {
 }
 exports.getEnumLength = getEnumLength;
 function getTransactionFromGlobalMap(globalMap) {
-  const txKeyVals = globalMap.keyVals.filter(
+  const txKeyVals = globalMap.unknownKeyVals.filter(
     kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
   );
   const len = txKeyVals.length;
@@ -70,7 +70,7 @@ function inputCheckUncleanFinalized(inputIndex, input) {
 }
 exports.inputCheckUncleanFinalized = inputCheckUncleanFinalized;
 function insertTxInGlobalMap(txBuf, globalMap) {
-  const txKeyVals = globalMap.keyVals.filter(
+  const txKeyVals = globalMap.unknownKeyVals.filter(
     kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
   );
   const len = txKeyVals.length;

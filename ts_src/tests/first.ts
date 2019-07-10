@@ -44,7 +44,7 @@ function stripIndices(psbt: Psbt): Psbt {
     JSON.stringify(psbt, (key, value) => {
       if (key === 'index') {
         return 0;
-      } else if (key === 'keyVals') {
+      } else if (key === 'unknownKeyVals') {
         return [];
       } else {
         return value;

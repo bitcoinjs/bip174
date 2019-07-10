@@ -167,7 +167,7 @@ export function psbtFromKeyVals({
 }: PsbtFromKeyValsArg): PsbtAttributes {
   // That was easy :-)
   const globalMap: PsbtGlobal = {
-    keyVals: [] as KeyValue[],
+    unknownKeyVals: [] as KeyValue[],
   };
   for (const keyVal of globalMapKeyVals) {
     // If a globalMap item needs pubkey, uncomment
@@ -186,7 +186,7 @@ export function psbtFromKeyVals({
         break;
       default:
         // This will allow inclusion during serialization.
-        globalMap.keyVals.push(keyVal);
+        globalMap.unknownKeyVals.push(keyVal);
     }
   }
 
@@ -199,7 +199,7 @@ export function psbtFromKeyVals({
   // Get input fields
   for (const index of range(inputCount)) {
     const input: PsbtInput = {
-      keyVals: [] as KeyValue[],
+      unknownKeyVals: [] as KeyValue[],
     };
     for (const keyVal of inputKeyVals[index]) {
       convert.inputs.checkPubkey(keyVal);
@@ -280,7 +280,7 @@ export function psbtFromKeyVals({
           break;
         default:
           // This will allow inclusion during serialization.
-          input.keyVals.push(keyVal);
+          input.unknownKeyVals.push(keyVal);
       }
     }
     inputs.push(input);
@@ -288,7 +288,7 @@ export function psbtFromKeyVals({
 
   for (const index of range(outputCount)) {
     const output: PsbtOutput = {
-      keyVals: [] as KeyValue[],
+      unknownKeyVals: [] as KeyValue[],
     };
     for (const keyVal of outputKeyVals[index]) {
       convert.outputs.checkPubkey(keyVal);
@@ -317,7 +317,7 @@ export function psbtFromKeyVals({
           );
           break;
         default:
-          output.keyVals.push(keyVal);
+          output.unknownKeyVals.push(keyVal);
       }
     }
     outputs.push(output);

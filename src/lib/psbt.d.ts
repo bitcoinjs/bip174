@@ -27,9 +27,9 @@ export declare class Psbt {
     addRedeemScriptToOutput(outputIndex: number, redeemScript: RedeemScript): this;
     addWitnessScriptToOutput(outputIndex: number, witnessScript: WitnessScript): this;
     addBip32DerivationToOutput(outputIndex: number, bip32Derivation: Bip32Derivation): this;
-    addKeyValToGlobal(keyVal: KeyValue): this;
-    addKeyValToInput(inputIndex: number, keyVal: KeyValue): this;
-    addKeyValToOutput(outputIndex: number, keyVal: KeyValue): this;
+    addUnknownKeyValToGlobal(keyVal: KeyValue): this;
+    addUnknownKeyValToInput(inputIndex: number, keyVal: KeyValue): this;
+    addUnknownKeyValToOutput(outputIndex: number, keyVal: KeyValue): this;
     addInput<T>(inputData: T, transactionInputAdder: (input: T, txBuffer: Buffer) => Buffer): this;
     addOutput<T>(outputData: T, transactionOutputAdder: (output: T, txBuffer: Buffer) => Buffer, allowNoInput?: boolean): this;
     clearFinalizedInput(inputIndex: number): this;

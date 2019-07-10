@@ -129,7 +129,7 @@ exports.checkKeyBuffer = checkKeyBuffer;
 function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
   // That was easy :-)
   const globalMap = {
-    keyVals: [],
+    unknownKeyVals: [],
   };
   for (const keyVal of globalMapKeyVals) {
     // If a globalMap item needs pubkey, uncomment
@@ -151,7 +151,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
         break;
       default:
         // This will allow inclusion during serialization.
-        globalMap.keyVals.push(keyVal);
+        globalMap.unknownKeyVals.push(keyVal);
     }
   }
   // Get input and output counts to loop the respective fields
@@ -162,7 +162,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
   // Get input fields
   for (const index of tools_1.range(inputCount)) {
     const input = {
-      keyVals: [],
+      unknownKeyVals: [],
     };
     for (const keyVal of inputKeyVals[index]) {
       convert.inputs.checkPubkey(keyVal);
@@ -274,14 +274,14 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           break;
         default:
           // This will allow inclusion during serialization.
-          input.keyVals.push(keyVal);
+          input.unknownKeyVals.push(keyVal);
       }
     }
     inputs.push(input);
   }
   for (const index of tools_1.range(outputCount)) {
     const output = {
-      keyVals: [],
+      unknownKeyVals: [],
     };
     for (const keyVal of outputKeyVals[index]) {
       convert.outputs.checkPubkey(keyVal);
@@ -317,7 +317,7 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           );
           break;
         default:
-          output.keyVals.push(keyVal);
+          output.unknownKeyVals.push(keyVal);
       }
     }
     outputs.push(output);

@@ -69,14 +69,14 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   t.assert(result.pubkey.equals(keyVal.key.slice(1)));
   const psbt1 = {
     globalMap: {
-      keyVals: [],
+      unknownKeyVals: [],
     },
     inputs: [],
     outputs: [],
   };
   const psbt2 = {
     globalMap: {
-      keyVals: [],
+      unknownKeyVals: [],
     },
     inputs: [],
     outputs: [],
@@ -92,11 +92,11 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   t.throws(() => {
     combiner_1.combine([psbt1, psbt2]);
   }, new RegExp('Combine: One of the Psbts does not have the same transaction.'));
-  psbt1.globalMap.keyVals.push({
+  psbt1.globalMap.unknownKeyVals.push({
     key: b('09'),
     value: b('ff'),
   });
-  psbt1.globalMap.keyVals.push({
+  psbt1.globalMap.unknownKeyVals.push({
     key: b('09'),
     value: b('ff'),
   });
