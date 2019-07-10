@@ -11,7 +11,17 @@ const {
     unsignedTx: { isTransactionInput, isTransactionOutputScript },
   },
 } = convert;
+// version 1, locktime 0, 0 ins, 0 outs
+const DEFAULT_UNSIGNED_TX = Buffer.from('01000000000000000000', 'hex');
 class Psbt {
+  constructor() {
+    this.inputs = [];
+    this.outputs = [];
+    this.globalMap = {
+      keyVals: [],
+      unsignedTx: Buffer.from(DEFAULT_UNSIGNED_TX),
+    };
+  }
   static fromTransaction(txBuf, txCountGetter) {
     if (txCountGetter === undefined)
       txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
@@ -45,15 +55,6 @@ class Psbt {
     const results = parser_1.psbtFromBuffer(buffer, txCountGetter);
     Object.assign(psbt, results);
     return psbt;
-  }
-  constructor() {
-    this.globalMap = {
-      keyVals: [],
-      // version 1, locktime 0, 0 ins, 0 outs
-      unsignedTx: Buffer.from('01000000000000000000', 'hex'),
-    };
-    this.inputs = [];
-    this.outputs = [];
   }
   toBase64() {
     const buffer = this.toBuffer();
