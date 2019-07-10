@@ -1,5 +1,16 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+function isGlobalXpub(data) {
+  return (
+    Buffer.isBuffer(data.extendedPubkey) &&
+    Buffer.isBuffer(data.masterFingerprint) &&
+    typeof data.path === 'string' &&
+    data.extendedPubkey.length === 78 &&
+    [2, 3].includes(data.extendedPubkey[45]) &&
+    data.masterFingerprint.length === 4
+  );
+}
+exports.isGlobalXpub = isGlobalXpub;
 function isPartialSig(data) {
   return (
     Buffer.isBuffer(data.pubkey) &&

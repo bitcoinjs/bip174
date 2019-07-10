@@ -6,6 +6,7 @@ export interface KeyValue {
 export interface PsbtGlobal {
   keyVals: KeyValue[];
   unsignedTx?: UnsignedTx;
+  globalXpub?: GlobalXpub;
 }
 
 export interface PsbtInput {
@@ -30,6 +31,23 @@ export interface PsbtOutput {
 }
 
 export type UnsignedTx = Buffer;
+
+export interface GlobalXpub {
+  extendedPubkey: Buffer;
+  masterFingerprint: Buffer;
+  path: string;
+}
+
+export function isGlobalXpub(data: any): data is GlobalXpub {
+  return (
+    Buffer.isBuffer(data.extendedPubkey) &&
+    Buffer.isBuffer(data.masterFingerprint) &&
+    typeof data.path === 'string' &&
+    data.extendedPubkey.length === 78 &&
+    [2, 3].includes(data.extendedPubkey[45]) &&
+    data.masterFingerprint.length === 4
+  );
+}
 
 export interface PartialSig {
   pubkey: Buffer;

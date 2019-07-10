@@ -5,6 +5,13 @@ const dummyPubkey = () =>
     '03b1341ccba7683b6af4f1238cd6e97e7167d569fac47f1e48d47541844355bd46',
     'hex',
   );
+const dummyXpub = () =>
+  Buffer.from(
+    '0488b21e034a346d9880000000032e6467810075260ee7a831189d814e656a300ab7f9a' +
+      '151b7377efffe91051103b034ec32baa6c3c05481a9d15c6ee6c48a9692e18285c174d4' +
+      '14718f85670e22',
+    'hex',
+  );
 const dummySig = () =>
   Buffer.from(
     '304302200424b58effaaa694e1559ea5c93bbfd4a89064224055cdf070b6' +
@@ -15,6 +22,22 @@ const dummySig = () =>
 const dummy4Byte = () => Buffer.from([1, 2, 3, 4]);
 exports.fixtures = {
   valid: [
+    {
+      method: 'setVersion',
+      addInputOutput: true,
+      args: [3],
+      expected:
+        'cHNidP8BAFMDAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD//' +
+        '///AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAA==',
+    },
+    {
+      method: 'setLocktime',
+      addInputOutput: true,
+      args: [3],
+      expected:
+        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD' +
+        '/////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAwAAAAAAAA==',
+    },
     {
       method: 'fromTransaction',
       addInputOutput: false,
@@ -32,6 +55,22 @@ exports.fixtures = {
         }),
       ],
       expected: 'cHNidP8BAAIBAgAAAAA=',
+    },
+    {
+      method: 'addGlobalXpubToGlobal',
+      addInputOutput: true,
+      args: [
+        {
+          masterFingerprint: dummy4Byte(),
+          extendedPubkey: dummyXpub(),
+          path: "m/4'/5/7",
+        },
+      ],
+      expected:
+        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
+        '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAE8BBIiyHgNKNG2Y' +
+        'gAAAAAMuZGeBAHUmDueoMRidgU5lajAKt/mhUbc3fv/+kQURA7A07DK6psPAVIGp0Vxu' +
+        '5sSKlpLhgoXBdNQUcY+FZw4iEAECAwQEAACABQAAAAcAAAAAAAA=',
     },
     {
       method: 'addNonWitnessUtxoToInput',
@@ -205,6 +244,19 @@ exports.fixtures = {
     },
   ],
   invalid: [
+    {
+      method: 'addGlobalXpubToGlobal',
+      addInputOutput: true,
+      twice: false,
+      args: [
+        {
+          a: 4,
+        },
+      ],
+      exception:
+        'globalXpub should be { masterFingerprint: Buffer; ' +
+        'extendedPubkey: Buffer; path: string; }',
+    },
     {
       method: 'addNonWitnessUtxoToInput',
       addInputOutput: true,

@@ -42,8 +42,8 @@ function run(f: any, typ: string): void {
       t.equal(err.message, f.exception);
       return t.end();
     }
-    if (f.expected) t.equal(psbt!.toBase64(), f.expected);
-    else console.log(f.method + '\n' + psbt!.toBase64() + '\n');
+    t.equal(psbt!.toBase64(), f.expected);
+    // else console.log(f.method + '\n' + psbt!.toBase64() + '\n');
     t.end();
   });
 }

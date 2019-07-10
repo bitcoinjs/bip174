@@ -88,6 +88,16 @@ class Psbt {
     utils_1.insertTxInGlobalMap(updated, this.globalMap);
     return this;
   }
+  addGlobalXpubToGlobal(globalXpub) {
+    if (!interfaces_1.isGlobalXpub(globalXpub)) {
+      throw new Error(
+        'globalXpub should be { masterFingerprint: Buffer; extendedPubkey: ' +
+          'Buffer; path: string; }',
+      );
+    }
+    this.globalMap.globalXpub = globalXpub;
+    return this;
+  }
   addNonWitnessUtxoToInput(inputIndex, nonWitnessUtxo) {
     const input = utils_1.checkForInput(this.inputs, inputIndex);
     if (input.nonWitnessUtxo || input.witnessUtxo) {

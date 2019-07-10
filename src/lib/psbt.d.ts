@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionOutput, TransactionVersionSetter, WitnessScript, WitnessUtxo } from './interfaces';
+import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionInput, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionOutput, TransactionVersionSetter, WitnessScript, WitnessUtxo } from './interfaces';
 export declare class Psbt {
     static fromTransaction<T extends typeof Psbt>(this: T, txBuf: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
     static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
@@ -14,6 +14,7 @@ export declare class Psbt {
     toBuffer(): Buffer;
     setVersion(version: number, transactionVersionSetter?: TransactionVersionSetter): this;
     setLocktime(locktime: number, transactionLocktimeSetter?: TransactionLocktimeSetter): this;
+    addGlobalXpubToGlobal(globalXpub: GlobalXpub): this;
     addNonWitnessUtxoToInput(inputIndex: number, nonWitnessUtxo: NonWitnessUtxo): this;
     addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): this;
     addPartialSigToInput(inputIndex: number, partialSig: PartialSig): this;

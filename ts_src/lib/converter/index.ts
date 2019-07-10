@@ -1,5 +1,6 @@
 import { InputTypes, OutputTypes } from '../typeFields';
 
+import * as globalXpub from './global/globalXpub';
 import * as unsignedTx from './global/unsignedTx';
 
 import * as finalScriptSig from './input/finalScriptSig';
@@ -17,6 +18,7 @@ import * as witnessScript from './shared/witnessScript';
 
 const globals = {
   unsignedTx,
+  globalXpub,
   // pass an Array of key bytes that require pubkey beside the key
   checkPubkey: checkPubkey.makeChecker([]),
 };

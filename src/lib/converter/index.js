@@ -1,6 +1,7 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_1 = require('../typeFields');
+const globalXpub = require('./global/globalXpub');
 const unsignedTx = require('./global/unsignedTx');
 const finalScriptSig = require('./input/finalScriptSig');
 const finalScriptWitness = require('./input/finalScriptWitness');
@@ -15,6 +16,7 @@ const redeemScript = require('./shared/redeemScript');
 const witnessScript = require('./shared/witnessScript');
 const globals = {
   unsignedTx,
+  globalXpub,
   // pass an Array of key bytes that require pubkey beside the key
   checkPubkey: checkPubkey.makeChecker([]),
 };
