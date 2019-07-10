@@ -11,11 +11,9 @@ import {
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
 import { PsbtAttributes } from './index';
 
-const countGetter = convert.globals.unsignedTx.getInputOutputCounts;
-
 export function psbtFromBuffer(
   buffer: Buffer,
-  txCountGetter: TransactionIOCountGetter = countGetter,
+  txCountGetter: TransactionIOCountGetter,
 ): PsbtAttributes {
   let offset = 0;
 

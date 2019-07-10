@@ -1,5 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
+const txTools_1 = require('../utils/txTools');
 const dummyPubkey = () =>
   Buffer.from(
     '03b1341ccba7683b6af4f1238cd6e97e7167d569fac47f1e48d47541844355bd46',
@@ -41,7 +42,10 @@ exports.fixtures = {
     {
       method: 'fromTransaction',
       addInputOutput: false,
-      args: [Buffer.from([1, 0, 0, 0, 0, 0, 0, 0, 0, 0])],
+      args: [
+        Buffer.from([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]),
+        txTools_1.getInputOutputCounts,
+      ],
       expected: 'cHNidP8BAAoBAAAAAAAAAAAAAAAA',
     },
     {
@@ -237,7 +241,7 @@ exports.fixtures = {
     {
       method: 'addOutput',
       addInputOutput: true,
-      args: [{ wow: 0 }, false, (data, txBuf) => txBuf.slice(data.wow)],
+      args: [{ wow: 0 }, (data, txBuf) => txBuf.slice(data.wow), false],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAAA=',
@@ -368,23 +372,19 @@ exports.fixtures = {
       method: 'addInput',
       addInputOutput: true,
       args: [{ wow: 1 }],
-      exception:
-        'If inputData is not a TransactionInput object, you must pass a ' +
-        'function to handle it.',
+      exception: 'You must pass a function to handle the input.',
     },
     {
       method: 'addOutput',
       addInputOutput: true,
       args: [{ wow: 1 }],
-      exception:
-        'If outputData is not a TransactionOutput object, you must pass a ' +
-        'function to handle it.',
+      exception: 'You must pass a function to handle the output.',
     },
     {
       method: 'addOutput',
       addInputOutput: true,
       dupeTx: true,
-      args: [{ wow: 0 }, false, (data, txBuf) => txBuf.slice(data.wow)],
+      args: [{ wow: 0 }, (data, txBuf) => txBuf.slice(data.wow), false],
       exception: 'Extract Transaction: Expected one Transaction, got 2',
     },
     {

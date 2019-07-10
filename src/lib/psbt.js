@@ -1,20 +1,12 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const combiner_1 = require('./combiner');
-const convert = require('./converter');
 const interfaces_1 = require('./interfaces');
 const parser_1 = require('./parser');
 const typeFields_1 = require('./typeFields');
 const utils_1 = require('./utils');
-const {
-  globals: {
-    unsignedTx: { isTransactionInput, isTransactionOutputScript },
-  },
-} = convert;
 class Psbt {
   static fromTransaction(txBuf, txCountGetter) {
-    if (txCountGetter === undefined)
-      txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
     const result = txCountGetter(txBuf);
     const psbt = new this();
     psbt.globalMap.unsignedTx = txBuf;
@@ -251,19 +243,12 @@ class Psbt {
     return this;
   }
   addInput(inputData, transactionInputAdder) {
+    if (transactionInputAdder === undefined) {
+      throw new Error('You must pass a function to handle the input.');
+    }
     const txBuf = this.getTransaction();
     let newTxBuf;
-    if (isTransactionInput(inputData) && transactionInputAdder === undefined) {
-      newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
-    } else {
-      if (transactionInputAdder === undefined) {
-        throw new Error(
-          'If inputData is not a TransactionInput object, you must pass a ' +
-            'function to handle it.',
-        );
-      }
-      newTxBuf = transactionInputAdder(inputData, txBuf);
-    }
+    newTxBuf = transactionInputAdder(inputData, txBuf);
     utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
       keyVals: [],
@@ -277,33 +262,18 @@ class Psbt {
     utils_1.addInputAttributes(this, inputData);
     return this;
   }
-  addOutput(outputData, allowNoInput = false, transactionOutputAdder) {
+  addOutput(outputData, transactionOutputAdder, allowNoInput) {
     if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
         'Add Output: can not add an output before adding an input.',
       );
     }
+    if (transactionOutputAdder === undefined) {
+      throw new Error('You must pass a function to handle the output.');
+    }
     const txBuf = this.getTransaction();
     let newTxBuf;
-    if (
-      isTransactionOutputScript(outputData) &&
-      transactionOutputAdder === undefined
-    ) {
-      newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
-    } else {
-      if (transactionOutputAdder === undefined) {
-        if (typeof outputData.address === 'string') {
-          throw new Error(
-            'Must use a transactionOutputAdder to parse address.',
-          );
-        }
-        throw new Error(
-          'If outputData is not a TransactionOutput object, you must pass a ' +
-            'function to handle it.',
-        );
-      }
-      newTxBuf = transactionOutputAdder(outputData, txBuf);
-    }
+    newTxBuf = transactionOutputAdder(outputData, txBuf);
     utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
       keyVals: [],

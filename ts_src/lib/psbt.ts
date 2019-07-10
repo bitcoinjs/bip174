@@ -1,5 +1,4 @@
 import { combine } from './combiner';
-import * as convert from './converter';
 import {
   Bip32Derivation,
   FinalScriptSig,
@@ -18,10 +17,8 @@ import {
   PsbtOutput,
   RedeemScript,
   SighashType,
-  TransactionInput,
   TransactionIOCountGetter,
   TransactionLocktimeSetter,
-  TransactionOutput,
   TransactionVersionSetter,
   WitnessScript,
   WitnessUtxo,
@@ -41,20 +38,13 @@ import {
   inputCheckUncleanFinalized,
   insertTxInGlobalMap,
 } from './utils';
-const {
-  globals: {
-    unsignedTx: { isTransactionInput, isTransactionOutputScript },
-  },
-} = convert;
 
 export class Psbt {
   static fromTransaction<T extends typeof Psbt>(
     this: T,
     txBuf: Buffer,
-    txCountGetter?: TransactionIOCountGetter,
+    txCountGetter: TransactionIOCountGetter,
   ): InstanceType<T> {
-    if (txCountGetter === undefined)
-      txCountGetter = convert.globals.unsignedTx.getInputOutputCounts;
     const result = txCountGetter(txBuf);
     const psbt = new this() as InstanceType<T>;
     psbt.globalMap.unsignedTx = txBuf;
@@ -75,7 +65,7 @@ export class Psbt {
   static fromBase64<T extends typeof Psbt>(
     this: T,
     data: string,
-    txCountGetter?: TransactionIOCountGetter,
+    txCountGetter: TransactionIOCountGetter,
   ): InstanceType<T> {
     const buffer = Buffer.from(data, 'base64');
     return this.fromBuffer(buffer, txCountGetter);
@@ -83,7 +73,7 @@ export class Psbt {
   static fromHex<T extends typeof Psbt>(
     this: T,
     data: string,
-    txCountGetter?: TransactionIOCountGetter,
+    txCountGetter: TransactionIOCountGetter,
   ): InstanceType<T> {
     const buffer = Buffer.from(data, 'hex');
     return this.fromBuffer(buffer, txCountGetter);
@@ -91,7 +81,7 @@ export class Psbt {
   static fromBuffer<T extends typeof Psbt>(
     this: T,
     buffer: Buffer,
-    txCountGetter?: TransactionIOCountGetter,
+    txCountGetter: TransactionIOCountGetter,
   ): InstanceType<T> {
     const psbt = new this() as InstanceType<T>;
     const results = psbtFromBuffer(buffer, txCountGetter);
@@ -351,31 +341,16 @@ export class Psbt {
     return this;
   }
 
-  addInput(inputData: TransactionInput): this;
   addInput<T>(
     inputData: T,
-    transactionInputAdder?: (input: T, txBuffer: Buffer) => Buffer,
-  ): this;
-  addInput<T>(
-    inputData: T | TransactionInput,
-    transactionInputAdder?: (
-      input: T | TransactionInput,
-      txBuffer: Buffer,
-    ) => Buffer,
+    transactionInputAdder: (input: T, txBuffer: Buffer) => Buffer,
   ): this {
+    if (transactionInputAdder === undefined) {
+      throw new Error('You must pass a function to handle the input.');
+    }
     const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
-    if (isTransactionInput(inputData) && transactionInputAdder === undefined) {
-      newTxBuf = convert.globals.unsignedTx.addInput(inputData, txBuf);
-    } else {
-      if (transactionInputAdder === undefined) {
-        throw new Error(
-          'If inputData is not a TransactionInput object, you must pass a ' +
-            'function to handle it.',
-        );
-      }
-      newTxBuf = transactionInputAdder(inputData, txBuf);
-    }
+    newTxBuf = transactionInputAdder(inputData, txBuf);
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
       keyVals: [],
@@ -392,46 +367,22 @@ export class Psbt {
     return this;
   }
 
-  addOutput(outputData: TransactionOutput, allowNoInput?: boolean): this;
   addOutput<T>(
     outputData: T,
+    transactionOutputAdder: (output: T, txBuffer: Buffer) => Buffer,
     allowNoInput?: boolean,
-    transactionOutputAdder?: (output: T, txBuffer: Buffer) => Buffer,
-  ): this;
-  addOutput<T>(
-    outputData: T | TransactionOutput,
-    allowNoInput: boolean = false,
-    transactionOutputAdder?: (
-      output: T | TransactionOutput,
-      txBuffer: Buffer,
-    ) => Buffer,
   ): this {
     if (!allowNoInput && this.inputs.length === 0) {
       throw new Error(
         'Add Output: can not add an output before adding an input.',
       );
     }
+    if (transactionOutputAdder === undefined) {
+      throw new Error('You must pass a function to handle the output.');
+    }
     const txBuf = this.getTransaction();
     let newTxBuf: Buffer;
-    if (
-      isTransactionOutputScript(outputData) &&
-      transactionOutputAdder === undefined
-    ) {
-      newTxBuf = convert.globals.unsignedTx.addOutput(outputData, txBuf);
-    } else {
-      if (transactionOutputAdder === undefined) {
-        if (typeof (outputData as any).address === 'string') {
-          throw new Error(
-            'Must use a transactionOutputAdder to parse address.',
-          );
-        }
-        throw new Error(
-          'If outputData is not a TransactionOutput object, you must pass a ' +
-            'function to handle it.',
-        );
-      }
-      newTxBuf = transactionOutputAdder(outputData, txBuf);
-    }
+    newTxBuf = transactionOutputAdder(outputData, txBuf);
     insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
       keyVals: [],
