@@ -5,10 +5,9 @@ export declare class Psbt {
     static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
     static fromHex<T extends typeof Psbt>(this: T, data: string, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
     static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txCountGetter?: TransactionIOCountGetter): InstanceType<T>;
-    inputs: PsbtInput[];
-    outputs: PsbtOutput[];
-    globalMap: PsbtGlobal;
-    constructor();
+    readonly inputs: PsbtInput[];
+    readonly outputs: PsbtOutput[];
+    readonly globalMap: PsbtGlobal;
     toBase64(): string;
     toHex(): string;
     toBuffer(): Buffer;
