@@ -206,7 +206,7 @@ exports.fixtures = {
         '6X5xZ9Vp+sR/HkjUdUGEQ1W9RggBAgMEAwAAAAA=',
     },
     {
-      method: 'addKeyValToGlobal',
+      method: 'addUnknownKeyValToGlobal',
       addInputOutput: true,
       args: [{ key: Buffer.from([255]), value: Buffer.from([255]) }],
       expected:
@@ -214,7 +214,7 @@ exports.fixtures = {
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAH/Af8AAAA=',
     },
     {
-      method: 'addKeyValToInput',
+      method: 'addUnknownKeyValToInput',
       addInputOutput: true,
       args: [0, { key: Buffer.from([255]), value: Buffer.from([255]) }],
       expected:
@@ -222,7 +222,7 @@ exports.fixtures = {
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAB/wH/AAA=',
     },
     {
-      method: 'addKeyValToOutput',
+      method: 'addUnknownKeyValToOutput',
       addInputOutput: true,
       args: [0, { key: Buffer.from([255]), value: Buffer.from([255]) }],
       expected:
@@ -400,13 +400,14 @@ exports.fixtures = {
       exception: 'No output #12',
     },
     {
-      method: 'addKeyValToGlobal',
+      method: 'addUnknownKeyValToGlobal',
       addInputOutput: true,
       args: [{ key: Buffer.from([0]), value: Buffer.from([255]) }],
-      exception: 'Use the method for your specific key instead of addKeyVal*',
+      exception:
+        'Use the method for your specific key instead of addUnknownKeyVal*',
     },
     {
-      method: 'addKeyValToGlobal',
+      method: 'addUnknownKeyValToGlobal',
       addInputOutput: true,
       twice: true,
       args: [{ key: Buffer.from([255]), value: Buffer.from([255]) }],

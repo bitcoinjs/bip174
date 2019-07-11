@@ -12,7 +12,7 @@ class Psbt {
     this.inputs = [];
     this.outputs = [];
     this.globalMap = {
-      keyVals: [],
+      unknownKeyVals: [],
       unsignedTx: Buffer.from(DEFAULT_UNSIGNED_TX),
     };
   }
@@ -22,13 +22,13 @@ class Psbt {
     psbt.globalMap.unsignedTx = txBuf;
     while (result.inputCount > 0) {
       psbt.inputs.push({
-        keyVals: [],
+        unknownKeyVals: [],
       });
       result.inputCount--;
     }
     while (result.outputCount > 0) {
       psbt.outputs.push({
-        keyVals: [],
+        unknownKeyVals: [],
       });
       result.outputCount--;
     }
@@ -214,33 +214,33 @@ class Psbt {
     output.bip32Derivation.push(bip32Derivation);
     return this;
   }
-  addKeyValToGlobal(keyVal) {
+  addUnknownKeyValToGlobal(keyVal) {
     utils_1.checkHasKey(
       keyVal,
-      this.globalMap.keyVals,
+      this.globalMap.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.GlobalTypes),
     );
-    this.globalMap.keyVals.push(keyVal);
+    this.globalMap.unknownKeyVals.push(keyVal);
     return this;
   }
-  addKeyValToInput(inputIndex, keyVal) {
+  addUnknownKeyValToInput(inputIndex, keyVal) {
     const input = utils_1.checkForInput(this.inputs, inputIndex);
     utils_1.checkHasKey(
       keyVal,
-      input.keyVals,
+      input.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.InputTypes),
     );
-    input.keyVals.push(keyVal);
+    input.unknownKeyVals.push(keyVal);
     return this;
   }
-  addKeyValToOutput(outputIndex, keyVal) {
+  addUnknownKeyValToOutput(outputIndex, keyVal) {
     const output = utils_1.checkForOutput(this.outputs, outputIndex);
     utils_1.checkHasKey(
       keyVal,
-      output.keyVals,
+      output.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.OutputTypes),
     );
-    output.keyVals.push(keyVal);
+    output.unknownKeyVals.push(keyVal);
     return this;
   }
   addInput(inputData, transactionInputAdder) {
@@ -252,14 +252,16 @@ class Psbt {
     newTxBuf = transactionInputAdder(inputData, txBuf);
     utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.inputs.push({
-      keyVals: [],
+      unknownKeyVals: [],
     });
-    const addKeyVals = inputData.keyVals || [];
+    const addKeyVals = inputData.unknownKeyVals || [];
     const inputIndex = this.inputs.length - 1;
     if (!Array.isArray(addKeyVals)) {
-      throw new Error('keyVals must be an Array');
+      throw new Error('unknownKeyVals must be an Array');
     }
-    addKeyVals.forEach(keyVal => this.addKeyValToInput(inputIndex, keyVal));
+    addKeyVals.forEach(keyVal =>
+      this.addUnknownKeyValToInput(inputIndex, keyVal),
+    );
     utils_1.addInputAttributes(this, inputData);
     return this;
   }
@@ -277,14 +279,16 @@ class Psbt {
     newTxBuf = transactionOutputAdder(outputData, txBuf);
     utils_1.insertTxInGlobalMap(newTxBuf, this.globalMap);
     this.outputs.push({
-      keyVals: [],
+      unknownKeyVals: [],
     });
-    const addKeyVals = outputData.keyVals || [];
+    const addKeyVals = outputData.unknownKeyVals || [];
     const outputIndex = this.outputs.length - 1;
     if (!Array.isArray(addKeyVals)) {
-      throw new Error('keyVals must be an Array');
+      throw new Error('unknownKeyVals must be an Array');
     }
-    addKeyVals.forEach(keyVal => this.addKeyValToInput(outputIndex, keyVal));
+    addKeyVals.forEach(keyVal =>
+      this.addUnknownKeyValToInput(outputIndex, keyVal),
+    );
     utils_1.addOutputAttributes(this, outputData);
     return this;
   }
@@ -298,7 +302,7 @@ class Psbt {
           'nonWitnessUtxo',
           'finalScriptSig',
           'finalScriptWitness',
-          'keyVals',
+          'unknownKeyVals',
         ].includes(key)
       ) {
         // @ts-ignore

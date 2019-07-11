@@ -30,7 +30,7 @@ const sortKeyVals = (a, b) => {
   return a.key.compare(b.key);
 };
 function keyValsFromMap(keyValMap, converterFactory) {
-  const attributes = Object.keys(keyValMap).filter(k => k !== 'keyVals');
+  const attributes = Object.keys(keyValMap).filter(k => k !== 'unknownKeyVals');
   const keyVals = [];
   const keyHexes = new Set();
   for (const attrKey of attributes) {
@@ -60,7 +60,7 @@ function keyValsFromMap(keyValMap, converterFactory) {
     }
   }
   // Get other keyVals that have not yet been gotten
-  const otherKeyVals = keyValMap.keyVals.filter(keyVal => {
+  const otherKeyVals = keyValMap.unknownKeyVals.filter(keyVal => {
     return !keyHexes.has(keyVal.key.toString('hex'));
   });
   return keyVals.concat(otherKeyVals).sort(sortKeyVals);

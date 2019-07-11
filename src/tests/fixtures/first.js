@@ -19,7 +19,7 @@ exports.fixtures = [
       'afe127fefca4995f26f82083bd10b4a6ba670000008000000080050000800000',
     output: {
       globalMap: {
-        keyVals: [],
+        unknownKeyVals: [],
         unsignedTx:
           '0200000001279a2323a5dfb51fc45f220fa58b0fc13e1e3342792a85' +
           'd7e36cd6333b5cbc390000000000ffffffff01a05aea0b000000001976a914ffe9c0' +
@@ -27,7 +27,7 @@ exports.fixtures = [
       },
       inputs: [
         {
-          keyVals: [],
+          unknownKeyVals: [],
           witnessUtxo: {
             script: 'a9146345200f68d189e1adc0df1c4d16ea8f14c0dbeb87',
             value: 199909013,
@@ -66,7 +66,7 @@ exports.fixtures = [
       ],
       outputs: [
         {
-          keyVals: [],
+          unknownKeyVals: [],
         },
       ],
     },

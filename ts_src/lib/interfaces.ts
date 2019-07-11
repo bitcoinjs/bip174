@@ -4,13 +4,13 @@ export interface KeyValue {
 }
 
 export interface PsbtGlobal {
-  keyVals: KeyValue[];
+  unknownKeyVals: KeyValue[];
   unsignedTx?: UnsignedTx;
   globalXpub?: GlobalXpub;
 }
 
 export interface PsbtInput {
-  keyVals: KeyValue[];
+  unknownKeyVals: KeyValue[];
   partialSig?: PartialSig[];
   nonWitnessUtxo?: NonWitnessUtxo;
   witnessUtxo?: WitnessUtxo;
@@ -24,7 +24,7 @@ export interface PsbtInput {
 }
 
 export interface PsbtOutput {
-  keyVals: KeyValue[];
+  unknownKeyVals: KeyValue[];
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
   bip32Derivation?: Bip32Derivation[];
@@ -129,7 +129,7 @@ export interface TransactionInput {
   hash: string | Buffer;
   index: number;
   sequence?: number;
-  keyVals?: KeyValue[];
+  unknownKeyVals?: KeyValue[];
   partialSig?: PartialSig[];
   nonWitnessUtxo?: NonWitnessUtxo;
   witnessUtxo?: WitnessUtxo;
@@ -149,7 +149,7 @@ export type TransactionInputAdder = (
 
 interface TransactionOutputBase {
   value: number;
-  keyVals?: KeyValue[];
+  unknownKeyVals?: KeyValue[];
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
   bip32Derivation?: Bip32Derivation[];

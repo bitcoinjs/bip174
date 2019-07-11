@@ -27,7 +27,7 @@ export function checkHasKey(
 ): void {
   if (checkKeyVal.key[0] < enumLength) {
     throw new Error(
-      `Use the method for your specific key instead of addKeyVal*`,
+      `Use the method for your specific key instead of addUnknownKeyVal*`,
     );
   }
   if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
@@ -46,7 +46,7 @@ export function getEnumLength(myenum: any): number {
 }
 
 export function getTransactionFromGlobalMap(globalMap: PsbtGlobal): Buffer {
-  const txKeyVals = globalMap.keyVals.filter(
+  const txKeyVals = globalMap.unknownKeyVals.filter(
     kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
   );
   const len = txKeyVals.length;
@@ -87,7 +87,7 @@ export function insertTxInGlobalMap(
   txBuf: Buffer,
   globalMap: PsbtGlobal,
 ): void {
-  const txKeyVals = globalMap.keyVals.filter(
+  const txKeyVals = globalMap.unknownKeyVals.filter(
     kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
   );
   const len = txKeyVals.length;
