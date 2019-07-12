@@ -13,15 +13,8 @@ function run(f, typ) {
       // @ts-ignore
       func = psbt_1.Psbt[f.method].bind(psbt_1.Psbt);
     } else {
-      psbt = new psbt_1.Psbt();
+      psbt = new psbt_1.Psbt(txTools_1.getDefaultTx());
       addInputOutput(psbt);
-      if (f.switchTx || f.dupeTx) {
-        psbt.globalMap.unknownKeyVals.push({
-          key: Buffer.from([0]),
-          value: psbt.globalMap.unsignedTx,
-        });
-        if (!f.dupeTx) delete psbt.globalMap.unsignedTx;
-      }
       // @ts-ignore
       func = psbt[f.method].bind(psbt);
     }
@@ -44,8 +37,8 @@ function run(f, typ) {
       t.equal(err.message, f.exception);
       return t.end();
     }
-    t.equal(psbt.toBase64(), f.expected);
-    // else console.log(f.method + '\n' + psbt!.toBase64() + '\n');
+    if (f.expected) t.equal(psbt.toBase64(), f.expected);
+    else console.log(f.method + '\n' + psbt.toBase64() + '\n');
     t.end();
   });
 }
@@ -56,21 +49,15 @@ for (const f of methods_1.fixtures.invalid) {
   run(f, 'invalid');
 }
 function addInputOutput(psbt) {
-  psbt.addInput(
-    {
-      hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-      index: 3,
-    },
-    txTools_1.addInput,
-  );
-  psbt.addOutput(
-    {
-      script: Buffer.from(
-        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-        'hex',
-      ),
-      value: 1234567890,
-    },
-    txTools_1.addOutput,
-  );
+  psbt.addInput({
+    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    index: 3,
+  });
+  psbt.addOutput({
+    script: Buffer.from(
+      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+      'hex',
+    ),
+    value: 1234567890,
+  });
 }

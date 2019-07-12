@@ -1,14 +1,14 @@
 import * as tape from 'tape';
 import { Psbt } from '../../lib/psbt';
 import { fixtures } from '../fixtures/update';
-import { getInputOutputCounts as ioGet } from '../utils/txTools';
+import { transactionFromBuffer } from '../utils/txTools';
 
 let lastAfter: any;
 
 for (const f of fixtures) {
   tape(f.description, t => {
     const before = f.before || lastAfter;
-    const psbt = Psbt.fromBase64(before, ioGet);
+    const psbt = Psbt.fromBase64(before, transactionFromBuffer);
     for (const [i, input] of f.inputData.entries()) {
       for (const key of Object.keys(input)) {
         const upperKey = key.replace(/^./, s => s.toUpperCase());

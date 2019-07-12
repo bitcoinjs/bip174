@@ -1,21 +1,10 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_1 = require('../../typeFields');
-function decode(keyVal) {
-  if (keyVal.key[0] !== typeFields_1.GlobalTypes.UNSIGNED_TX) {
-    throw new Error(
-      'Decode Error: could not decode unsignedTx with key 0x' +
-        keyVal.key.toString('hex'),
-    );
-  }
-  return keyVal.value;
-}
-exports.decode = decode;
 function encode(data) {
-  const key = Buffer.from([typeFields_1.GlobalTypes.UNSIGNED_TX]);
   return {
-    key,
-    value: data,
+    key: Buffer.from([typeFields_1.GlobalTypes.UNSIGNED_TX]),
+    value: data.toBuffer(),
   };
 }
 exports.encode = encode;

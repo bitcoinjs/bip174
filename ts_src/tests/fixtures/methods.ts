@@ -1,4 +1,3 @@
-import { getInputOutputCounts as ioGet } from '../utils/txTools';
 const dummyPubkey = (): Buffer =>
   Buffer.from(
     '03b1341ccba7683b6af4f1238cd6e97e7167d569fac47f1e48d47541844355bd46',
@@ -22,40 +21,6 @@ const dummy4Byte = (): Buffer => Buffer.from([1, 2, 3, 4]);
 
 export const fixtures = {
   valid: [
-    {
-      method: 'setVersion',
-      addInputOutput: true,
-      args: [3],
-      expected:
-        'cHNidP8BAFMDAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD//' +
-        '///AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAA==',
-    },
-    {
-      method: 'setLocktime',
-      addInputOutput: true,
-      args: [3],
-      expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD' +
-        '/////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAwAAAAAAAA==',
-    },
-    {
-      method: 'fromTransaction',
-      addInputOutput: false,
-      args: [Buffer.from([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ioGet],
-      expected: 'cHNidP8BAAoBAAAAAAAAAAAAAAAA',
-    },
-    {
-      method: 'fromTransaction',
-      addInputOutput: false,
-      args: [
-        Buffer.from([1, 2]),
-        (txBuf: any): any => ({
-          inputCount: txBuf[0],
-          outputCount: txBuf[1],
-        }),
-      ],
-      expected: 'cHNidP8BAAIBAgAAAAA=',
-    },
     {
       method: 'addGlobalXpubToGlobal',
       addInputOutput: true,
@@ -228,26 +193,34 @@ export const fixtures = {
     {
       method: 'addInput',
       addInputOutput: true,
-      switchTx: true,
       args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
+        {
+          hash:
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+          index: 1,
+        },
       ],
       expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
-        '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAAA=',
+        'cHNidP8BAHwBAAAAAtSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
+        '////AA8ODQwLCgkIBwYFBAMCAQAPDg0MCwoJCAcGBQQDAgEBAAAAAP////8B0gKWSQAA' +
+        'AAAXqRThiHDywpf7/KVMXG9kXHdFpbZu2ocAAAAAAAAAAA==',
     },
     {
       method: 'addOutput',
       addInputOutput: true,
       args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
-        false,
+        {
+          script: Buffer.from(
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+            'hex',
+          ),
+          value: 3,
+        },
       ],
       expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
-        '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAAA=',
+        'cHNidP8BAHwBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
+        '////AtIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAwAAAAAAAAAgAQIDBAUG' +
+        'BwgJCgsMDQ4PAAECAwQFBgcICQoLDA0ODwAAAAAAAAAAAA==',
     },
   ],
   invalid: [
@@ -370,29 +343,6 @@ export const fixtures = {
       exception:
         'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
         'Buffer; path: string; }',
-    },
-    {
-      method: 'addInput',
-      addInputOutput: true,
-      args: [{ wow: 1 }],
-      exception: 'You must pass a function to handle the input.',
-    },
-    {
-      method: 'addOutput',
-      addInputOutput: true,
-      args: [{ wow: 1 }],
-      exception: 'You must pass a function to handle the output.',
-    },
-    {
-      method: 'addOutput',
-      addInputOutput: true,
-      dupeTx: true,
-      args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
-        false,
-      ],
-      exception: 'Extract Transaction: Expected one Transaction, got 2',
     },
     {
       method: 'addRedeemScriptToInput',

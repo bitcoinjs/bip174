@@ -2,6 +2,7 @@ import * as tape from 'tape';
 import { combine } from '../lib/combiner';
 import { inputs as convertInputs } from '../lib/converter';
 import { isPartialSig } from '../lib/interfaces';
+import { getDefaultTx } from './utils/txTools';
 
 const b = (hex: string): Buffer => Buffer.from(hex, 'hex');
 
@@ -93,8 +94,8 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   t.throws(() => {
     combine([psbt1, psbt2]);
   }, new RegExp('Combine: Self missing transaction'));
-  psbt1.globalMap.unsignedTx = b('01000000000000000000');
-  psbt2.globalMap.unsignedTx = b('02000000000000000000');
+  psbt1.globalMap.unsignedTx = getDefaultTx(1);
+  psbt2.globalMap.unsignedTx = getDefaultTx(2);
   t.throws(() => {
     combine([psbt1, psbt2]);
   }, new RegExp('Combine: One of the Psbts does not have the same transaction.'));

@@ -1,3 +1,11 @@
+export type TransactionFromBuffer = (buffer: Buffer) => Transaction;
+export interface Transaction {
+  getInputOutputCounts(): { inputCount: number; outputCount: number };
+  addInput(objectArg: any): void;
+  addOutput(objectArg: any): void;
+  toBuffer(): Buffer;
+}
+
 export interface KeyValue {
   key: Buffer;
   value: Buffer;
@@ -5,12 +13,11 @@ export interface KeyValue {
 
 export interface PsbtGlobal {
   unknownKeyVals: KeyValue[];
-  unsignedTx?: UnsignedTx;
+  unsignedTx: Transaction;
   globalXpub?: GlobalXpub;
 }
 
-export interface PsbtInput {
-  unknownKeyVals: KeyValue[];
+interface PsbtInputBase {
   partialSig?: PartialSig[];
   nonWitnessUtxo?: NonWitnessUtxo;
   witnessUtxo?: WitnessUtxo;
@@ -23,14 +30,29 @@ export interface PsbtInput {
   porCommitment?: PorCommitment;
 }
 
-export interface PsbtOutput {
+export interface PsbtInput extends PsbtInputBase {
   unknownKeyVals: KeyValue[];
+}
+
+export interface PsbtInputExtended extends PsbtInputBase {
+  [index: string]: any;
+  unknownKeyVals?: KeyValue[];
+}
+
+export interface PsbtOutputBase {
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
   bip32Derivation?: Bip32Derivation[];
 }
 
-export type UnsignedTx = Buffer;
+export interface PsbtOutput extends PsbtOutputBase {
+  unknownKeyVals: KeyValue[];
+}
+
+export interface PsbtOutputExtended extends PsbtOutputBase {
+  [index: string]: any;
+  unknownKeyVals?: KeyValue[];
+}
 
 export interface GlobalXpub {
   extendedPubkey: Buffer;
@@ -129,17 +151,6 @@ export interface TransactionInput {
   hash: string | Buffer;
   index: number;
   sequence?: number;
-  unknownKeyVals?: KeyValue[];
-  partialSig?: PartialSig[];
-  nonWitnessUtxo?: NonWitnessUtxo;
-  witnessUtxo?: WitnessUtxo;
-  sighashType?: SighashType;
-  redeemScript?: RedeemScript;
-  witnessScript?: WitnessScript;
-  bip32Derivation?: Bip32Derivation[];
-  finalScriptSig?: FinalScriptSig;
-  finalScriptWitness?: FinalScriptWitness;
-  porCommitment?: PorCommitment;
 }
 
 export type TransactionInputAdder = (
@@ -147,25 +158,10 @@ export type TransactionInputAdder = (
   txBuffer: Buffer,
 ) => Buffer;
 
-interface TransactionOutputBase {
-  value: number;
-  unknownKeyVals?: KeyValue[];
-  redeemScript?: RedeemScript;
-  witnessScript?: WitnessScript;
-  bip32Derivation?: Bip32Derivation[];
-}
-
-export interface TransactionOutputAddress extends TransactionOutputBase {
-  address: string;
-}
-
-export interface TransactionOutputScript extends TransactionOutputBase {
+export interface TransactionOutput {
   script: Buffer;
+  value: number;
 }
-
-export type TransactionOutput =
-  | TransactionOutputAddress
-  | TransactionOutputScript;
 
 export type TransactionOutputAdder = (
   output: TransactionOutput,

@@ -1,18 +1,16 @@
 /// <reference types="node" />
-import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtOutput, RedeemScript, SighashType, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionVersionSetter, WitnessScript, WitnessUtxo } from './interfaces';
+import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtInputExtended, PsbtOutput, PsbtOutputExtended, RedeemScript, SighashType, Transaction, TransactionFromBuffer, WitnessScript, WitnessUtxo } from './interfaces';
 export declare class Psbt {
-    static fromTransaction<T extends typeof Psbt>(this: T, txBuf: Buffer, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
-    static fromBase64<T extends typeof Psbt>(this: T, data: string, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
-    static fromHex<T extends typeof Psbt>(this: T, data: string, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
-    static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txCountGetter: TransactionIOCountGetter): InstanceType<T>;
+    static fromBase64<T extends typeof Psbt>(this: T, data: string, txFromBuffer: TransactionFromBuffer): InstanceType<T>;
+    static fromHex<T extends typeof Psbt>(this: T, data: string, txFromBuffer: TransactionFromBuffer): InstanceType<T>;
+    static fromBuffer<T extends typeof Psbt>(this: T, buffer: Buffer, txFromBuffer: TransactionFromBuffer): InstanceType<T>;
     readonly inputs: PsbtInput[];
     readonly outputs: PsbtOutput[];
     readonly globalMap: PsbtGlobal;
+    constructor(tx: Transaction);
     toBase64(): string;
     toHex(): string;
     toBuffer(): Buffer;
-    setVersion(version: number, transactionVersionSetter?: TransactionVersionSetter): this;
-    setLocktime(locktime: number, transactionLocktimeSetter?: TransactionLocktimeSetter): this;
     addGlobalXpubToGlobal(globalXpub: GlobalXpub): this;
     addNonWitnessUtxoToInput(inputIndex: number, nonWitnessUtxo: NonWitnessUtxo): this;
     addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): this;
@@ -30,8 +28,8 @@ export declare class Psbt {
     addUnknownKeyValToGlobal(keyVal: KeyValue): this;
     addUnknownKeyValToInput(inputIndex: number, keyVal: KeyValue): this;
     addUnknownKeyValToOutput(outputIndex: number, keyVal: KeyValue): this;
-    addInput<T>(inputData: T, transactionInputAdder: (input: T, txBuffer: Buffer) => Buffer): this;
-    addOutput<T>(outputData: T, transactionOutputAdder: (output: T, txBuffer: Buffer) => Buffer, allowNoInput?: boolean): this;
+    addInput(inputData: PsbtInputExtended): this;
+    addOutput(outputData: PsbtOutputExtended): this;
     clearFinalizedInput(inputIndex: number): this;
     combine(...those: this[]): this;
     getTransaction(): Buffer;

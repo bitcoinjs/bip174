@@ -14,12 +14,13 @@ import {
   PorCommitment,
   PsbtGlobal,
   PsbtInput,
+  PsbtInputExtended,
   PsbtOutput,
+  PsbtOutputExtended,
   RedeemScript,
   SighashType,
-  TransactionIOCountGetter,
-  TransactionLocktimeSetter,
-  TransactionVersionSetter,
+  Transaction,
+  TransactionFromBuffer,
   WitnessScript,
   WitnessUtxo,
 } from './interfaces';
@@ -31,73 +32,48 @@ import {
   checkForInput,
   checkForOutput,
   checkHasKey,
-  defaultLocktimeSetter,
-  defaultVersionSetter,
   getEnumLength,
-  getTransactionFromGlobalMap,
   inputCheckUncleanFinalized,
-  insertTxInGlobalMap,
 } from './utils';
 
-// version 1, locktime 0, 0 ins, 0 outs
-const DEFAULT_UNSIGNED_TX = Buffer.from('01000000000000000000', 'hex');
-
 export class Psbt {
-  static fromTransaction<T extends typeof Psbt>(
-    this: T,
-    txBuf: Buffer,
-    txCountGetter: TransactionIOCountGetter,
-  ): InstanceType<T> {
-    const result = txCountGetter(txBuf);
-    const psbt = new this() as InstanceType<T>;
-    psbt.globalMap.unsignedTx = txBuf;
-    while (result.inputCount > 0) {
-      psbt.inputs.push({
-        unknownKeyVals: [],
-      });
-      result.inputCount--;
-    }
-    while (result.outputCount > 0) {
-      psbt.outputs.push({
-        unknownKeyVals: [],
-      });
-      result.outputCount--;
-    }
-    return psbt;
-  }
   static fromBase64<T extends typeof Psbt>(
     this: T,
     data: string,
-    txCountGetter: TransactionIOCountGetter,
+    txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
     const buffer = Buffer.from(data, 'base64');
-    return this.fromBuffer(buffer, txCountGetter);
+    return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromHex<T extends typeof Psbt>(
     this: T,
     data: string,
-    txCountGetter: TransactionIOCountGetter,
+    txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
     const buffer = Buffer.from(data, 'hex');
-    return this.fromBuffer(buffer, txCountGetter);
+    return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromBuffer<T extends typeof Psbt>(
     this: T,
     buffer: Buffer,
-    txCountGetter: TransactionIOCountGetter,
+    txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
-    const psbt = new this() as InstanceType<T>;
-    const results = psbtFromBuffer(buffer, txCountGetter);
+    const results = psbtFromBuffer(buffer, txFromBuffer);
+    const psbt = new this(results.globalMap.unsignedTx) as InstanceType<T>;
     Object.assign(psbt, results);
     return psbt;
   }
 
   readonly inputs: PsbtInput[] = [];
   readonly outputs: PsbtOutput[] = [];
-  readonly globalMap: PsbtGlobal = {
-    unknownKeyVals: [],
-    unsignedTx: Buffer.from(DEFAULT_UNSIGNED_TX),
-  };
+  readonly globalMap: PsbtGlobal;
+
+  constructor(tx: Transaction) {
+    this.globalMap = {
+      unknownKeyVals: [],
+      unsignedTx: tx,
+    };
+  }
 
   toBase64(): string {
     const buffer = this.toBuffer();
@@ -111,36 +87,6 @@ export class Psbt {
 
   toBuffer(): Buffer {
     return psbtToBuffer(this);
-  }
-
-  setVersion(
-    version: number,
-    transactionVersionSetter?: TransactionVersionSetter,
-  ): this {
-    let func: TransactionVersionSetter;
-    if (transactionVersionSetter !== undefined) {
-      func = transactionVersionSetter;
-    } else {
-      func = defaultVersionSetter;
-    }
-    const updated = func(version, this.globalMap.unsignedTx!);
-    insertTxInGlobalMap(updated, this.globalMap);
-    return this;
-  }
-
-  setLocktime(
-    locktime: number,
-    transactionLocktimeSetter?: TransactionLocktimeSetter,
-  ): this {
-    let func: TransactionLocktimeSetter;
-    if (transactionLocktimeSetter !== undefined) {
-      func = transactionLocktimeSetter;
-    } else {
-      func = defaultLocktimeSetter;
-    }
-    const updated = func(locktime, this.globalMap.unsignedTx!);
-    insertTxInGlobalMap(updated, this.globalMap);
-    return this;
   }
 
   addGlobalXpubToGlobal(globalXpub: GlobalXpub): this {
@@ -341,21 +287,12 @@ export class Psbt {
     return this;
   }
 
-  addInput<T>(
-    inputData: T,
-    transactionInputAdder: (input: T, txBuffer: Buffer) => Buffer,
-  ): this {
-    if (transactionInputAdder === undefined) {
-      throw new Error('You must pass a function to handle the input.');
-    }
-    const txBuf = this.getTransaction();
-    let newTxBuf: Buffer;
-    newTxBuf = transactionInputAdder(inputData, txBuf);
-    insertTxInGlobalMap(newTxBuf, this.globalMap);
+  addInput(inputData: PsbtInputExtended): this {
+    this.globalMap.unsignedTx.addInput(inputData);
     this.inputs.push({
       unknownKeyVals: [],
     });
-    const addKeyVals = (inputData as any).unknownKeyVals || [];
+    const addKeyVals = inputData.unknownKeyVals || [];
     const inputIndex = this.inputs.length - 1;
     if (!Array.isArray(addKeyVals)) {
       throw new Error('unknownKeyVals must be an Array');
@@ -367,27 +304,12 @@ export class Psbt {
     return this;
   }
 
-  addOutput<T>(
-    outputData: T,
-    transactionOutputAdder: (output: T, txBuffer: Buffer) => Buffer,
-    allowNoInput?: boolean,
-  ): this {
-    if (!allowNoInput && this.inputs.length === 0) {
-      throw new Error(
-        'Add Output: can not add an output before adding an input.',
-      );
-    }
-    if (transactionOutputAdder === undefined) {
-      throw new Error('You must pass a function to handle the output.');
-    }
-    const txBuf = this.getTransaction();
-    let newTxBuf: Buffer;
-    newTxBuf = transactionOutputAdder(outputData, txBuf);
-    insertTxInGlobalMap(newTxBuf, this.globalMap);
+  addOutput(outputData: PsbtOutputExtended): this {
+    this.globalMap.unsignedTx.addOutput(outputData);
     this.outputs.push({
       unknownKeyVals: [],
     });
-    const addKeyVals = (outputData as any).unknownKeyVals || [];
+    const addKeyVals = outputData.unknownKeyVals || [];
     const outputIndex = this.outputs.length - 1;
     if (!Array.isArray(addKeyVals)) {
       throw new Error('unknownKeyVals must be an Array');
@@ -428,6 +350,6 @@ export class Psbt {
   }
 
   getTransaction(): Buffer {
-    return getTransactionFromGlobalMap(this.globalMap);
+    return this.globalMap.unsignedTx.toBuffer();
   }
 }

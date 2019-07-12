@@ -1,58 +1,33 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
-import {
-  addInput,
-  addOutput,
-  getInputOutputCounts as ioGet,
-} from './utils/txTools';
+import { getDefaultTx, transactionFromBuffer } from './utils/txTools';
 
 tape('Test: add Input Output', t => {
-  const psbt = new Psbt();
-  t.throws(() => {
-    psbt.addOutput(
-      {
-        script: Buffer.from([]),
-        value: 1,
-      },
-      addOutput,
-    );
-  }, new RegExp('Add Output: can not add an output before adding an input.'));
-  psbt.addInput(
-    {
-      hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-      index: 3,
-    },
-    addInput,
-  );
-  psbt.addInput(
-    {
-      hash: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-      index: 1,
-    },
-    addInput,
-  );
-  psbt.addOutput(
-    {
-      script: Buffer.from(
-        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-        'hex',
-      ),
-      value: 1234567890,
-    },
-    addOutput,
-  );
-  psbt.addOutput(
-    {
-      script: Buffer.from(
-        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-        'hex',
-      ),
-      value: 987654321,
-    },
-    addOutput,
-  );
+  const psbt = new Psbt(getDefaultTx());
+  psbt.addInput({
+    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    index: 3,
+  });
+  psbt.addInput({
+    hash: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    index: 1,
+  });
+  psbt.addOutput({
+    script: Buffer.from(
+      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+      'hex',
+    ),
+    value: 1234567890,
+  });
+  psbt.addOutput({
+    script: Buffer.from(
+      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+      'hex',
+    ),
+    value: 987654321,
+  });
   const hex = psbt.toHex();
-  const hex2 = Psbt.fromHex(hex, ioGet).toHex();
+  const hex2 = Psbt.fromHex(hex, transactionFromBuffer).toHex();
   t.equal(
     hex,
     '70736274ff01009c0100000002d4a76ff95de1f4c0161a3e53ea876a91ed95331ae8d01' +

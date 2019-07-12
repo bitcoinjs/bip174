@@ -4,19 +4,14 @@ const tape = require('tape');
 const psbt_1 = require('../lib/psbt');
 const create_1 = require('./fixtures/create');
 const txTools_1 = require('./utils/txTools');
-const getNewPsbt = () => {
-  const psbt = new psbt_1.Psbt();
-  psbt.globalMap.unsignedTx[0] = 2; // BIP fixtures all use version 2
-  return psbt;
-};
 for (const f of create_1.fixtures) {
   tape('Test: ' + f.description, t => {
-    const psbt = getNewPsbt();
+    const psbt = new psbt_1.Psbt(txTools_1.getDefaultTx(2));
     for (const input of f.input.addInputs) {
-      psbt.addInput(input, txTools_1.addInput);
+      psbt.addInput(input);
     }
     for (const output of f.input.addOutputs) {
-      psbt.addOutput(output, txTools_1.addOutput);
+      psbt.addOutput(output);
     }
     t.equal(psbt.toBase64(), f.expectedBeforeUpdate);
     for (const [i, input] of f.input.updateInputData.entries()) {

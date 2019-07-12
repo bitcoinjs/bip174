@@ -1,6 +1,6 @@
-import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from './interfaces';
+import { KeyValue, PsbtInput, PsbtOutput } from './interfaces';
 import { Psbt } from './psbt';
-import { GlobalTypes, INPUT_TYPE_NAMES, OUTPUT_TYPE_NAMES } from './typeFields';
+import { INPUT_TYPE_NAMES, OUTPUT_TYPE_NAMES } from './typeFields';
 
 export function checkForInput(
   inputs: PsbtInput[],
@@ -45,21 +45,6 @@ export function getEnumLength(myenum: any): number {
   return count;
 }
 
-export function getTransactionFromGlobalMap(globalMap: PsbtGlobal): Buffer {
-  const txKeyVals = globalMap.unknownKeyVals.filter(
-    kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  return tx !== undefined ? tx : txKeyVals[0].value;
-}
-
 export function inputCheckUncleanFinalized(
   inputIndex: number,
   input: PsbtInput,
@@ -81,25 +66,6 @@ export function inputCheckUncleanFinalized(
       `Input #${inputIndex} has too much or too little data to clean`,
     );
   }
-}
-
-export function insertTxInGlobalMap(
-  txBuf: Buffer,
-  globalMap: PsbtGlobal,
-): void {
-  const txKeyVals = globalMap.unknownKeyVals.filter(
-    kv => kv.key[0] === GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  if (tx !== undefined) globalMap.unsignedTx = txBuf;
-  else txKeyVals[0].value = txBuf;
 }
 
 export function addInputAttributes<T extends typeof Psbt>(

@@ -7,7 +7,7 @@ const txTools_1 = require('./utils/txTools');
 for (const f of combine_1.fixtures) {
   tape('Test: ' + f.description, t => {
     const psbts = f.psbts.map(p =>
-      psbt_1.Psbt.fromHex(p, txTools_1.getInputOutputCounts),
+      psbt_1.Psbt.fromHex(p, txTools_1.transactionFromBuffer),
     );
     const jsonA1 = jsonify(psbts[0]);
     const jsonA2 = jsonify(psbts[1]);

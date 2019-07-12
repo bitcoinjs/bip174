@@ -34,21 +34,6 @@ function getEnumLength(myenum) {
   return count;
 }
 exports.getEnumLength = getEnumLength;
-function getTransactionFromGlobalMap(globalMap) {
-  const txKeyVals = globalMap.unknownKeyVals.filter(
-    kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  return tx !== undefined ? tx : txKeyVals[0].value;
-}
-exports.getTransactionFromGlobalMap = getTransactionFromGlobalMap;
 function inputCheckUncleanFinalized(inputIndex, input) {
   let result = false;
   const isP2SH = !!input.redeemScript;
@@ -69,22 +54,6 @@ function inputCheckUncleanFinalized(inputIndex, input) {
   }
 }
 exports.inputCheckUncleanFinalized = inputCheckUncleanFinalized;
-function insertTxInGlobalMap(txBuf, globalMap) {
-  const txKeyVals = globalMap.unknownKeyVals.filter(
-    kv => kv.key[0] === typeFields_1.GlobalTypes.UNSIGNED_TX,
-  );
-  const len = txKeyVals.length;
-  const tx = globalMap.unsignedTx;
-  const hasTx = tx !== undefined ? 1 : 0;
-  if (len + hasTx !== 1) {
-    throw new Error(
-      `Extract Transaction: Expected one Transaction, got ${len + hasTx}`,
-    );
-  }
-  if (tx !== undefined) globalMap.unsignedTx = txBuf;
-  else txKeyVals[0].value = txBuf;
-}
-exports.insertTxInGlobalMap = insertTxInGlobalMap;
 function addInputAttributes(psbt, data) {
   const inputIndex = psbt.inputs.length - 1;
   for (const name of typeFields_1.INPUT_TYPE_NAMES) {

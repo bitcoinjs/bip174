@@ -4,7 +4,7 @@ const convert = require('../converter');
 const tools_1 = require('../converter/tools');
 const varuint = require('../converter/varint');
 const typeFields_1 = require('../typeFields');
-function psbtFromBuffer(buffer, txCountGetter) {
+function psbtFromBuffer(buffer, txGetter) {
   let offset = 0;
   function varSlice() {
     const keyLen = varuint.decode(buffer, offset);
@@ -68,10 +68,9 @@ function psbtFromBuffer(buffer, txCountGetter) {
   if (unsignedTxMaps.length !== 1) {
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
-  const unsignedTx = txCountGetter(unsignedTxMaps[0].value);
+  const unsignedTx = txGetter(unsignedTxMaps[0].value);
   // Get input and output counts to loop the respective fields
-  const inputCount = unsignedTx.inputCount;
-  const outputCount = unsignedTx.outputCount;
+  const { inputCount, outputCount } = unsignedTx.getInputOutputCounts();
   const inputKeyVals = [];
   const outputKeyVals = [];
   // Get input fields
@@ -115,7 +114,11 @@ function psbtFromBuffer(buffer, txCountGetter) {
     }
     outputKeyVals.push(output);
   }
-  return psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals });
+  return psbtFromKeyVals(unsignedTx, {
+    globalMapKeyVals,
+    inputKeyVals,
+    outputKeyVals,
+  });
 }
 exports.psbtFromBuffer = psbtFromBuffer;
 function checkKeyBuffer(type, keyBuf, keyNum) {
@@ -126,11 +129,16 @@ function checkKeyBuffer(type, keyBuf, keyNum) {
   }
 }
 exports.checkKeyBuffer = checkKeyBuffer;
-function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
+function psbtFromKeyVals(
+  unsignedTx,
+  { globalMapKeyVals, inputKeyVals, outputKeyVals },
+) {
   // That was easy :-)
   const globalMap = {
     unknownKeyVals: [],
+    unsignedTx,
   };
+  let txCount = 0;
   for (const keyVal of globalMapKeyVals) {
     // If a globalMap item needs pubkey, uncomment
     // const pubkey = convert.globals.checkPubkey(keyVal);
@@ -141,10 +149,10 @@ function psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals }) {
           keyVal.key,
           typeFields_1.GlobalTypes.UNSIGNED_TX,
         );
-        if (globalMap.unsignedTx !== undefined) {
+        if (txCount > 0) {
           throw new Error('Format Error: GlobalMap has multiple UNSIGNED_TX');
         }
-        globalMap.unsignedTx = convert.globals.unsignedTx.decode(keyVal);
+        txCount++;
         break;
       case typeFields_1.GlobalTypes.GLOBAL_XPUB:
         globalMap.globalXpub = convert.globals.globalXpub.decode(keyVal);
