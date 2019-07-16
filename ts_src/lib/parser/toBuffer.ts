@@ -71,9 +71,11 @@ function keyValsFromMap(keyValMap: any, converterFactory: any): KeyValue[] {
   }
 
   // Get other keyVals that have not yet been gotten
-  const otherKeyVals = keyValMap.unknownKeyVals.filter((keyVal: KeyValue) => {
-    return !keyHexes.has(keyVal.key.toString('hex'));
-  });
+  const otherKeyVals = keyValMap.unknownKeyVals
+    ? keyValMap.unknownKeyVals.filter((keyVal: KeyValue) => {
+        return !keyHexes.has(keyVal.key.toString('hex'));
+      })
+    : [];
 
   return keyVals.concat(otherKeyVals).sort(sortKeyVals);
 }

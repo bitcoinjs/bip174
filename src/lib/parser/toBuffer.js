@@ -60,9 +60,11 @@ function keyValsFromMap(keyValMap, converterFactory) {
     }
   }
   // Get other keyVals that have not yet been gotten
-  const otherKeyVals = keyValMap.unknownKeyVals.filter(keyVal => {
-    return !keyHexes.has(keyVal.key.toString('hex'));
-  });
+  const otherKeyVals = keyValMap.unknownKeyVals
+    ? keyValMap.unknownKeyVals.filter(keyVal => {
+        return !keyHexes.has(keyVal.key.toString('hex'));
+      })
+    : [];
   return keyVals.concat(otherKeyVals).sort(sortKeyVals);
 }
 function psbtToKeyVals({ globalMap, inputs, outputs }) {
