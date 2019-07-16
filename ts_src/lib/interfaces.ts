@@ -1,8 +1,24 @@
+// This function should throw if the scriptSig or scriptWitness section for
+// any input is not empty. And it should throw if the transaction is segwit
+// format. As per the BIP.
 export type TransactionFromBuffer = (buffer: Buffer) => Transaction;
+// This is a light wrapper that will give the information needed for parsing
+// and modifying the Transaction internally.
+// This library will have no logical understanding of the Transaction format,
+// and it must be provided via the below interface
 export interface Transaction {
+  // Self explanatory
   getInputOutputCounts(): { inputCount: number; outputCount: number };
+  // This function should check the arg for the correct info needed to add an
+  // input. For example in Bitcoin it would need the hash, index, and sequence.
+  // This function will modify the internal state of the transaction.
   addInput(objectArg: any): void;
+  // Same as addInput. But with adding an output. For Bitcoin scriptPubkey
+  // and value are all that should be needed.
   addOutput(objectArg: any): void;
+  // This is primarily used when serializing the PSBT to a binary.
+  // You can implement caching behind the scenes if needed and clear the cache
+  // when addInput or addOutput are called.
   toBuffer(): Buffer;
 }
 

@@ -47,14 +47,14 @@ const { PsbtTransaction , pTxFromBuffer } = require('./someImplementation')
 // Anyone using this library for Bitcoin specifically should use bitcoinjs-lib
 
 // Your PsbtTransaction will have a toBuffer function to allow for serialization
-const tx = pTxFromBuffer(someBuffer);
+const tx = pTxFromBuffer(someTransactionBuffer);
 const psbt = new Psbt(tx)
 
 // OR
 
 // This will parse the PSBT, and use the function you pass to parse the Transaction part
 // the function should throw if the scriptSig section is not empty
-const psbt = Psbt.fromBuffer(someBuffer, pTxFromBuffer)
+const psbt = Psbt.fromBuffer(somePsbtBuffer, pTxFromBuffer)
 
 psbt.addInput({
   hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
