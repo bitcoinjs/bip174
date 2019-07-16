@@ -178,6 +178,7 @@ class Psbt {
       this.globalMap.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.GlobalTypes),
     );
+    if (!this.globalMap.unknownKeyVals) this.globalMap.unknownKeyVals = [];
     this.globalMap.unknownKeyVals.push(keyVal);
     return this;
   }
@@ -188,6 +189,7 @@ class Psbt {
       input.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.InputTypes),
     );
+    if (!input.unknownKeyVals) input.unknownKeyVals = [];
     input.unknownKeyVals.push(keyVal);
     return this;
   }
@@ -198,6 +200,7 @@ class Psbt {
       output.unknownKeyVals,
       utils_1.getEnumLength(typeFields_1.OutputTypes),
     );
+    if (!output.unknownKeyVals) output.unknownKeyVals = [];
     output.unknownKeyVals.push(keyVal);
     return this;
   }

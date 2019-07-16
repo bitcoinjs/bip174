@@ -22,7 +22,7 @@ export function checkForOutput(
 
 export function checkHasKey(
   checkKeyVal: KeyValue,
-  keyVals: KeyValue[],
+  keyVals: KeyValue[] | undefined,
   enumLength: number,
 ): void {
   if (checkKeyVal.key[0] < enumLength) {
@@ -30,7 +30,10 @@ export function checkHasKey(
       `Use the method for your specific key instead of addUnknownKeyVal*`,
     );
   }
-  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
+  if (
+    keyVals &&
+    keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0
+  ) {
     throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
   }
 }

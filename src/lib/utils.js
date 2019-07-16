@@ -19,7 +19,10 @@ function checkHasKey(checkKeyVal, keyVals, enumLength) {
       `Use the method for your specific key instead of addUnknownKeyVal*`,
     );
   }
-  if (keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0) {
+  if (
+    keyVals &&
+    keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0
+  ) {
     throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
   }
 }

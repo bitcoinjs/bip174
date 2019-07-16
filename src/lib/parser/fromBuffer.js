@@ -135,7 +135,6 @@ function psbtFromKeyVals(
 ) {
   // That was easy :-)
   const globalMap = {
-    unknownKeyVals: [],
     unsignedTx,
   };
   let txCount = 0;
@@ -159,6 +158,7 @@ function psbtFromKeyVals(
         break;
       default:
         // This will allow inclusion during serialization.
+        if (!globalMap.unknownKeyVals) globalMap.unknownKeyVals = [];
         globalMap.unknownKeyVals.push(keyVal);
     }
   }
@@ -169,9 +169,7 @@ function psbtFromKeyVals(
   const outputs = [];
   // Get input fields
   for (const index of tools_1.range(inputCount)) {
-    const input = {
-      unknownKeyVals: [],
-    };
+    const input = {};
     for (const keyVal of inputKeyVals[index]) {
       convert.inputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
@@ -282,15 +280,14 @@ function psbtFromKeyVals(
           break;
         default:
           // This will allow inclusion during serialization.
+          if (!input.unknownKeyVals) input.unknownKeyVals = [];
           input.unknownKeyVals.push(keyVal);
       }
     }
     inputs.push(input);
   }
   for (const index of tools_1.range(outputCount)) {
-    const output = {
-      unknownKeyVals: [],
-    };
+    const output = {};
     for (const keyVal of outputKeyVals[index]) {
       convert.outputs.checkPubkey(keyVal);
       switch (keyVal.key[0]) {
@@ -325,6 +322,7 @@ function psbtFromKeyVals(
           );
           break;
         default:
+          if (!output.unknownKeyVals) output.unknownKeyVals = [];
           output.unknownKeyVals.push(keyVal);
       }
     }

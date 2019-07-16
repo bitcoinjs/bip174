@@ -14,11 +14,12 @@ export interface KeyValue {
     value: Buffer;
 }
 export interface PsbtGlobal {
-    unknownKeyVals: KeyValue[];
     unsignedTx: Transaction;
+    unknownKeyVals?: KeyValue[];
     globalXpub?: GlobalXpub;
 }
-interface PsbtInputBase {
+export interface PsbtInput {
+    unknownKeyVals?: KeyValue[];
     partialSig?: PartialSig[];
     nonWitnessUtxo?: NonWitnessUtxo;
     witnessUtxo?: WitnessUtxo;
@@ -30,22 +31,16 @@ interface PsbtInputBase {
     finalScriptWitness?: FinalScriptWitness;
     porCommitment?: PorCommitment;
 }
-export interface PsbtInput extends PsbtInputBase {
-    unknownKeyVals: KeyValue[];
-}
-export interface PsbtInputExtended extends PsbtInputBase {
+export interface PsbtInputExtended extends PsbtInput {
     [index: string]: any;
-    unknownKeyVals?: KeyValue[];
 }
-export interface PsbtOutputBase {
+export interface PsbtOutput {
+    unknownKeyVals?: KeyValue[];
     redeemScript?: RedeemScript;
     witnessScript?: WitnessScript;
     bip32Derivation?: Bip32Derivation[];
 }
-export interface PsbtOutput extends PsbtOutputBase {
-    unknownKeyVals: KeyValue[];
-}
-export interface PsbtOutputExtended extends PsbtOutputBase {
+export interface PsbtOutputExtended extends PsbtOutput {
     [index: string]: any;
     unknownKeyVals?: KeyValue[];
 }
@@ -95,4 +90,3 @@ export interface TransactionOutput {
 export declare type TransactionOutputAdder = (output: TransactionOutput, txBuffer: Buffer) => Buffer;
 export declare type TransactionVersionSetter = (version: number, txBuffer: Buffer) => Buffer;
 export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Buffer) => Buffer;
-export {};

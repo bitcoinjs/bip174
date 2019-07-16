@@ -53,6 +53,7 @@ const psbt = new Psbt(tx)
 // OR
 
 // This will parse the PSBT, and use the function you pass to parse the Transaction part
+// the function should throw if the scriptSig section is not empty
 const psbt = Psbt.fromBuffer(someBuffer, pTxFromBuffer)
 
 psbt.addInput({

@@ -269,6 +269,7 @@ export class Psbt {
       this.globalMap.unknownKeyVals,
       getEnumLength(GlobalTypes),
     );
+    if (!this.globalMap.unknownKeyVals) this.globalMap.unknownKeyVals = [];
     this.globalMap.unknownKeyVals.push(keyVal);
     return this;
   }
@@ -276,6 +277,7 @@ export class Psbt {
   addUnknownKeyValToInput(inputIndex: number, keyVal: KeyValue): this {
     const input = checkForInput(this.inputs, inputIndex);
     checkHasKey(keyVal, input.unknownKeyVals, getEnumLength(InputTypes));
+    if (!input.unknownKeyVals) input.unknownKeyVals = [];
     input.unknownKeyVals.push(keyVal);
     return this;
   }
@@ -283,6 +285,7 @@ export class Psbt {
   addUnknownKeyValToOutput(outputIndex: number, keyVal: KeyValue): this {
     const output = checkForOutput(this.outputs, outputIndex);
     checkHasKey(keyVal, output.unknownKeyVals, getEnumLength(OutputTypes));
+    if (!output.unknownKeyVals) output.unknownKeyVals = [];
     output.unknownKeyVals.push(keyVal);
     return this;
   }
