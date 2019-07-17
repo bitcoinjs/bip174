@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import { Bip32Derivation, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, NonWitnessUtxo, PartialSig, PorCommitment, PsbtGlobal, PsbtInput, PsbtInputExtended, PsbtOutput, PsbtOutputExtended, RedeemScript, SighashType, Transaction, TransactionFromBuffer, WitnessScript, WitnessUtxo } from './interfaces';
+import { KeyValue, PsbtGlobal, PsbtGlobalUpdate, PsbtInput, PsbtInputExtended, PsbtInputUpdate, PsbtOutput, PsbtOutputExtended, PsbtOutputUpdate, Transaction, TransactionFromBuffer } from './interfaces';
 export declare class Psbt {
     static fromBase64<T extends typeof Psbt>(this: T, data: string, txFromBuffer: TransactionFromBuffer): InstanceType<T>;
     static fromHex<T extends typeof Psbt>(this: T, data: string, txFromBuffer: TransactionFromBuffer): InstanceType<T>;
@@ -11,20 +11,9 @@ export declare class Psbt {
     toBase64(): string;
     toHex(): string;
     toBuffer(): Buffer;
-    addGlobalXpubToGlobal(globalXpub: GlobalXpub): this;
-    addNonWitnessUtxoToInput(inputIndex: number, nonWitnessUtxo: NonWitnessUtxo): this;
-    addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): this;
-    addPartialSigToInput(inputIndex: number, partialSig: PartialSig): this;
-    addSighashTypeToInput(inputIndex: number, sighashType: SighashType): this;
-    addRedeemScriptToInput(inputIndex: number, redeemScript: RedeemScript): this;
-    addWitnessScriptToInput(inputIndex: number, witnessScript: WitnessScript): this;
-    addBip32DerivationToInput(inputIndex: number, bip32Derivation: Bip32Derivation): this;
-    addFinalScriptSigToInput(inputIndex: number, finalScriptSig: FinalScriptSig): this;
-    addFinalScriptWitnessToInput(inputIndex: number, finalScriptWitness: FinalScriptWitness): this;
-    addPorCommitmentToInput(inputIndex: number, porCommitment: PorCommitment): this;
-    addRedeemScriptToOutput(outputIndex: number, redeemScript: RedeemScript): this;
-    addWitnessScriptToOutput(outputIndex: number, witnessScript: WitnessScript): this;
-    addBip32DerivationToOutput(outputIndex: number, bip32Derivation: Bip32Derivation): this;
+    updateGlobal(updateData: PsbtGlobalUpdate): this;
+    updateInput(inputIndex: number, updateData: PsbtInputUpdate): this;
+    updateOutput(outputIndex: number, updateData: PsbtOutputUpdate): this;
     addUnknownKeyValToGlobal(keyVal: KeyValue): this;
     addUnknownKeyValToInput(inputIndex: number, keyVal: KeyValue): this;
     addUnknownKeyValToOutput(outputIndex: number, keyVal: KeyValue): this;

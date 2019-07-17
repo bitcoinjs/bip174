@@ -14,40 +14,10 @@ for (const f of fixtures) {
     }
     t.equal(psbt.toBase64(), f.expectedBeforeUpdate);
     for (const [i, input] of f.input.updateInputData.entries()) {
-      const attrs = Object.keys(input);
-      for (const attr of attrs) {
-        const upperAttr = attr.replace(/^./, s => s.toUpperCase());
-        // @ts-ignore
-        let adder = psbt[`add${upperAttr}ToInput`];
-        if (adder !== undefined) {
-          adder = adder.bind(psbt);
-          // @ts-ignore
-          const data = input[attr];
-          if (Array.isArray(data)) {
-            data.forEach(d => adder(i, d));
-          } else {
-            adder(i, data);
-          }
-        }
-      }
+      psbt.updateInput(i, input);
     }
     for (const [i, output] of f.input.updateOutputData.entries()) {
-      const attrs = Object.keys(output);
-      for (const attr of attrs) {
-        const upperAttr = attr.replace(/^./, s => s.toUpperCase());
-        // @ts-ignore
-        let adder = psbt[`add${upperAttr}ToOutput`];
-        if (adder !== undefined) {
-          adder = adder.bind(psbt);
-          // @ts-ignore
-          const data = output[attr];
-          if (Array.isArray(data)) {
-            data.forEach(d => adder(i, d));
-          } else {
-            adder(i, data);
-          }
-        }
-      }
+      psbt.updateOutput(i, output);
     }
     t.equal(psbt.toBase64(), f.expectedAfterUpdate);
     t.end();

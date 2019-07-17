@@ -4,7 +4,7 @@ const tape = require('tape');
 const psbt_1 = require('../lib/psbt');
 const methods_1 = require('./fixtures/methods');
 const txTools_1 = require('./utils/txTools');
-const BJSON = require('json-buffer');
+const BJSON = require('buffer-json');
 function run(f, typ) {
   tape(`check ${typ} method: ${f.method}`, t => {
     let func;
@@ -21,10 +21,21 @@ function run(f, typ) {
     try {
       psbt = func(...f.args);
       if (f.twice) {
-        const dup = BJSON.parse(BJSON.stringify(f.args));
-        const pubkeyArgs = dup.filter(arg => !!arg.pubkey);
-        pubkeyArgs.forEach(arg => {
-          arg.pubkey[2] = 0xff;
+        const dup = JSON.parse(BJSON.stringify(f.args), (key, value) => {
+          if (
+            key &&
+            value &&
+            value.type &&
+            value.type === 'Buffer' &&
+            value.data.startsWith('base64:')
+          ) {
+            const buf = Buffer.from(value.data.slice(7), 'base64');
+            if (['pubkey', 'extendedPubkey'].indexOf(key) > -1) {
+              buf[2] = 0xff;
+            }
+            return buf;
+          }
+          return value;
         });
         psbt = func(...dup);
       }
@@ -34,7 +45,9 @@ function run(f, typ) {
       }
     } catch (err) {
       if (!f.exception) throw err;
-      t.equal(err.message, f.exception);
+      t.throws(() => {
+        if (err) throw err;
+      }, new RegExp(f.exception));
       return t.end();
     }
     if (f.expected) t.equal(psbt.toBase64(), f.expected);

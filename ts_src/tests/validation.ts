@@ -1,7 +1,6 @@
 import * as tape from 'tape';
 import { combine } from '../lib/combiner';
 import { inputs as convertInputs } from '../lib/converter';
-import { isPartialSig } from '../lib/interfaces';
 import { getDefaultTx } from './utils/txTools';
 
 const b = (hex: string): Buffer => Buffer.from(hex, 'hex');
@@ -25,7 +24,7 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   ];
   for (const sig of sigs) {
     data.signature = sig;
-    t.assert(isPartialSig(data) === false);
+    t.assert(convertInputs.partialSig.check(data) === false);
   }
 
   const keyVal = {

@@ -13,13 +13,17 @@ export interface KeyValue {
     key: Buffer;
     value: Buffer;
 }
-export interface PsbtGlobal {
+export interface PsbtGlobal extends PsbtGlobalUpdate {
     unsignedTx: Transaction;
     unknownKeyVals?: KeyValue[];
-    globalXpub?: GlobalXpub;
 }
-export interface PsbtInput {
+export interface PsbtGlobalUpdate {
+    globalXpub?: GlobalXpub[];
+}
+export interface PsbtInput extends PsbtInputUpdate {
     unknownKeyVals?: KeyValue[];
+}
+export interface PsbtInputUpdate {
     partialSig?: PartialSig[];
     nonWitnessUtxo?: NonWitnessUtxo;
     witnessUtxo?: WitnessUtxo;
@@ -34,38 +38,35 @@ export interface PsbtInput {
 export interface PsbtInputExtended extends PsbtInput {
     [index: string]: any;
 }
-export interface PsbtOutput {
+export interface PsbtOutput extends PsbtOutputUpdate {
     unknownKeyVals?: KeyValue[];
+}
+export interface PsbtOutputUpdate {
     redeemScript?: RedeemScript;
     witnessScript?: WitnessScript;
     bip32Derivation?: Bip32Derivation[];
 }
 export interface PsbtOutputExtended extends PsbtOutput {
     [index: string]: any;
-    unknownKeyVals?: KeyValue[];
 }
 export interface GlobalXpub {
     extendedPubkey: Buffer;
     masterFingerprint: Buffer;
     path: string;
 }
-export declare function isGlobalXpub(data: any): data is GlobalXpub;
 export interface PartialSig {
     pubkey: Buffer;
     signature: Buffer;
 }
-export declare function isPartialSig(data: any): data is PartialSig;
 export interface Bip32Derivation {
     masterFingerprint: Buffer;
     pubkey: Buffer;
     path: string;
 }
-export declare function isBip32Derivation(data: any): data is Bip32Derivation;
 export interface WitnessUtxo {
     script: Buffer;
     value: number;
 }
-export declare function isWitnessUtxo(data: any): data is WitnessUtxo;
 export declare type NonWitnessUtxo = Buffer;
 export declare type SighashType = number;
 export declare type RedeemScript = Buffer;

@@ -1,28 +1,16 @@
 import { combine } from './combiner';
 import {
-  Bip32Derivation,
-  FinalScriptSig,
-  FinalScriptWitness,
-  GlobalXpub,
-  isBip32Derivation,
-  isGlobalXpub,
-  isPartialSig,
-  isWitnessUtxo,
   KeyValue,
-  NonWitnessUtxo,
-  PartialSig,
-  PorCommitment,
   PsbtGlobal,
+  PsbtGlobalUpdate,
   PsbtInput,
   PsbtInputExtended,
+  PsbtInputUpdate,
   PsbtOutput,
   PsbtOutputExtended,
-  RedeemScript,
-  SighashType,
+  PsbtOutputUpdate,
   Transaction,
   TransactionFromBuffer,
-  WitnessScript,
-  WitnessUtxo,
 } from './interfaces';
 import { psbtFromBuffer, psbtToBuffer } from './parser';
 import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
@@ -34,6 +22,9 @@ import {
   checkHasKey,
   getEnumLength,
   inputCheckUncleanFinalized,
+  updateGlobal,
+  updateInput,
+  updateOutput,
 } from './utils';
 
 export class Psbt {
@@ -70,7 +61,6 @@ export class Psbt {
 
   constructor(tx: Transaction) {
     this.globalMap = {
-      unknownKeyVals: [],
       unsignedTx: tx,
     };
   }
@@ -89,177 +79,20 @@ export class Psbt {
     return psbtToBuffer(this);
   }
 
-  addGlobalXpubToGlobal(globalXpub: GlobalXpub): this {
-    if (!isGlobalXpub(globalXpub)) {
-      throw new Error(
-        'globalXpub should be { masterFingerprint: Buffer; extendedPubkey: ' +
-          'Buffer; path: string; }',
-      );
-    }
-    this.globalMap.globalXpub = globalXpub;
+  updateGlobal(updateData: PsbtGlobalUpdate): this {
+    updateGlobal(updateData, this.globalMap);
     return this;
   }
 
-  addNonWitnessUtxoToInput(
-    inputIndex: number,
-    nonWitnessUtxo: NonWitnessUtxo,
-  ): this {
+  updateInput(inputIndex: number, updateData: PsbtInputUpdate): this {
     const input = checkForInput(this.inputs, inputIndex);
-    if (input.nonWitnessUtxo || input.witnessUtxo) {
-      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
-    }
-    if (!Buffer.isBuffer(nonWitnessUtxo)) {
-      throw new Error('nonWitnessUtxo should be a Buffer of a Transaction');
-    }
-    input.nonWitnessUtxo = nonWitnessUtxo;
+    updateInput(updateData, input);
     return this;
   }
 
-  addWitnessUtxoToInput(inputIndex: number, witnessUtxo: WitnessUtxo): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (input.nonWitnessUtxo || input.witnessUtxo) {
-      throw new Error(`Input #${inputIndex} already has a Utxo attribute`);
-    }
-    if (!isWitnessUtxo(witnessUtxo)) {
-      throw new Error(
-        'witnessUtxo should be { script: Buffer; value: number; }',
-      );
-    }
-    input.witnessUtxo = witnessUtxo;
-    return this;
-  }
-
-  addPartialSigToInput(inputIndex: number, partialSig: PartialSig): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!isPartialSig(partialSig)) {
-      throw new Error(
-        'partialSig should be { pubkey: Buffer; signature: Buffer; }',
-      );
-    }
-    if (input.partialSig === undefined) input.partialSig = [];
-    input.partialSig.push(partialSig);
-    return this;
-  }
-
-  addSighashTypeToInput(inputIndex: number, sighashType: SighashType): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (typeof sighashType !== 'number') {
-      throw new Error('sighashType should be a number');
-    }
-    input.sighashType = sighashType;
-    return this;
-  }
-
-  addRedeemScriptToInput(inputIndex: number, redeemScript: RedeemScript): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!Buffer.isBuffer(redeemScript)) {
-      throw new Error('redeemScript should be a Buffer');
-    }
-    input.redeemScript = redeemScript;
-    return this;
-  }
-
-  addWitnessScriptToInput(
-    inputIndex: number,
-    witnessScript: WitnessScript,
-  ): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!Buffer.isBuffer(witnessScript)) {
-      throw new Error('witnessScript should be a Buffer');
-    }
-    input.witnessScript = witnessScript;
-    return this;
-  }
-
-  addBip32DerivationToInput(
-    inputIndex: number,
-    bip32Derivation: Bip32Derivation,
-  ): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!isBip32Derivation(bip32Derivation)) {
-      throw new Error(
-        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
-          'Buffer; path: string; }',
-      );
-    }
-    if (input.bip32Derivation === undefined) input.bip32Derivation = [];
-    input.bip32Derivation.push(bip32Derivation);
-    return this;
-  }
-
-  addFinalScriptSigToInput(
-    inputIndex: number,
-    finalScriptSig: FinalScriptSig,
-  ): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!Buffer.isBuffer(finalScriptSig)) {
-      throw new Error('finalScriptSig should be a Buffer');
-    }
-    input.finalScriptSig = finalScriptSig;
-    return this;
-  }
-
-  addFinalScriptWitnessToInput(
-    inputIndex: number,
-    finalScriptWitness: FinalScriptWitness,
-  ): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (!Buffer.isBuffer(finalScriptWitness)) {
-      throw new Error('finalScriptWitness should be a Buffer');
-    }
-    input.finalScriptWitness = finalScriptWitness;
-    return this;
-  }
-
-  addPorCommitmentToInput(
-    inputIndex: number,
-    porCommitment: PorCommitment,
-  ): this {
-    const input = checkForInput(this.inputs, inputIndex);
-    if (typeof porCommitment !== 'string') {
-      throw new Error('porCommitment should be a string');
-    }
-    input.porCommitment = porCommitment;
-    return this;
-  }
-
-  addRedeemScriptToOutput(
-    outputIndex: number,
-    redeemScript: RedeemScript,
-  ): this {
+  updateOutput(outputIndex: number, updateData: PsbtOutputUpdate): this {
     const output = checkForOutput(this.outputs, outputIndex);
-    if (!Buffer.isBuffer(redeemScript)) {
-      throw new Error('redeemScript should be a Buffer');
-    }
-    output.redeemScript = redeemScript;
-    return this;
-  }
-
-  addWitnessScriptToOutput(
-    outputIndex: number,
-    witnessScript: WitnessScript,
-  ): this {
-    const output = checkForOutput(this.outputs, outputIndex);
-    if (!Buffer.isBuffer(witnessScript)) {
-      throw new Error('witnessScript should be a Buffer');
-    }
-    output.witnessScript = witnessScript;
-    return this;
-  }
-
-  addBip32DerivationToOutput(
-    outputIndex: number,
-    bip32Derivation: Bip32Derivation,
-  ): this {
-    const output = checkForOutput(this.outputs, outputIndex);
-    if (!isBip32Derivation(bip32Derivation)) {
-      throw new Error(
-        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
-          'Buffer; path: string; }',
-      );
-    }
-    if (output.bip32Derivation === undefined) output.bip32Derivation = [];
-    output.bip32Derivation.push(bip32Derivation);
+    updateOutput(updateData, output);
     return this;
   }
 
@@ -303,7 +136,7 @@ export class Psbt {
     addKeyVals.forEach((keyVal: KeyValue) =>
       this.addUnknownKeyValToInput(inputIndex, keyVal),
     );
-    addInputAttributes(this, inputData);
+    addInputAttributes(this.inputs, inputData);
     return this;
   }
 
@@ -320,7 +153,7 @@ export class Psbt {
     addKeyVals.forEach((keyVal: KeyValue) =>
       this.addUnknownKeyValToInput(outputIndex, keyVal),
     );
-    addOutputAttributes(this, outputData);
+    addOutputAttributes(this.outputs, outputData);
     return this;
   }
 
