@@ -26,39 +26,28 @@ const sortKeyVals = (a, b) => {
   return a.key.compare(b.key);
 };
 function keyValsFromMap(keyValMap, converterFactory) {
-  const attributes = Object.keys(keyValMap).filter(k => k !== 'unknownKeyVals');
-  const keyVals = [];
-  const keyHexes = new Set();
-  for (const attrKey of attributes) {
+  const keyHexSet = new Set();
+  const keyVals = Object.entries(keyValMap).reduce((result, [key, value]) => {
+    if (key === 'unknownKeyVals') return result;
     // We are checking for undefined anyways. So ignore TS error
     // @ts-ignore
-    const converter = converterFactory[attrKey];
-    if (converter === undefined) continue;
-    // @ts-ignore
-    const data = keyValMap[attrKey];
-    const keyVal = Array.isArray(data)
-      ? data.map(converter.encode)
-      : converter.encode(data);
-    if (Array.isArray(keyVal)) {
-      const hexes = keyVal.map(kv => kv.key.toString('hex'));
-      hexes.forEach(hex => {
-        if (keyHexes.has(hex))
-          throw new Error('Serialize Error: Duplicate key: ' + hex);
-        keyHexes.add(hex);
-      });
-      keyVals.push(...keyVal);
-    } else {
-      const hex = keyVal.key.toString('hex');
-      if (keyHexes.has(hex))
+    const converter = converterFactory[key];
+    if (converter === undefined) return result;
+    const encodedKeyVals = (Array.isArray(value) ? value : [value]).map(
+      converter.encode,
+    );
+    const keyHexes = encodedKeyVals.map(kv => kv.key.toString('hex'));
+    keyHexes.forEach(hex => {
+      if (keyHexSet.has(hex))
         throw new Error('Serialize Error: Duplicate key: ' + hex);
-      keyHexes.add(hex);
-      keyVals.push(keyVal);
-    }
-  }
+      keyHexSet.add(hex);
+    });
+    return result.concat(encodedKeyVals);
+  }, []);
   // Get other keyVals that have not yet been gotten
   const otherKeyVals = keyValMap.unknownKeyVals
     ? keyValMap.unknownKeyVals.filter(keyVal => {
-        return !keyHexes.has(keyVal.key.toString('hex'));
+        return !keyHexSet.has(keyVal.key.toString('hex'));
       })
     : [];
   return keyVals.concat(otherKeyVals).sort(sortKeyVals);
@@ -66,23 +55,10 @@ function keyValsFromMap(keyValMap, converterFactory) {
 function psbtToKeyVals({ globalMap, inputs, outputs }) {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
-  const globalKeyVals = keyValsFromMap(globalMap, convert.globals);
-  const inputKeyVals = [];
-  const outputKeyVals = [];
-  for (const index of tools_1.range(inputs.length)) {
-    const input = inputs[index];
-    const _inputKeyVals = keyValsFromMap(input, convert.inputs);
-    inputKeyVals.push(_inputKeyVals);
-  }
-  for (const index of tools_1.range(outputs.length)) {
-    const output = outputs[index];
-    const _outputKeyVals = keyValsFromMap(output, convert.outputs);
-    outputKeyVals.push(_outputKeyVals);
-  }
   return {
-    globalKeyVals,
-    inputKeyVals,
-    outputKeyVals,
+    globalKeyVals: keyValsFromMap(globalMap, convert.globals),
+    inputKeyVals: inputs.map(i => keyValsFromMap(i, convert.inputs)),
+    outputKeyVals: outputs.map(o => keyValsFromMap(o, convert.outputs)),
   };
 }
 exports.psbtToKeyVals = psbtToKeyVals;

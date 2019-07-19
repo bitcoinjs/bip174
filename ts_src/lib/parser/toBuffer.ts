@@ -1,6 +1,6 @@
 import * as convert from '../converter';
-import { keyValsToBuffer, range } from '../converter/tools';
-import { KeyValue } from '../interfaces';
+import { keyValsToBuffer } from '../converter/tools';
+import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from '../interfaces';
 import { PsbtAttributes } from './index';
 
 export function psbtToBuffer({
@@ -33,43 +33,40 @@ const sortKeyVals = (a: KeyValue, b: KeyValue): number => {
   return a.key.compare(b.key);
 };
 
-function keyValsFromMap(keyValMap: any, converterFactory: any): KeyValue[] {
-  const attributes = Object.keys(keyValMap).filter(k => k !== 'unknownKeyVals');
-  const keyVals = [] as KeyValue[];
-  const keyHexes: Set<string> = new Set();
-  for (const attrKey of attributes) {
-    // We are checking for undefined anyways. So ignore TS error
-    // @ts-ignore
-    const converter = converterFactory[attrKey];
-    if (converter === undefined) continue;
-    // @ts-ignore
-    const data = keyValMap[attrKey] as any;
+function keyValsFromMap(
+  keyValMap: PsbtGlobal | PsbtInput | PsbtOutput,
+  converterFactory: any,
+): KeyValue[] {
+  const keyHexSet: Set<string> = new Set();
 
-    const keyVal = Array.isArray(data)
-      ? (data.map(converter.encode) as KeyValue[])
-      : (converter.encode(data) as KeyValue);
+  const keyVals = Object.entries(keyValMap).reduce(
+    (result, [key, value]) => {
+      if (key === 'unknownKeyVals') return result;
+      // We are checking for undefined anyways. So ignore TS error
+      // @ts-ignore
+      const converter = converterFactory[key];
+      if (converter === undefined) return result;
 
-    if (Array.isArray(keyVal)) {
-      const hexes = keyVal.map(kv => kv.key.toString('hex'));
-      hexes.forEach(hex => {
-        if (keyHexes.has(hex))
+      const encodedKeyVals = (Array.isArray(value) ? value : [value]).map(
+        converter.encode,
+      ) as KeyValue[];
+
+      const keyHexes = encodedKeyVals.map(kv => kv.key.toString('hex'));
+      keyHexes.forEach(hex => {
+        if (keyHexSet.has(hex))
           throw new Error('Serialize Error: Duplicate key: ' + hex);
-        keyHexes.add(hex);
+        keyHexSet.add(hex);
       });
-      keyVals.push(...keyVal);
-    } else {
-      const hex = keyVal.key.toString('hex');
-      if (keyHexes.has(hex))
-        throw new Error('Serialize Error: Duplicate key: ' + hex);
-      keyHexes.add(hex);
-      keyVals.push(keyVal);
-    }
-  }
+
+      return result.concat(encodedKeyVals);
+    },
+    [] as KeyValue[],
+  );
 
   // Get other keyVals that have not yet been gotten
   const otherKeyVals = keyValMap.unknownKeyVals
     ? keyValMap.unknownKeyVals.filter((keyVal: KeyValue) => {
-        return !keyHexes.has(keyVal.key.toString('hex'));
+        return !keyHexSet.has(keyVal.key.toString('hex'));
       })
     : [];
 
@@ -87,25 +84,9 @@ export function psbtToKeyVals({
 } {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
-  const globalKeyVals = keyValsFromMap(globalMap, convert.globals);
-  const inputKeyVals = [] as KeyValue[][];
-  const outputKeyVals = [] as KeyValue[][];
-
-  for (const index of range(inputs.length)) {
-    const input = inputs[index];
-    const _inputKeyVals = keyValsFromMap(input, convert.inputs);
-    inputKeyVals.push(_inputKeyVals);
-  }
-
-  for (const index of range(outputs.length)) {
-    const output = outputs[index];
-    const _outputKeyVals = keyValsFromMap(output, convert.outputs);
-    outputKeyVals.push(_outputKeyVals);
-  }
-
   return {
-    globalKeyVals,
-    inputKeyVals,
-    outputKeyVals,
+    globalKeyVals: keyValsFromMap(globalMap, convert.globals),
+    inputKeyVals: inputs.map(i => keyValsFromMap(i, convert.inputs)),
+    outputKeyVals: outputs.map(o => keyValsFromMap(o, convert.outputs)),
   };
 }
