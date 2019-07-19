@@ -39,3 +39,17 @@ export function encode(data: WitnessUtxo): KeyValue {
     value: result,
   };
 }
+
+export const expected = '{ script: Buffer; value: number; }';
+export function check(data: any): data is WitnessUtxo {
+  return Buffer.isBuffer(data.script) && typeof data.value === 'number';
+}
+
+export function canAdd(currentData: any, newData: any): boolean {
+  return (
+    !!currentData &&
+    !!newData &&
+    currentData.witnessUtxo === undefined &&
+    currentData.nonWitnessUtxo === undefined
+  );
+}

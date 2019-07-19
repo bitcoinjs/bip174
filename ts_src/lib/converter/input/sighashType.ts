@@ -20,3 +20,12 @@ export function encode(data: SighashType): KeyValue {
     value,
   };
 }
+
+export const expected = 'number';
+export function check(data: any): data is SighashType {
+  return typeof data === 'number';
+}
+
+export function canAdd(currentData: any, newData: any): boolean {
+  return !!currentData && !!newData && currentData.sighashType === undefined;
+}

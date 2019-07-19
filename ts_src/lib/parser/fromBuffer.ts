@@ -6,14 +6,15 @@ import {
   PsbtGlobal,
   PsbtInput,
   PsbtOutput,
-  TransactionIOCountGetter,
+  Transaction,
+  TransactionFromBuffer,
 } from '../interfaces';
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
 import { PsbtAttributes } from './index';
 
 export function psbtFromBuffer(
   buffer: Buffer,
-  txCountGetter: TransactionIOCountGetter,
+  txGetter: TransactionFromBuffer,
 ): PsbtAttributes {
   let offset = 0;
 
@@ -88,11 +89,10 @@ export function psbtFromBuffer(
     throw new Error('Format Error: Only one UNSIGNED_TX allowed');
   }
 
-  const unsignedTx = txCountGetter(unsignedTxMaps[0].value);
+  const unsignedTx = txGetter(unsignedTxMaps[0].value);
 
   // Get input and output counts to loop the respective fields
-  const inputCount = unsignedTx.inputCount;
-  const outputCount = unsignedTx.outputCount;
+  const { inputCount, outputCount } = unsignedTx.getInputOutputCounts();
   const inputKeyVals: KeyValue[][] = [];
   const outputKeyVals: KeyValue[][] = [];
 
@@ -139,7 +139,11 @@ export function psbtFromBuffer(
     outputKeyVals.push(output);
   }
 
-  return psbtFromKeyVals({ globalMapKeyVals, inputKeyVals, outputKeyVals });
+  return psbtFromKeyVals(unsignedTx, {
+    globalMapKeyVals,
+    inputKeyVals,
+    outputKeyVals,
+  });
 }
 
 interface PsbtFromKeyValsArg {
@@ -160,15 +164,15 @@ export function checkKeyBuffer(
   }
 }
 
-export function psbtFromKeyVals({
-  globalMapKeyVals,
-  inputKeyVals,
-  outputKeyVals,
-}: PsbtFromKeyValsArg): PsbtAttributes {
+export function psbtFromKeyVals(
+  unsignedTx: Transaction,
+  { globalMapKeyVals, inputKeyVals, outputKeyVals }: PsbtFromKeyValsArg,
+): PsbtAttributes {
   // That was easy :-)
   const globalMap: PsbtGlobal = {
-    unknownKeyVals: [] as KeyValue[],
+    unsignedTx,
   };
+  let txCount = 0;
   for (const keyVal of globalMapKeyVals) {
     // If a globalMap item needs pubkey, uncomment
     // const pubkey = convert.globals.checkPubkey(keyVal);
@@ -176,16 +180,20 @@ export function psbtFromKeyVals({
     switch (keyVal.key[0]) {
       case GlobalTypes.UNSIGNED_TX:
         checkKeyBuffer('global', keyVal.key, GlobalTypes.UNSIGNED_TX);
-        if (globalMap.unsignedTx !== undefined) {
+        if (txCount > 0) {
           throw new Error('Format Error: GlobalMap has multiple UNSIGNED_TX');
         }
-        globalMap.unsignedTx = convert.globals.unsignedTx.decode(keyVal);
+        txCount++;
         break;
       case GlobalTypes.GLOBAL_XPUB:
-        globalMap.globalXpub = convert.globals.globalXpub.decode(keyVal);
+        if (globalMap.globalXpub === undefined) {
+          globalMap.globalXpub = [];
+        }
+        globalMap.globalXpub.push(convert.globals.globalXpub.decode(keyVal));
         break;
       default:
         // This will allow inclusion during serialization.
+        if (!globalMap.unknownKeyVals) globalMap.unknownKeyVals = [];
         globalMap.unknownKeyVals.push(keyVal);
     }
   }
@@ -198,9 +206,7 @@ export function psbtFromKeyVals({
 
   // Get input fields
   for (const index of range(inputCount)) {
-    const input: PsbtInput = {
-      unknownKeyVals: [] as KeyValue[],
-    };
+    const input: PsbtInput = {};
     for (const keyVal of inputKeyVals[index]) {
       convert.inputs.checkPubkey(keyVal);
 
@@ -280,6 +286,7 @@ export function psbtFromKeyVals({
           break;
         default:
           // This will allow inclusion during serialization.
+          if (!input.unknownKeyVals) input.unknownKeyVals = [];
           input.unknownKeyVals.push(keyVal);
       }
     }
@@ -287,9 +294,7 @@ export function psbtFromKeyVals({
   }
 
   for (const index of range(outputCount)) {
-    const output: PsbtOutput = {
-      unknownKeyVals: [] as KeyValue[],
-    };
+    const output: PsbtOutput = {};
     for (const keyVal of outputKeyVals[index]) {
       convert.outputs.checkPubkey(keyVal);
 
@@ -317,6 +322,7 @@ export function psbtFromKeyVals({
           );
           break;
         default:
+          if (!output.unknownKeyVals) output.unknownKeyVals = [];
           output.unknownKeyVals.push(keyVal);
       }
     }

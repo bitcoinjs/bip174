@@ -18,3 +18,12 @@ export function encode(data: FinalScriptSig): KeyValue {
     value: data,
   };
 }
+
+export const expected = 'Buffer';
+export function check(data: any): data is FinalScriptSig {
+  return Buffer.isBuffer(data);
+}
+
+export function canAdd(currentData: any, newData: any): boolean {
+  return !!currentData && !!newData && currentData.finalScriptSig === undefined;
+}

@@ -17,3 +17,17 @@ export function encode(data: NonWitnessUtxo): KeyValue {
     value: data,
   };
 }
+
+export const expected = 'Buffer';
+export function check(data: any): data is NonWitnessUtxo {
+  return Buffer.isBuffer(data);
+}
+
+export function canAdd(currentData: any, newData: any): boolean {
+  return (
+    !!currentData &&
+    !!newData &&
+    currentData.witnessUtxo === undefined &&
+    currentData.nonWitnessUtxo === undefined
+  );
+}

@@ -1,4 +1,3 @@
-import { getInputOutputCounts as ioGet } from '../utils/txTools';
 const dummyPubkey = (): Buffer =>
   Buffer.from(
     '03b1341ccba7683b6af4f1238cd6e97e7167d569fac47f1e48d47541844355bd46',
@@ -23,47 +22,17 @@ const dummy4Byte = (): Buffer => Buffer.from([1, 2, 3, 4]);
 export const fixtures = {
   valid: [
     {
-      method: 'setVersion',
-      addInputOutput: true,
-      args: [3],
-      expected:
-        'cHNidP8BAFMDAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD//' +
-        '///AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAA==',
-    },
-    {
-      method: 'setLocktime',
-      addInputOutput: true,
-      args: [3],
-      expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD' +
-        '/////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAwAAAAAAAA==',
-    },
-    {
-      method: 'fromTransaction',
-      addInputOutput: false,
-      args: [Buffer.from([1, 0, 0, 0, 0, 0, 0, 0, 0, 0]), ioGet],
-      expected: 'cHNidP8BAAoBAAAAAAAAAAAAAAAA',
-    },
-    {
-      method: 'fromTransaction',
-      addInputOutput: false,
-      args: [
-        Buffer.from([1, 2]),
-        (txBuf: any): any => ({
-          inputCount: txBuf[0],
-          outputCount: txBuf[1],
-        }),
-      ],
-      expected: 'cHNidP8BAAIBAgAAAAA=',
-    },
-    {
-      method: 'addGlobalXpubToGlobal',
+      method: 'updateGlobal',
       addInputOutput: true,
       args: [
         {
-          masterFingerprint: dummy4Byte(),
-          extendedPubkey: dummyXpub(),
-          path: "m/4'/5/7",
+          globalXpub: [
+            {
+              masterFingerprint: dummy4Byte(),
+              extendedPubkey: dummyXpub(),
+              path: "m/4'/5/7",
+            },
+          ],
         },
       ],
       expected:
@@ -73,28 +42,34 @@ export const fixtures = {
         '5sSKlpLhgoXBdNQUcY+FZw4iEAECAwQEAACABQAAAAcAAAAAAAA=',
     },
     {
-      method: 'addNonWitnessUtxoToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { nonWitnessUtxo: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2G' +
         'AwAAAAD/////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABAAMB' +
         'AgMAAA==',
     },
     {
-      method: 'addWitnessUtxoToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, { script: Buffer.from([1, 2, 3]), value: 1234567890 }],
+      args: [
+        0,
+        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890 } },
+      ],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABAQzSApZJAAAA' +
         'AAMBAgMAAA==',
     },
     {
-      method: 'addPartialSigToInput',
+      method: 'updateInput',
       addInputOutput: true,
       twice: true,
-      args: [0, { pubkey: dummyPubkey(), signature: dummySig() }],
+      args: [
+        0,
+        { partialSig: [{ pubkey: dummyPubkey(), signature: dummySig() }] },
+      ],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAiAgOxNBzLp2g7' +
@@ -104,38 +79,42 @@ export const fixtures = {
         'kGQiQFXN8HC2dxRpRC0HAh9cjrD+plFtYLisszrWTt5g6Hhb+zqpS5m9+GFR25qaAQAA',
     },
     {
-      method: 'addSighashTypeToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 1],
+      args: [0, { sighashType: 1 }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABAwQBAAAAAAA=',
     },
     {
-      method: 'addRedeemScriptToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { redeemScript: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABBAMBAgMAAA==',
     },
     {
-      method: 'addWitnessScriptToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { witnessScript: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABBQMBAgMAAA==',
     },
     {
-      method: 'addBip32DerivationToInput',
+      method: 'updateInput',
       addInputOutput: true,
       args: [
         0,
         {
-          masterFingerprint: dummy4Byte(),
-          path: 'm/3',
-          pubkey: dummyPubkey(),
+          bip32Derivation: [
+            {
+              masterFingerprint: dummy4Byte(),
+              path: 'm/3',
+              pubkey: dummyPubkey(),
+            },
+          ],
         },
       ],
       expected:
@@ -144,55 +123,59 @@ export const fixtures = {
         'avTxI4zW6X5xZ9Vp+sR/HkjUdUGEQ1W9RggBAgMEAwAAAAAA',
     },
     {
-      method: 'addFinalScriptSigToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { finalScriptSig: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABBwMBAgMAAA==',
     },
     {
-      method: 'addFinalScriptWitnessToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { finalScriptWitness: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABCAMBAgMAAA==',
     },
     {
-      method: 'addPorCommitmentToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 'test'],
+      args: [0, { porCommitment: 'test' }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAABCQR0ZXN0AAA=',
     },
     {
-      method: 'addRedeemScriptToOutput',
+      method: 'updateOutput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { redeemScript: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAQADAQIDAA==',
     },
     {
-      method: 'addWitnessScriptToOutput',
+      method: 'updateOutput',
       addInputOutput: true,
-      args: [0, Buffer.from([1, 2, 3])],
+      args: [0, { witnessScript: Buffer.from([1, 2, 3]) }],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
         '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAQEDAQIDAA==',
     },
     {
-      method: 'addBip32DerivationToOutput',
+      method: 'updateOutput',
       addInputOutput: true,
       twice: true,
       args: [
         0,
         {
-          masterFingerprint: dummy4Byte(),
-          path: 'm/3',
-          pubkey: dummyPubkey(),
+          bip32Derivation: [
+            {
+              masterFingerprint: dummy4Byte(),
+              path: 'm/3',
+              pubkey: dummyPubkey(),
+            },
+          ],
         },
       ],
       expected:
@@ -228,183 +211,239 @@ export const fixtures = {
     {
       method: 'addInput',
       addInputOutput: true,
-      switchTx: true,
       args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
+        {
+          hash:
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+          index: 1,
+        },
       ],
       expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
-        '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAAA=',
+        'cHNidP8BAHwBAAAAAtSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
+        '////AA8ODQwLCgkIBwYFBAMCAQAPDg0MCwoJCAcGBQQDAgEBAAAAAP////8B0gKWSQAA' +
+        'AAAXqRThiHDywpf7/KVMXG9kXHdFpbZu2ocAAAAAAAAAAA==',
     },
     {
       method: 'addOutput',
       addInputOutput: true,
       args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
-        false,
+        {
+          script: Buffer.from(
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+            'hex',
+          ),
+          value: 3,
+        },
       ],
       expected:
-        'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
-        '////AdIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAAAAAAAAAAA=',
+        'cHNidP8BAHwBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
+        '////AtIClkkAAAAAF6kU4Yhw8sKX+/ylTFxvZFx3RaW2btqHAwAAAAAAAAAgAQIDBAUG' +
+        'BwgJCgsMDQ4PAAECAwQFBgcICQoLDA0ODwAAAAAAAAAAAA==',
     },
   ],
   invalid: [
     {
-      method: 'addGlobalXpubToGlobal',
+      method: 'updateGlobal',
       addInputOutput: true,
       twice: false,
       args: [
         {
-          a: 4,
+          globalXpub: 4,
         },
       ],
-      exception:
-        'globalXpub should be { masterFingerprint: Buffer; ' +
-        'extendedPubkey: Buffer; path: string; }',
+      exception: 'Key type globalXpub must be an array',
     },
     {
-      method: 'addNonWitnessUtxoToInput',
+      method: 'updateGlobal',
       addInputOutput: true,
       twice: false,
-      args: [0, 'blah'],
-      exception: 'nonWitnessUtxo should be a Buffer of a Transaction',
+      args: [
+        {
+          globalXpub: [4],
+        },
+      ],
+      exception:
+        'Data for global key globalXpub is incorrect: Expected { ' +
+        'masterFingerprint: Buffer; extendedPubkey: Buffer; path: string; } and got',
     },
     {
-      method: 'addNonWitnessUtxoToInput',
+      method: 'updateInput',
+      addInputOutput: true,
+      twice: false,
+      args: [0, { nonWitnessUtxo: 'blah' }],
+      exception:
+        'Data for input key nonWitnessUtxo is incorrect: Expected Buffer and got',
+    },
+    {
+      method: 'updateInput',
       addInputOutput: true,
       twice: true,
-      args: [0, dummy4Byte()],
-      exception: 'Input #0 already has a Utxo attribute',
+      args: [0, { nonWitnessUtxo: dummy4Byte() }],
+      exception: 'Can not add duplicate data to input',
     },
     {
-      method: 'addWitnessUtxoToInput',
-      addInputOutput: true,
-      args: [0, { scripty: Buffer.from([1, 2, 3]), vyalue: 1234567890 }],
-      exception: 'witnessUtxo should be { script: Buffer; value: number; }',
-    },
-    {
-      method: 'addWitnessUtxoToInput',
-      addInputOutput: true,
-      twice: true,
-      args: [0, { script: Buffer.from([1, 2, 3]), value: 1234567890 }],
-      exception: 'Input #0 already has a Utxo attribute',
-    },
-    {
-      method: 'addPartialSigToInput',
-      addInputOutput: true,
-      args: [0, { pubkdey: dummyPubkey(), signdature: dummySig() }],
-      exception: 'partialSig should be { pubkey: Buffer; signature: Buffer; }',
-    },
-    {
-      method: 'addSighashTypeToInput',
-      addInputOutput: true,
-      args: [0, 'a'],
-      exception: 'sighashType should be a number',
-    },
-    {
-      method: 'addRedeemScriptToInput',
-      addInputOutput: true,
-      args: [0, 'a'],
-      exception: 'redeemScript should be a Buffer',
-    },
-    {
-      method: 'addWitnessScriptToInput',
-      addInputOutput: true,
-      args: [0, 'a'],
-      exception: 'witnessScript should be a Buffer',
-    },
-    {
-      method: 'addBip32DerivationToInput',
+      method: 'updateInput',
       addInputOutput: true,
       args: [
         0,
         {
-          a: 1,
+          witnessUtxo: { scripty: Buffer.from([1, 2, 3]), vyalue: 1234567890 },
         },
       ],
       exception:
-        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
-        'Buffer; path: string; }',
+        'Data for input key witnessUtxo is incorrect: Expected { ' +
+        'script: Buffer; value: number; } and got',
     },
     {
-      method: 'addFinalScriptSigToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 8],
-      exception: 'finalScriptSig should be a Buffer',
+      twice: true,
+      args: [
+        0,
+        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890 } },
+      ],
+      exception: 'Can not add duplicate data to input',
     },
     {
-      method: 'addFinalScriptWitnessToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 8],
-      exception: 'finalScriptWitness should be a Buffer',
+      args: [
+        0,
+        { partialSig: [{ pubkdey: dummyPubkey(), signdature: dummySig() }] },
+      ],
+      exception:
+        'Data for input key partialSig is incorrect: Expected { pubkey: ' +
+        'Buffer; signature: Buffer; } and got',
     },
     {
-      method: 'addPorCommitmentToInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 8],
-      exception: 'porCommitment should be a string',
+      args: [0, { sighashType: 'a' }],
+      exception:
+        'Data for input key sighashType is incorrect: Expected number and got',
     },
     {
-      method: 'addRedeemScriptToOutput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 8],
-      exception: 'redeemScript should be a Buffer',
+      args: [0, { redeemScript: 'a' }],
+      exception:
+        'Data for input key redeemScript is incorrect: Expected Buffer and got',
     },
     {
-      method: 'addWitnessScriptToOutput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [0, 8],
-      exception: 'witnessScript should be a Buffer',
+      args: [0, { witnessScript: 'a' }],
+      exception:
+        'Data for input key witnessScript is incorrect: Expected Buffer and got',
     },
     {
-      method: 'addBip32DerivationToOutput',
+      method: 'updateInput',
       addInputOutput: true,
       args: [
         0,
         {
-          a: 8,
+          bip32Derivation: [
+            {
+              a: 1,
+            },
+          ],
         },
       ],
       exception:
-        'bip32Derivation should be { masterFingerprint: Buffer; pubkey: ' +
-        'Buffer; path: string; }',
+        'Data for input key bip32Derivation is incorrect: Expected { ' +
+        'masterFingerprint: Buffer; pubkey: Buffer; path: string; } and got',
     },
     {
-      method: 'addInput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [{ wow: 1 }],
-      exception: 'You must pass a function to handle the input.',
+      args: [0, { finalScriptSig: 8 }],
+      exception:
+        'Data for input key finalScriptSig is incorrect: Expected Buffer and got',
     },
     {
-      method: 'addOutput',
+      method: 'updateInput',
       addInputOutput: true,
-      args: [{ wow: 1 }],
-      exception: 'You must pass a function to handle the output.',
+      args: [0, { finalScriptWitness: 8 }],
+      exception:
+        'Data for input key finalScriptWitness is incorrect: Expected Buffer and got',
     },
     {
-      method: 'addOutput',
+      method: 'updateInput',
       addInputOutput: true,
-      dupeTx: true,
+      args: [0, { porCommitment: 8 }],
+      exception:
+        'Data for input key porCommitment is incorrect: Expected string and got',
+    },
+    {
+      method: 'updateOutput',
+      addInputOutput: true,
+      args: [0, { redeemScript: 8 }],
+      exception:
+        'Data for output key redeemScript is incorrect: Expected Buffer and got',
+    },
+    {
+      method: 'updateOutput',
+      addInputOutput: true,
+      args: [0, { witnessScript: 8 }],
+      exception:
+        'Data for output key witnessScript is incorrect: Expected Buffer and got',
+    },
+    {
+      method: 'updateOutput',
+      addInputOutput: true,
       args: [
-        { wow: 0 },
-        (data: any, txBuf: Buffer): Buffer => txBuf.slice(data.wow),
-        false,
+        0,
+        {
+          bip32Derivation: [
+            {
+              a: 8,
+            },
+          ],
+        },
       ],
-      exception: 'Extract Transaction: Expected one Transaction, got 2',
+      exception:
+        'Data for output key bip32Derivation is incorrect: Expected { ' +
+        'masterFingerprint: Buffer; pubkey: Buffer; path: string; } and got',
     },
     {
-      method: 'addRedeemScriptToInput',
+      method: 'updateInput',
       addInputOutput: true,
       args: [12, dummy4Byte()],
       exception: 'No input #12',
     },
     {
-      method: 'addRedeemScriptToOutput',
+      method: 'updateOutput',
       addInputOutput: true,
       args: [12, dummy4Byte()],
       exception: 'No output #12',
+    },
+    {
+      method: 'addInput',
+      addInputOutput: true,
+      args: [
+        {
+          hash:
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+          index: 1,
+          unknownKeyVals: 34,
+        },
+      ],
+      exception: 'unknownKeyVals must be an Array',
+    },
+    {
+      method: 'addOutput',
+      addInputOutput: true,
+      args: [
+        {
+          script: Buffer.from(
+            '0102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f00',
+            'hex',
+          ),
+          value: 3,
+          unknownKeyVals: 34,
+        },
+      ],
+      exception: 'unknownKeyVals must be an Array',
     },
     {
       method: 'addUnknownKeyValToGlobal',

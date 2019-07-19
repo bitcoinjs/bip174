@@ -3,7 +3,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const tape = require('tape');
 const combiner_1 = require('../lib/combiner');
 const converter_1 = require('../lib/converter');
-const interfaces_1 = require('../lib/interfaces');
+const txTools_1 = require('./utils/txTools');
 const b = hex => Buffer.from(hex, 'hex');
 tape('should not pass isPartialSig with invalid DER signature', t => {
   const data = {
@@ -24,7 +24,7 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   ];
   for (const sig of sigs) {
     data.signature = sig;
-    t.assert(interfaces_1.isPartialSig(data) === false);
+    t.assert(converter_1.inputs.partialSig.check(data) === false);
   }
   const keyVal = {
     key: b('ff'),
@@ -87,8 +87,8 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   t.throws(() => {
     combiner_1.combine([psbt1, psbt2]);
   }, new RegExp('Combine: Self missing transaction'));
-  psbt1.globalMap.unsignedTx = b('01000000000000000000');
-  psbt2.globalMap.unsignedTx = b('02000000000000000000');
+  psbt1.globalMap.unsignedTx = txTools_1.getDefaultTx(1);
+  psbt2.globalMap.unsignedTx = txTools_1.getDefaultTx(2);
   t.throws(() => {
     combiner_1.combine([psbt1, psbt2]);
   }, new RegExp('Combine: One of the Psbts does not have the same transaction.'));

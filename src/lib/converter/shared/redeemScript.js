@@ -1,10 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 function makeConverter(TYPE_BYTE) {
-  return {
-    decode,
-    encode,
-  };
   function decode(keyVal) {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
@@ -21,5 +17,19 @@ function makeConverter(TYPE_BYTE) {
       value: data,
     };
   }
+  const expected = 'Buffer';
+  function check(data) {
+    return Buffer.isBuffer(data);
+  }
+  function canAdd(currentData, newData) {
+    return !!currentData && !!newData && currentData.redeemScript === undefined;
+  }
+  return {
+    decode,
+    encode,
+    check,
+    expected,
+    canAdd,
+  };
 }
 exports.makeConverter = makeConverter;

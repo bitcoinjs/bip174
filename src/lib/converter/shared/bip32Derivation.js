@@ -2,10 +2,6 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const range = n => [...Array(n).keys()];
 function makeConverter(TYPE_BYTE) {
-  return {
-    decode,
-    encode,
-  };
   function decode(keyVal) {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
@@ -60,5 +56,30 @@ function makeConverter(TYPE_BYTE) {
       value,
     };
   }
+  const expected =
+    '{ masterFingerprint: Buffer; pubkey: Buffer; path: string; }';
+  function check(data) {
+    return (
+      Buffer.isBuffer(data.pubkey) &&
+      Buffer.isBuffer(data.masterFingerprint) &&
+      typeof data.path === 'string' &&
+      [33, 65].includes(data.pubkey.length) &&
+      [2, 3, 4].includes(data.pubkey[0]) &&
+      data.masterFingerprint.length === 4
+    );
+  }
+  function canAddToArray(array, item, dupeSet) {
+    const dupeString = item.pubkey.toString('hex');
+    if (dupeSet.has(dupeString)) return false;
+    dupeSet.add(dupeString);
+    return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  }
+  return {
+    decode,
+    encode,
+    check,
+    expected,
+    canAddToArray,
+  };
 }
 exports.makeConverter = makeConverter;

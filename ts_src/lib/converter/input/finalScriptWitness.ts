@@ -18,3 +18,14 @@ export function encode(data: FinalScriptWitness): KeyValue {
     value: data,
   };
 }
+
+export const expected = 'Buffer';
+export function check(data: any): data is FinalScriptWitness {
+  return Buffer.isBuffer(data);
+}
+
+export function canAdd(currentData: any, newData: any): boolean {
+  return (
+    !!currentData && !!newData && currentData.finalScriptWitness === undefined
+  );
+}

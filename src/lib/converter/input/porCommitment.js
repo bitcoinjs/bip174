@@ -19,3 +19,12 @@ function encode(data) {
   };
 }
 exports.encode = encode;
+exports.expected = 'string';
+function check(data) {
+  return typeof data === 'string';
+}
+exports.check = check;
+function canAdd(currentData, newData) {
+  return !!currentData && !!newData && currentData.porCommitment === undefined;
+}
+exports.canAdd = canAdd;

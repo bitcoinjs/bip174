@@ -227,7 +227,7 @@ exports.fixtures = [
       globalMapKeyVals: [
         {
           key: b('00'),
-          value: b('fb'),
+          value: b('02000000000000000000'),
         },
         {
           key: b(
@@ -242,8 +242,8 @@ exports.fixtures = [
       outputKeyVals: [],
     },
     expected:
-      'cHNidP8BAAH7TwEEiLIeA0o0bZiAAAAAAy5kZ4EAdSYO56gxGJ2BTmVqMAq3+aFRtzd+' +
-      '//6RBREDsDTsMrqmw8BUganRXG7mxIqWkuGChcF01BRxj4VnDiIQAQIDBAQAAIAFAA' +
-      'CABgAAAAAAAA==',
+      'cHNidP8BAAoCAAAAAAAAAAAATwEEiLIeA0o0bZiAAAAAAy5kZ4EAdSYO56gxGJ2BTmVqM' +
+      'Aq3+aFRtzd+//6RBREDsDTsMrqmw8BUganRXG7mxIqWkuGChcF01BRxj4VnDiIQAQIDBA' +
+      'QAAIAFAACABgAAAAAAAA==',
   },
 ];

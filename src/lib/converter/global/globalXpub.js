@@ -55,3 +55,29 @@ function encode(data) {
   };
 }
 exports.encode = encode;
+exports.expected =
+  '{ masterFingerprint: Buffer; extendedPubkey: Buffer; path: string; }';
+function check(data) {
+  const epk = data.extendedPubkey;
+  const mfp = data.masterFingerprint;
+  const p = data.path;
+  return (
+    Buffer.isBuffer(epk) &&
+    epk.length === 78 &&
+    [2, 3].indexOf(epk[45]) > -1 &&
+    Buffer.isBuffer(mfp) &&
+    mfp.length === 4 &&
+    typeof p === 'string' &&
+    !!p.match(/^m(\/\d+'?)+$/)
+  );
+}
+exports.check = check;
+function canAddToArray(array, item, dupeSet) {
+  const dupeString = item.extendedPubkey.toString('hex');
+  if (dupeSet.has(dupeString)) return false;
+  dupeSet.add(dupeString);
+  return (
+    array.filter(v => v.extendedPubkey.equals(item.extendedPubkey)).length === 0
+  );
+}
+exports.canAddToArray = canAddToArray;

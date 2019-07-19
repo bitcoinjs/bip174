@@ -58,3 +58,34 @@ export function encode(data: GlobalXpub): KeyValue {
     value,
   };
 }
+
+export const expected =
+  '{ masterFingerprint: Buffer; extendedPubkey: Buffer; path: string; }';
+
+export function check(data: any): data is GlobalXpub {
+  const epk = data.extendedPubkey;
+  const mfp = data.masterFingerprint;
+  const p = data.path;
+  return (
+    Buffer.isBuffer(epk) &&
+    epk.length === 78 &&
+    [2, 3].indexOf(epk[45]) > -1 &&
+    Buffer.isBuffer(mfp) &&
+    mfp.length === 4 &&
+    typeof p === 'string' &&
+    !!p.match(/^m(\/\d+'?)+$/)
+  );
+}
+
+export function canAddToArray(
+  array: GlobalXpub[],
+  item: GlobalXpub,
+  dupeSet: Set<string>,
+): boolean {
+  const dupeString = item.extendedPubkey.toString('hex');
+  if (dupeSet.has(dupeString)) return false;
+  dupeSet.add(dupeString);
+  return (
+    array.filter(v => v.extendedPubkey.equals(item.extendedPubkey)).length === 0
+  );
+}

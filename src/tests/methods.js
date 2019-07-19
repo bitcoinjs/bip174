@@ -4,7 +4,7 @@ const tape = require('tape');
 const psbt_1 = require('../lib/psbt');
 const methods_1 = require('./fixtures/methods');
 const txTools_1 = require('./utils/txTools');
-const BJSON = require('json-buffer');
+const BJSON = require('buffer-json');
 function run(f, typ) {
   tape(`check ${typ} method: ${f.method}`, t => {
     let func;
@@ -13,25 +13,29 @@ function run(f, typ) {
       // @ts-ignore
       func = psbt_1.Psbt[f.method].bind(psbt_1.Psbt);
     } else {
-      psbt = new psbt_1.Psbt();
+      psbt = new psbt_1.Psbt(txTools_1.getDefaultTx());
       addInputOutput(psbt);
-      if (f.switchTx || f.dupeTx) {
-        psbt.globalMap.unknownKeyVals.push({
-          key: Buffer.from([0]),
-          value: psbt.globalMap.unsignedTx,
-        });
-        if (!f.dupeTx) delete psbt.globalMap.unsignedTx;
-      }
       // @ts-ignore
       func = psbt[f.method].bind(psbt);
     }
     try {
       psbt = func(...f.args);
       if (f.twice) {
-        const dup = BJSON.parse(BJSON.stringify(f.args));
-        const pubkeyArgs = dup.filter(arg => !!arg.pubkey);
-        pubkeyArgs.forEach(arg => {
-          arg.pubkey[2] = 0xff;
+        const dup = JSON.parse(BJSON.stringify(f.args), (key, value) => {
+          if (
+            key &&
+            value &&
+            value.type &&
+            value.type === 'Buffer' &&
+            value.data.startsWith('base64:')
+          ) {
+            const buf = Buffer.from(value.data.slice(7), 'base64');
+            if (['pubkey', 'extendedPubkey'].indexOf(key) > -1) {
+              buf[2] = 0xff;
+            }
+            return buf;
+          }
+          return value;
         });
         psbt = func(...dup);
       }
@@ -41,11 +45,13 @@ function run(f, typ) {
       }
     } catch (err) {
       if (!f.exception) throw err;
-      t.equal(err.message, f.exception);
+      t.throws(() => {
+        if (err) throw err;
+      }, new RegExp(f.exception));
       return t.end();
     }
-    t.equal(psbt.toBase64(), f.expected);
-    // else console.log(f.method + '\n' + psbt!.toBase64() + '\n');
+    if (f.expected) t.equal(psbt.toBase64(), f.expected);
+    else console.log(f.method + '\n' + psbt.toBase64() + '\n');
     t.end();
   });
 }
@@ -56,21 +62,15 @@ for (const f of methods_1.fixtures.invalid) {
   run(f, 'invalid');
 }
 function addInputOutput(psbt) {
-  psbt.addInput(
-    {
-      hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
-      index: 3,
-    },
-    txTools_1.addInput,
-  );
-  psbt.addOutput(
-    {
-      script: Buffer.from(
-        'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
-        'hex',
-      ),
-      value: 1234567890,
-    },
-    txTools_1.addOutput,
-  );
+  psbt.addInput({
+    hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
+    index: 3,
+  });
+  psbt.addOutput({
+    script: Buffer.from(
+      'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
+      'hex',
+    ),
+    value: 1234567890,
+  });
 }

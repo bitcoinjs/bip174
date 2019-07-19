@@ -6,12 +6,14 @@ export function makeConverter(
 ): {
   decode: (keyVal: KeyValue) => Bip32Derivation;
   encode: (data: Bip32Derivation) => KeyValue;
+  check: (data: any) => data is Bip32Derivation;
+  expected: string;
+  canAddToArray: (
+    array: Bip32Derivation[],
+    item: Bip32Derivation,
+    dupeSet: Set<string>,
+  ) => boolean;
 } {
-  return {
-    decode,
-    encode,
-  };
-
   function decode(keyVal: KeyValue): Bip32Derivation {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
@@ -71,4 +73,36 @@ export function makeConverter(
       value,
     };
   }
+
+  const expected =
+    '{ masterFingerprint: Buffer; pubkey: Buffer; path: string; }';
+  function check(data: any): data is Bip32Derivation {
+    return (
+      Buffer.isBuffer(data.pubkey) &&
+      Buffer.isBuffer(data.masterFingerprint) &&
+      typeof data.path === 'string' &&
+      [33, 65].includes(data.pubkey.length) &&
+      [2, 3, 4].includes(data.pubkey[0]) &&
+      data.masterFingerprint.length === 4
+    );
+  }
+
+  function canAddToArray(
+    array: Bip32Derivation[],
+    item: Bip32Derivation,
+    dupeSet: Set<string>,
+  ): boolean {
+    const dupeString = item.pubkey.toString('hex');
+    if (dupeSet.has(dupeString)) return false;
+    dupeSet.add(dupeString);
+    return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  }
+
+  return {
+    decode,
+    encode,
+    check,
+    expected,
+    canAddToArray,
+  };
 }

@@ -21,3 +21,12 @@ function encode(data) {
   };
 }
 exports.encode = encode;
+exports.expected = 'number';
+function check(data) {
+  return typeof data === 'number';
+}
+exports.check = check;
+function canAdd(currentData, newData) {
+  return !!currentData && !!newData && currentData.sighashType === undefined;
+}
+exports.canAdd = canAdd;

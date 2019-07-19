@@ -19,3 +19,12 @@ function encode(data) {
   };
 }
 exports.encode = encode;
+exports.expected = 'Buffer';
+function check(data) {
+  return Buffer.isBuffer(data);
+}
+exports.check = check;
+function canAdd(currentData, newData) {
+  return !!currentData && !!newData && currentData.finalScriptSig === undefined;
+}
+exports.canAdd = canAdd;

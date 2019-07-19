@@ -37,33 +37,47 @@ In order to keep this library as separate from Bitcoin logic as possible, This l
 ## Example
 ```javascript
 const { Psbt } = require('bip174')
-const { inputAdder, outputAdder } = require('./someImplementation')
-// See tests/utils/txTools file for an example of a simple Bitcoin Transaction parser.
-// Also see BitcoinJS-lib for an extended class that uses the Transaction class internally.
+const { PsbtTransaction , pTxFromBuffer } = require('./someImplementation')
+// Psbt requires a Transaction interface to create an instance, as well as
+// A function that turns a buffer into that interface. See Transaction and TransactionFromBuffer
+// in ts_src/lib/interfaces.ts ...
 
-const psbt = new Psbt()
+// See tests/utils/txTools file for an example of a simple Bitcoin Transaction.
+// Also see BitcoinJS-lib for an extended class that uses the Transaction class internally.
+// Anyone using this library for Bitcoin specifically should use bitcoinjs-lib
+
+// Your PsbtTransaction will have a toBuffer function to allow for serialization
+const tx = pTxFromBuffer(someTransactionBuffer);
+const psbt = new Psbt(tx)
+
+// OR
+
+// This will parse the PSBT, and use the function you pass to parse the Transaction part
+// the function should throw if the scriptSig section is not empty
+const psbt = Psbt.fromBuffer(somePsbtBuffer, pTxFromBuffer)
+
 psbt.addInput({
   hash: '865dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
   index: 3,
-}, inputAdder)
+})
 psbt.addInput({
   hash: 'ff5dce988413971fd812d0e81a3395ed916a87ea533e1a16c0f4e15df96fa7d4',
   index: 1,
-}, inputAdder)
+})
 psbt.addOutput({
   script: Buffer.from(
     'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
     'hex',
   ),
   value: 1234567890,
-}, outputAdder)
+})
 psbt.addOutput({
   script: Buffer.from(
     'a914e18870f2c297fbfca54c5c6f645c7745a5b66eda87',
     'hex',
   ),
   value: 987654321,
-}, outputAdder)
+})
 psbt.addRedeemScriptToInput(0, Buffer.from(
   '00208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',
   'hex',

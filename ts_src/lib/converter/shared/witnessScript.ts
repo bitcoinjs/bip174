@@ -5,12 +5,10 @@ export function makeConverter(
 ): {
   decode: (keyVal: KeyValue) => WitnessScript;
   encode: (data: WitnessScript) => KeyValue;
+  check: (data: any) => data is WitnessScript;
+  expected: string;
+  canAdd: (currentData: any, newData: any) => boolean;
 } {
-  return {
-    decode,
-    encode,
-  };
-
   function decode(keyVal: KeyValue): WitnessScript {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
@@ -28,4 +26,23 @@ export function makeConverter(
       value: data,
     };
   }
+
+  const expected = 'Buffer';
+  function check(data: any): data is WitnessScript {
+    return Buffer.isBuffer(data);
+  }
+
+  function canAdd(currentData: any, newData: any): boolean {
+    return (
+      !!currentData && !!newData && currentData.witnessScript === undefined
+    );
+  }
+
+  return {
+    decode,
+    encode,
+    check,
+    expected,
+    canAdd,
+  };
 }
