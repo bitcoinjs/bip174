@@ -67,18 +67,12 @@ function psbtToKeyVals({ globalMap, inputs, outputs }) {
   // First parse the global keyVals
   // Get any extra keyvals to pass along
   const globalKeyVals = keyValsFromMap(globalMap, convert.globals);
-  const inputKeyVals = [];
-  const outputKeyVals = [];
-  for (const index of tools_1.range(inputs.length)) {
-    const input = inputs[index];
-    const _inputKeyVals = keyValsFromMap(input, convert.inputs);
-    inputKeyVals.push(_inputKeyVals);
-  }
-  for (const index of tools_1.range(outputs.length)) {
-    const output = outputs[index];
-    const _outputKeyVals = keyValsFromMap(output, convert.outputs);
-    outputKeyVals.push(_outputKeyVals);
-  }
+  const inputKeyVals = inputs.map(input =>
+    keyValsFromMap(input, convert.inputs),
+  );
+  const outputKeyVals = outputs.map(output =>
+    keyValsFromMap(output, convert.outputs),
+  );
   return {
     globalKeyVals,
     inputKeyVals,

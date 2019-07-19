@@ -1,5 +1,5 @@
 import * as convert from '../converter';
-import { keyValsToBuffer, range } from '../converter/tools';
+import { keyValsToBuffer } from '../converter/tools';
 import { KeyValue } from '../interfaces';
 import { PsbtAttributes } from './index';
 
@@ -88,20 +88,12 @@ export function psbtToKeyVals({
   // First parse the global keyVals
   // Get any extra keyvals to pass along
   const globalKeyVals = keyValsFromMap(globalMap, convert.globals);
-  const inputKeyVals = [] as KeyValue[][];
-  const outputKeyVals = [] as KeyValue[][];
-
-  for (const index of range(inputs.length)) {
-    const input = inputs[index];
-    const _inputKeyVals = keyValsFromMap(input, convert.inputs);
-    inputKeyVals.push(_inputKeyVals);
-  }
-
-  for (const index of range(outputs.length)) {
-    const output = outputs[index];
-    const _outputKeyVals = keyValsFromMap(output, convert.outputs);
-    outputKeyVals.push(_outputKeyVals);
-  }
+  const inputKeyVals = inputs.map(input =>
+    keyValsFromMap(input, convert.inputs),
+  );
+  const outputKeyVals = outputs.map(output =>
+    keyValsFromMap(output, convert.outputs),
+  );
 
   return {
     globalKeyVals,
