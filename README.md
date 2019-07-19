@@ -6,11 +6,11 @@
 
 A [BIP174](https://github.com/bitcoin/bips/blob/master/bip-0174.mediawiki) compatible partial Transaction encoding library.
 
-## Under heavy development
+## Bitcoin users, use bitcoinjs-lib's Psbt class.
 
-TODO: Increase coverage. Squish bugs.
+This library is separate as an attempt to separate Bitcoin specific logic from the encoding format.
 
-WARNING: Until v1.0.0 release, this library will be in flux and have many bugs. Be warned.
+I apologize if this library is hard to use. Removing Bitcoin specific logic from "Partially Signed BITCOIN Transaction" format was kind of hard.
 
 ## Responsibilities Covered
 
@@ -28,11 +28,10 @@ In order to keep this library as separate from Bitcoin logic as possible, This l
 2. Extractor: This class has minimal knowledge of Bitcoin transactions, so creating a full transaction from a PSBT must be done with a bitcoin aware extended class.
 3. Input Finalizer: This class, again, has no knowledge of whether an input is finished.
 
-## Static methods and addInput / addOutput require function parameters
+## Static methods and addInput / addOutput require an abstract Transaction object
 
-* Static methods: They require a Transaction input/output count getter. The function is `(txBuffer: Buffer) => { inputCount: number; outputCount: number; }` and takes in the Buffer of the value in the 0x00 key of the globalMap.
-* addInput/addOutput methods: They require a function to modify the Buffer of the Transaction and return it. `(input: T, txBuffer: Buffer) => Buffer` where T is the same type you passed in the first argument.
-  * **WARNING** If `T` type has attributes that are named the same as any corresponding input or output types (`witnessUtxo` etc.) the addOutput and addInput functions will try to add them. This allows you to add the input/output attributes to your `T` type and it will automatically add them all in one try.
+* Static methods: You must pass a `TransactionFromBuffer` typed function. See `ts_src/lib/interfaces.ts` for info on the `Transaction` interface and the `TransactionFromBuffer` function.
+* addInput/addOutput methods: The constructor takes a `Transaction` abstract interface that has an addInput/addOutput method which will be called.
 
 ## Example
 ```javascript
