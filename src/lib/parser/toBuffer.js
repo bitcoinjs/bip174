@@ -9,16 +9,12 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
     outputs,
   });
   const globalBuffer = tools_1.keyValsToBuffer(globalKeyVals);
-  const inputBuffers = [];
-  const outputBuffers = [];
-  inputKeyVals.forEach(input => {
-    inputBuffers.push(tools_1.keyValsToBuffer(input));
-  });
-  outputKeyVals.forEach(output => {
-    outputBuffers.push(tools_1.keyValsToBuffer(output));
-  });
-  if (inputBuffers.length === 0) inputBuffers.push(Buffer.from([0]));
-  if (outputBuffers.length === 0) outputBuffers.push(Buffer.from([0]));
+  const keyValsOrEmptyToBuffer = keyVals =>
+    keyVals.length === 0
+      ? [Buffer.from([0])]
+      : keyVals.map(tools_1.keyValsToBuffer);
+  const inputBuffers = keyValsOrEmptyToBuffer(inputKeyVals);
+  const outputBuffers = keyValsOrEmptyToBuffer(outputKeyVals);
   const header = Buffer.allocUnsafe(5);
   header.writeUIntBE(0x70736274ff, 0, 5);
   return Buffer.concat(
