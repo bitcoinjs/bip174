@@ -19,6 +19,7 @@
     "no-implicit-dependencies": [true, "dev"],
     "no-return-await": true,
     "no-var-requires": false,
+    "no-unnecessary-callback-wrapper": true,
     "no-unused-expression": false,
     "object-literal-sort-keys": false,
     "quotemark": [true, "single", "avoid-escape"],

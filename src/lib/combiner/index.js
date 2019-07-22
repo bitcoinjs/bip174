@@ -11,10 +11,8 @@ function combine(psbts) {
     throw new Error('Combine: Self missing transaction');
   }
   const selfGlobalSet = getKeySet(selfKeyVals.globalKeyVals);
-  const selfInputSets = selfKeyVals.inputKeyVals.map(input => getKeySet(input));
-  const selfOutputSets = selfKeyVals.outputKeyVals.map(output =>
-    getKeySet(output),
-  );
+  const selfInputSets = selfKeyVals.inputKeyVals.map(getKeySet);
+  const selfOutputSets = selfKeyVals.outputKeyVals.map(getKeySet);
   for (const other of others) {
     const otherTx = getTx(other);
     if (
@@ -34,9 +32,7 @@ function combine(psbts) {
         otherKeyVals.globalKeyVals,
       ),
     );
-    const otherInputSets = otherKeyVals.inputKeyVals.map(input =>
-      getKeySet(input),
-    );
+    const otherInputSets = otherKeyVals.inputKeyVals.map(getKeySet);
     otherInputSets.forEach((inputSet, idx) =>
       inputSet.forEach(
         keyPusher(
@@ -46,9 +42,7 @@ function combine(psbts) {
         ),
       ),
     );
-    const otherOutputSets = otherKeyVals.outputKeyVals.map(output =>
-      getKeySet(output),
-    );
+    const otherOutputSets = otherKeyVals.outputKeyVals.map(getKeySet);
     otherOutputSets.forEach((outputSet, idx) =>
       outputSet.forEach(
         keyPusher(

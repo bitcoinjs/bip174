@@ -112,7 +112,7 @@ function updateMaker<T, Y>(
           ) {
             throw new Error(`Key type ${name} must be an array`);
           }
-          if (!data.every(v => check(v))) {
+          if (!data.every(check)) {
             throwForUpdateMaker(typeName, name, expected, data);
           }
           // @ts-ignore
