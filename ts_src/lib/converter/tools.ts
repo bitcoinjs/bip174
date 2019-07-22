@@ -17,7 +17,7 @@ export function reverseBuffer(buffer: Buffer): Buffer {
 }
 
 export function keyValsToBuffer(keyVals: KeyValue[]): Buffer {
-  const buffers = keyVals.map(keyVal => keyValToBuffer(keyVal));
+  const buffers = keyVals.map(keyValToBuffer);
   buffers.push(Buffer.from([0]));
   return Buffer.concat(buffers);
 }

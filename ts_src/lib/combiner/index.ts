@@ -12,10 +12,8 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
     throw new Error('Combine: Self missing transaction');
   }
   const selfGlobalSet = getKeySet(selfKeyVals.globalKeyVals);
-  const selfInputSets = selfKeyVals.inputKeyVals.map(input => getKeySet(input));
-  const selfOutputSets = selfKeyVals.outputKeyVals.map(output =>
-    getKeySet(output),
-  );
+  const selfInputSets = selfKeyVals.inputKeyVals.map(getKeySet);
+  const selfOutputSets = selfKeyVals.outputKeyVals.map(getKeySet);
 
   for (const other of others) {
     const otherTx = getTx(other);
@@ -38,9 +36,7 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
       ),
     );
 
-    const otherInputSets = otherKeyVals.inputKeyVals.map(input =>
-      getKeySet(input),
-    );
+    const otherInputSets = otherKeyVals.inputKeyVals.map(getKeySet);
     otherInputSets.forEach((inputSet, idx) =>
       inputSet.forEach(
         keyPusher(
@@ -51,9 +47,7 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
       ),
     );
 
-    const otherOutputSets = otherKeyVals.outputKeyVals.map(output =>
-      getKeySet(output),
-    );
+    const otherOutputSets = otherKeyVals.outputKeyVals.map(getKeySet);
     otherOutputSets.forEach((outputSet, idx) =>
       outputSet.forEach(
         keyPusher(
