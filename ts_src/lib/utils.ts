@@ -60,16 +60,13 @@ export function inputCheckUncleanFinalized(
   input: PsbtInput,
 ): void {
   let result: boolean = false;
-  const isP2SH = !!input.redeemScript;
-  const isP2WSH = !!input.witnessScript;
-  const isNonSegwit = !!input.nonWitnessUtxo;
-  const isSegwit = !!input.witnessUtxo;
-  if (isSegwit !== isNonSegwit) {
-    const needScriptSig = isNonSegwit || (isSegwit && isP2SH);
-    const needWitnessScript = isSegwit && isP2WSH;
+  if (!input.nonWitnessUtxo !== !input.witnessUtxo) {
+    const needScriptSig = !!input.redeemScript;
+    const needWitnessScript = !!input.witnessScript;
     const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
     const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
-    result = scriptSigOK && witnessScriptOK;
+    const hasOneFinal = !!input.finalScriptSig || !!input.finalScriptWitness;
+    result = scriptSigOK && witnessScriptOK && hasOneFinal;
   }
   if (result === false) {
     throw new Error(
