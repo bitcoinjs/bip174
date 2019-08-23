@@ -63,10 +63,8 @@ export function inputCheckUncleanFinalized(
   if (!input.nonWitnessUtxo !== !input.witnessUtxo) {
     const needScriptSig = !!input.redeemScript;
     const needWitnessScript = !!input.witnessScript;
-    const scriptSigOK =
-      !needScriptSig || (needScriptSig && !!input.finalScriptSig);
-    const witnessScriptOK =
-      !needWitnessScript || (needWitnessScript && !!input.finalScriptWitness);
+    const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
+    const witnessScriptOK = !needWitnessScript || !!input.finalScriptWitness;
     const hasOneFinal = !!input.finalScriptSig || !!input.finalScriptWitness;
     result = scriptSigOK && witnessScriptOK && hasOneFinal;
   }
