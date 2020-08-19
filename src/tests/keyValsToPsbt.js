@@ -8,9 +8,13 @@ const txTools_1 = require('./utils/txTools');
 for (const f of keyValsToPsbt_1.fixtures) {
   if (f.exception) {
     tape('From keyVals should throw:', t => {
-      t.throws(() => {
-        fromBuffer_1.psbtFromKeyVals(txTools_1.getDefaultTx(), f.data);
-      }, new RegExp(f.exception));
+      t.throws(
+        () => {
+          fromBuffer_1.psbtFromKeyVals(txTools_1.getDefaultTx(), f.data);
+        },
+        Error,
+        f.exception,
+      );
       t.end();
     });
   } else {

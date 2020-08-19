@@ -182,12 +182,9 @@ function psbtFromKeyVals(
             keyVal.key,
             typeFields_1.InputTypes.NON_WITNESS_UTXO,
           );
-          if (
-            input.nonWitnessUtxo !== undefined ||
-            input.witnessUtxo !== undefined
-          ) {
+          if (input.nonWitnessUtxo !== undefined) {
             throw new Error(
-              'Format Error: Input has multiple [NON_]WITNESS_UTXO',
+              'Format Error: Input has multiple NON_WITNESS_UTXO',
             );
           }
           input.nonWitnessUtxo = convert.inputs.nonWitnessUtxo.decode(keyVal);
@@ -198,13 +195,8 @@ function psbtFromKeyVals(
             keyVal.key,
             typeFields_1.InputTypes.WITNESS_UTXO,
           );
-          if (
-            input.nonWitnessUtxo !== undefined ||
-            input.witnessUtxo !== undefined
-          ) {
-            throw new Error(
-              'Format Error: Input has multiple [NON_]WITNESS_UTXO',
-            );
+          if (input.witnessUtxo !== undefined) {
+            throw new Error('Format Error: Input has multiple WITNESS_UTXO');
           }
           input.witnessUtxo = convert.inputs.witnessUtxo.decode(keyVal);
           break;
