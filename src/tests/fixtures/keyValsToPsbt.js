@@ -104,7 +104,7 @@ exports.fixtures = [
       ],
       outputKeyVals: [],
     },
-    exception: 'Format Error: Input has multiple WITNESS_UTXO ',
+    exception: 'Format Error: Input has multiple WITNESS_UTXO',
   },
   {
     data: {

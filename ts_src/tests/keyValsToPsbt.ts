@@ -7,13 +7,9 @@ import { getDefaultTx, transactionFromBuffer } from './utils/txTools';
 for (const f of fixtures) {
   if (f.exception) {
     tape('From keyVals should throw:', t => {
-      t.throws(
-        () => {
-          psbtFromKeyVals(getDefaultTx(), f.data);
-        },
-        Error,
-        f.exception,
-      );
+      t.throws(() => {
+        psbtFromKeyVals(getDefaultTx(), f.data);
+      }, new RegExp(f.exception));
       t.end();
     });
   } else {
