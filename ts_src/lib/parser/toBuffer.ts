@@ -39,29 +39,26 @@ function keyValsFromMap(
 ): KeyValue[] {
   const keyHexSet: Set<string> = new Set();
 
-  const keyVals = Object.entries(keyValMap).reduce(
-    (result, [key, value]) => {
-      if (key === 'unknownKeyVals') return result;
-      // We are checking for undefined anyways. So ignore TS error
-      // @ts-ignore
-      const converter = converterFactory[key];
-      if (converter === undefined) return result;
+  const keyVals = Object.entries(keyValMap).reduce((result, [key, value]) => {
+    if (key === 'unknownKeyVals') return result;
+    // We are checking for undefined anyways. So ignore TS error
+    // @ts-ignore
+    const converter = converterFactory[key];
+    if (converter === undefined) return result;
 
-      const encodedKeyVals = (Array.isArray(value) ? value : [value]).map(
-        converter.encode,
-      ) as KeyValue[];
+    const encodedKeyVals = (Array.isArray(value) ? value : [value]).map(
+      converter.encode,
+    ) as KeyValue[];
 
-      const keyHexes = encodedKeyVals.map(kv => kv.key.toString('hex'));
-      keyHexes.forEach(hex => {
-        if (keyHexSet.has(hex))
-          throw new Error('Serialize Error: Duplicate key: ' + hex);
-        keyHexSet.add(hex);
-      });
+    const keyHexes = encodedKeyVals.map(kv => kv.key.toString('hex'));
+    keyHexes.forEach(hex => {
+      if (keyHexSet.has(hex))
+        throw new Error('Serialize Error: Duplicate key: ' + hex);
+      keyHexSet.add(hex);
+    });
 
-      return result.concat(encodedKeyVals);
-    },
-    [] as KeyValue[],
-  );
+    return result.concat(encodedKeyVals);
+  }, [] as KeyValue[]);
 
   // Get other keyVals that have not yet been gotten
   const otherKeyVals = keyValMap.unknownKeyVals

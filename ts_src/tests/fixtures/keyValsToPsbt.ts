@@ -69,10 +69,8 @@ export const fixtures = [
       inputKeyVals: [
         [
           {
-            key: b('01'),
-            value: b(
-              '70aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d',
-            ),
+            key: b('00'),
+            value: b('03'),
           },
           {
             key: b('00'),
@@ -82,7 +80,7 @@ export const fixtures = [
       ],
       outputKeyVals: [],
     },
-    exception: 'Format Error: Input has multiple \\[NON_\\]WITNESS_UTXO',
+    exception: 'Format Error: Input has multiple NON_WITNESS_UTXO',
   },
   {
     data: {
@@ -90,18 +88,22 @@ export const fixtures = [
       inputKeyVals: [
         [
           {
-            key: b('00'),
-            value: b('04'),
+            key: b('01'),
+            value: b(
+              '70aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d',
+            ),
           },
           {
             key: b('01'),
-            value: b('05'),
+            value: b(
+              '70aaf00800000000160014d85c2b71d0060b09c9886aeb815e50991dda124d',
+            ),
           },
         ],
       ],
       outputKeyVals: [],
     },
-    exception: 'Format Error: Input has multiple \\[NON_\\]WITNESS_UTXO',
+    exception: 'Format Error: Input has multiple WITNESS_UTXO',
   },
   {
     data: {
