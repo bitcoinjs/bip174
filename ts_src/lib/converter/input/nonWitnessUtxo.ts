@@ -24,10 +24,5 @@ export function check(data: any): data is NonWitnessUtxo {
 }
 
 export function canAdd(currentData: any, newData: any): boolean {
-  return (
-    !!currentData &&
-    !!newData &&
-    currentData.witnessUtxo === undefined &&
-    currentData.nonWitnessUtxo === undefined
-  );
+  return !!currentData && !!newData && currentData.nonWitnessUtxo === undefined;
 }

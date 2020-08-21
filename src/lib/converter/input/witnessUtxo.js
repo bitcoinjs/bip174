@@ -43,11 +43,6 @@ function check(data) {
 }
 exports.check = check;
 function canAdd(currentData, newData) {
-  return (
-    !!currentData &&
-    !!newData &&
-    currentData.witnessUtxo === undefined &&
-    currentData.nonWitnessUtxo === undefined
-  );
+  return !!currentData && !!newData && currentData.witnessUtxo === undefined;
 }
 exports.canAdd = canAdd;

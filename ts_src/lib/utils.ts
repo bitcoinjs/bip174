@@ -59,8 +59,8 @@ export function inputCheckUncleanFinalized(
   inputIndex: number,
   input: PsbtInput,
 ): void {
-  let result: boolean = false;
-  if (!input.nonWitnessUtxo !== !input.witnessUtxo) {
+  let result = false;
+  if (input.nonWitnessUtxo || input.witnessUtxo) {
     const needScriptSig = !!input.redeemScript;
     const needWitnessScript = !!input.witnessScript;
     const scriptSigOK = !needScriptSig || !!input.finalScriptSig;
