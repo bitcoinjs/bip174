@@ -68,7 +68,7 @@ function check(data) {
     Buffer.isBuffer(mfp) &&
     mfp.length === 4 &&
     typeof p === 'string' &&
-    !!p.match(/^m(\/\d+'?)+$/)
+    !!p.match(/^m(\/\d+'?)*$/)
   );
 }
 exports.check = check;

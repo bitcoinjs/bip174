@@ -73,7 +73,7 @@ export function check(data: any): data is GlobalXpub {
     Buffer.isBuffer(mfp) &&
     mfp.length === 4 &&
     typeof p === 'string' &&
-    !!p.match(/^m(\/\d+'?)+$/)
+    !!p.match(/^m(\/\d+'?)*$/)
   );
 }
 
