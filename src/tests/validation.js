@@ -103,5 +103,15 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   t.throws(() => {
     combiner_1.combine([psbt1, psbt2]);
   }, new RegExp('Combine: KeyValue Map keys should be unique'));
+  t.ok(
+    converter_1.globals.globalXpub.check({
+      masterFingerprint: b('3442193e'),
+      extendedPubkey: b(
+        // tslint:disable-next-line:max-line-length
+        '0488b21e000000000000000000873dff81c02f525623fd1fe5167eac3a55a049de3d314bb42ee227ffed37d5080339a36013301597daef41fbe593a02cc513d0b55527ec2df1050e2e8ff49c85c2',
+      ),
+      path: 'm',
+    }),
+  );
   t.end();
 });
