@@ -78,6 +78,5 @@ export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
     inputCount: number;
     outputCount: number;
 };
-
 export declare type TransactionVersionSetter = (version: number, txBuffer: Buffer) => Buffer;
 export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Buffer) => Buffer;
