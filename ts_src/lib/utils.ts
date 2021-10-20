@@ -146,7 +146,7 @@ export function addInputAttributes(inputs: PsbtInput[], data: any): void {
 
 export function addOutputAttributes(outputs: PsbtOutput[], data: any): void {
   const index = outputs.length - 1;
-  const output = checkForInput(outputs, index);
+  const output = checkForOutput(outputs, index);
   updateOutput(data, output);
 }
 
