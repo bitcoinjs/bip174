@@ -116,7 +116,7 @@ function addInputAttributes(inputs, data) {
 exports.addInputAttributes = addInputAttributes;
 function addOutputAttributes(outputs, data) {
   const index = outputs.length - 1;
-  const output = checkForInput(outputs, index);
+  const output = checkForOutput(outputs, index);
   exports.updateOutput(data, output);
 }
 exports.addOutputAttributes = addOutputAttributes;
