@@ -15,6 +15,12 @@ export enum InputTypes {
   FINAL_SCRIPTSIG,
   FINAL_SCRIPTWITNESS,
   POR_COMMITMENT,
+  TAP_KEY_SIG = 0x13,
+  TAP_SCRIPT_SIG, // multiple OK, key contains x-only pubkey
+  TAP_LEAF_SCRIPT, // multiple OK, key contains controlblock
+  TAP_BIP32_DERIVATION, // multiple OK, key contains x-only pubkey
+  TAP_INTERNAL_KEY,
+  TAP_MERKLE_ROOT,
 }
 export const INPUT_TYPE_NAMES = [
   'nonWitnessUtxo',
@@ -27,15 +33,27 @@ export const INPUT_TYPE_NAMES = [
   'finalScriptSig',
   'finalScriptWitness',
   'porCommitment',
+  'tapKeySig',
+  'tapScriptSig',
+  'tapLeafScript',
+  'tapBip32Derivation',
+  'tapInternalKey',
+  'tapMerkleRoot',
 ];
 
 export enum OutputTypes {
   REDEEM_SCRIPT,
   WITNESS_SCRIPT,
   BIP32_DERIVATION, // multiple OK, key contains pubkey
+  TAP_INTERNAL_KEY = 0x05,
+  TAP_TREE,
+  TAP_BIP32_DERIVATION, // multiple OK, key contains x-only pubkey
 }
 export const OUTPUT_TYPE_NAMES = [
   'redeemScript',
   'witnessScript',
   'bip32Derivation',
+  'tapInternalKey',
+  'tapTree',
+  'tapBip32Derivation',
 ];

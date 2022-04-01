@@ -51,6 +51,12 @@ export interface PsbtInputUpdate {
   finalScriptSig?: FinalScriptSig;
   finalScriptWitness?: FinalScriptWitness;
   porCommitment?: PorCommitment;
+  tapKeySig?: TapKeySig;
+  tapScriptSig?: TapScriptSig[];
+  tapLeafScript?: TapLeafScript[];
+  tapBip32Derivation?: TapBip32Derivation[];
+  tapInternalKey?: TapInternalKey;
+  tapMerkleRoot?: TapMerkleRoot;
 }
 
 export interface PsbtInputExtended extends PsbtInput {
@@ -65,6 +71,9 @@ export interface PsbtOutputUpdate {
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
   bip32Derivation?: Bip32Derivation[];
+  tapBip32Derivation?: TapBip32Derivation[];
+  tapTree?: TapTree;
+  tapInternalKey?: TapInternalKey;
 }
 
 export interface PsbtOutputExtended extends PsbtOutput {
@@ -106,6 +115,37 @@ export type FinalScriptSig = Buffer;
 export type FinalScriptWitness = Buffer;
 
 export type PorCommitment = string;
+
+export type TapKeySig = Buffer;
+
+export interface TapScriptSig extends PartialSig {
+  leafHash: Buffer;
+}
+
+interface TapScript {
+  leafVersion: number;
+  script: Buffer;
+}
+
+export type ControlBlock = Buffer;
+
+export interface TapLeafScript extends TapScript {
+  controlBlock: ControlBlock;
+}
+
+export interface TapBip32Derivation extends Bip32Derivation {
+  leafHashes: Buffer[];
+}
+
+export type TapInternalKey = Buffer;
+
+export type TapMerkleRoot = Buffer;
+
+export interface TapLeaf extends TapScript {
+  depth: number;
+}
+
+export type TapTree = TapLeaf[];
 
 export type TransactionIOCountGetter = (
   txBuffer: Buffer,

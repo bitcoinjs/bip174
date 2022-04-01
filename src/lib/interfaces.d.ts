@@ -34,6 +34,12 @@ export interface PsbtInputUpdate {
     finalScriptSig?: FinalScriptSig;
     finalScriptWitness?: FinalScriptWitness;
     porCommitment?: PorCommitment;
+    tapKeySig?: TapKeySig;
+    tapScriptSig?: TapScriptSig[];
+    tapLeafScript?: TapLeafScript[];
+    tapBip32Derivation?: TapBip32Derivation[];
+    tapInternalKey?: TapInternalKey;
+    tapMerkleRoot?: TapMerkleRoot;
 }
 export interface PsbtInputExtended extends PsbtInput {
     [index: string]: any;
@@ -45,6 +51,9 @@ export interface PsbtOutputUpdate {
     redeemScript?: RedeemScript;
     witnessScript?: WitnessScript;
     bip32Derivation?: Bip32Derivation[];
+    tapBip32Derivation?: TapBip32Derivation[];
+    tapTree?: TapTree;
+    tapInternalKey?: TapInternalKey;
 }
 export interface PsbtOutputExtended extends PsbtOutput {
     [index: string]: any;
@@ -74,6 +83,27 @@ export declare type WitnessScript = Buffer;
 export declare type FinalScriptSig = Buffer;
 export declare type FinalScriptWitness = Buffer;
 export declare type PorCommitment = string;
+export declare type TapKeySig = Buffer;
+export interface TapScriptSig extends PartialSig {
+    leafHash: Buffer;
+}
+interface TapScript {
+    leafVersion: number;
+    script: Buffer;
+}
+export declare type ControlBlock = Buffer;
+export interface TapLeafScript extends TapScript {
+    controlBlock: ControlBlock;
+}
+export interface TapBip32Derivation extends Bip32Derivation {
+    leafHashes: Buffer[];
+}
+export declare type TapInternalKey = Buffer;
+export declare type TapMerkleRoot = Buffer;
+export interface TapLeaf extends TapScript {
+    depth: number;
+}
+export declare type TapTree = TapLeaf[];
 export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
     inputCount: number;
     outputCount: number;
@@ -91,3 +121,4 @@ export interface TransactionOutput {
 export declare type TransactionOutputAdder = (output: TransactionOutput, txBuffer: Buffer) => Buffer;
 export declare type TransactionVersionSetter = (version: number, txBuffer: Buffer) => Buffer;
 export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Buffer) => Buffer;
+export {};

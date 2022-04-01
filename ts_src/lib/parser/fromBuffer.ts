@@ -276,6 +276,38 @@ export function psbtFromKeyVals(
           checkKeyBuffer('input', keyVal.key, InputTypes.POR_COMMITMENT);
           input.porCommitment = convert.inputs.porCommitment.decode(keyVal);
           break;
+        case InputTypes.TAP_KEY_SIG:
+          checkKeyBuffer('input', keyVal.key, InputTypes.TAP_KEY_SIG);
+          input.tapKeySig = convert.inputs.tapKeySig.decode(keyVal);
+          break;
+        case InputTypes.TAP_SCRIPT_SIG:
+          if (input.tapScriptSig === undefined) {
+            input.tapScriptSig = [];
+          }
+          input.tapScriptSig.push(convert.inputs.tapScriptSig.decode(keyVal));
+          break;
+        case InputTypes.TAP_LEAF_SCRIPT:
+          if (input.tapLeafScript === undefined) {
+            input.tapLeafScript = [];
+          }
+          input.tapLeafScript.push(convert.inputs.tapLeafScript.decode(keyVal));
+          break;
+        case InputTypes.TAP_BIP32_DERIVATION:
+          if (input.tapBip32Derivation === undefined) {
+            input.tapBip32Derivation = [];
+          }
+          input.tapBip32Derivation.push(
+            convert.inputs.tapBip32Derivation.decode(keyVal),
+          );
+          break;
+        case InputTypes.TAP_INTERNAL_KEY:
+          checkKeyBuffer('input', keyVal.key, InputTypes.TAP_INTERNAL_KEY);
+          input.tapInternalKey = convert.inputs.tapInternalKey.decode(keyVal);
+          break;
+        case InputTypes.TAP_MERKLE_ROOT:
+          checkKeyBuffer('input', keyVal.key, InputTypes.TAP_MERKLE_ROOT);
+          input.tapMerkleRoot = convert.inputs.tapMerkleRoot.decode(keyVal);
+          break;
         default:
           // This will allow inclusion during serialization.
           if (!input.unknownKeyVals) input.unknownKeyVals = [];
@@ -311,6 +343,22 @@ export function psbtFromKeyVals(
           }
           output.bip32Derivation.push(
             convert.outputs.bip32Derivation.decode(keyVal),
+          );
+          break;
+        case OutputTypes.TAP_INTERNAL_KEY:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.TAP_INTERNAL_KEY);
+          output.tapInternalKey = convert.outputs.tapInternalKey.decode(keyVal);
+          break;
+        case OutputTypes.TAP_TREE:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.TAP_TREE);
+          output.tapTree = convert.outputs.tapTree.decode(keyVal);
+          break;
+        case OutputTypes.TAP_BIP32_DERIVATION:
+          if (output.tapBip32Derivation === undefined) {
+            output.tapBip32Derivation = [];
+          }
+          output.tapBip32Derivation.push(
+            convert.outputs.tapBip32Derivation.decode(keyVal),
           );
           break;
         default:
