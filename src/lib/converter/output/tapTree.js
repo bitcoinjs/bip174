@@ -28,17 +28,13 @@ function decode(keyVal) {
 exports.decode = decode;
 function encode(tree) {
   const key = Buffer.from([typeFields_1.OutputTypes.TAP_TREE]);
-  const bufs = new Array(tree.length * 2);
-  for (const tapLeaf of tree) {
-    const headBuf = Buffer.allocUnsafe(
-      2 + varuint.encodingLength(tapLeaf.script.length),
-    );
-    headBuf[0] = tapLeaf.depth;
-    headBuf[1] = tapLeaf.leafVersion;
-    varuint.encode(tapLeaf.script.length, headBuf, 2);
-    bufs.push(headBuf);
-    bufs.push(tapLeaf.script);
-  }
+  const bufs = [].concat(
+    ...tree.map(tapLeaf => [
+      Buffer.of(tapLeaf.depth, tapLeaf.leafVersion),
+      varuint.encode(tapLeaf.script.length),
+      tapLeaf.script,
+    ]),
+  );
   return {
     key,
     value: Buffer.concat(bufs),
