@@ -26,8 +26,8 @@ export function makeConverter(
       value: keyVal.value.slice(nHashesLen + nHashes * 32),
     });
     const leafHashes: Buffer[] = new Array(nHashes);
-    for (let i = nHashesLen; i < nHashesLen + 32 * nHashes; i += 32) {
-      leafHashes[i] = keyVal.value.slice(i, i + 32);
+    for (let i = 0, _offset = nHashesLen; i < nHashes; i++, _offset += 32) {
+      leafHashes[i] = keyVal.value.slice(_offset, _offset + 32);
     }
     return { ...base, leafHashes };
   }

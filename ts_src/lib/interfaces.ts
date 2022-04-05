@@ -145,7 +145,9 @@ export interface TapLeaf extends TapScript {
   depth: number;
 }
 
-export type TapTree = TapLeaf[];
+export interface TapTree {
+  leaves: TapLeaf[];
+}
 
 export type TransactionIOCountGetter = (
   txBuffer: Buffer,

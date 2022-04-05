@@ -23,13 +23,13 @@ function decode(keyVal) {
     });
     _offset += scriptLen;
   }
-  return data;
+  return { leaves: data };
 }
 exports.decode = decode;
 function encode(tree) {
   const key = Buffer.from([typeFields_1.OutputTypes.TAP_TREE]);
   const bufs = [].concat(
-    ...tree.map(tapLeaf => [
+    ...tree.leaves.map(tapLeaf => [
       Buffer.of(tapLeaf.depth, tapLeaf.leafVersion),
       varuint.encode(tapLeaf.script.length),
       tapLeaf.script,
@@ -41,11 +41,12 @@ function encode(tree) {
   };
 }
 exports.encode = encode;
-exports.expected = '[{ depth: number; leafVersion: number, script: Buffer; }]';
+exports.expected =
+  '{ leaves: [{ depth: number; leafVersion: number, script: Buffer; }] }';
 function check(data) {
   return (
-    Array.isArray(data) &&
-    data.every(
+    Array.isArray(data.leaves) &&
+    data.leaves.every(
       tapLeaf =>
         tapLeaf.depth >= 0 &&
         tapLeaf.depth <= 128 &&

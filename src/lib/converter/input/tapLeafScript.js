@@ -1,7 +1,6 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_1 = require('../../typeFields');
-const varuint = require('../varint');
 function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_1.InputTypes.TAP_LEAF_SCRIPT) {
     throw new Error(
@@ -29,14 +28,10 @@ function decode(keyVal) {
 exports.decode = decode;
 function encode(tScript) {
   const head = Buffer.from([typeFields_1.InputTypes.TAP_LEAF_SCRIPT]);
-  const _offset = varuint.encodingLength(tScript.script.length);
-  const value = Buffer.allocUnsafe(_offset + tScript.script.length + 1);
-  varuint.encode(tScript.script.length, value);
-  value[_offset + tScript.script.length] = tScript.leafVersion;
-  tScript.script.copy(value, _offset);
+  const verBuf = Buffer.from([tScript.leafVersion]);
   return {
     key: Buffer.concat([head, tScript.controlBlock]),
-    value,
+    value: Buffer.concat([tScript.script, verBuf]),
   };
 }
 exports.encode = encode;

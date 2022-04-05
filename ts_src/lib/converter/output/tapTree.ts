@@ -1,4 +1,4 @@
-import { KeyValue, TapTree } from '../../interfaces';
+import { KeyValue, TapLeaf, TapTree } from '../../interfaces';
 import { OutputTypes } from '../../typeFields';
 import * as varuint from '../varint';
 
@@ -10,7 +10,7 @@ export function decode(keyVal: KeyValue): TapTree {
     );
   }
   let _offset = 0;
-  const data: TapTree = [];
+  const data: TapLeaf[] = [];
   while (_offset < keyVal.value.length) {
     const depth = keyVal.value[_offset++];
     const leafVersion = keyVal.value[_offset++];
@@ -23,13 +23,13 @@ export function decode(keyVal: KeyValue): TapTree {
     });
     _offset += scriptLen;
   }
-  return data;
+  return { leaves: data };
 }
 
 export function encode(tree: TapTree): KeyValue {
   const key = Buffer.from([OutputTypes.TAP_TREE]);
   const bufs = ([] as Buffer[]).concat(
-    ...tree.map(tapLeaf => [
+    ...tree.leaves.map(tapLeaf => [
       Buffer.of(tapLeaf.depth, tapLeaf.leafVersion),
       varuint.encode(tapLeaf.script.length),
       tapLeaf.script,
@@ -42,11 +42,11 @@ export function encode(tree: TapTree): KeyValue {
 }
 
 export const expected =
-  '[{ depth: number; leafVersion: number, script: Buffer; }]';
+  '{ leaves: [{ depth: number; leafVersion: number, script: Buffer; }] }';
 export function check(data: any): data is TapTree {
   return (
-    Array.isArray(data) &&
-    data.every(
+    Array.isArray(data.leaves) &&
+    data.leaves.every(
       (tapLeaf: any) =>
         tapLeaf.depth >= 0 &&
         tapLeaf.depth <= 128 &&

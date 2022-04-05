@@ -103,7 +103,9 @@ export declare type TapMerkleRoot = Buffer;
 export interface TapLeaf extends TapScript {
     depth: number;
 }
-export declare type TapTree = TapLeaf[];
+export interface TapTree {
+    leaves: TapLeaf[];
+}
 export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
     inputCount: number;
     outputCount: number;

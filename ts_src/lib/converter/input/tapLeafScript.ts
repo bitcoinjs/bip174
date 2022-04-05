@@ -1,6 +1,5 @@
 import { KeyValue, TapLeafScript } from '../../interfaces';
 import { InputTypes } from '../../typeFields';
-import * as varuint from '../varint';
 
 export function decode(keyVal: KeyValue): TapLeafScript {
   if (keyVal.key[0] !== InputTypes.TAP_LEAF_SCRIPT) {
@@ -31,16 +30,11 @@ export function decode(keyVal: KeyValue): TapLeafScript {
 
 export function encode(tScript: TapLeafScript): KeyValue {
   const head = Buffer.from([InputTypes.TAP_LEAF_SCRIPT]);
-  const _offset = varuint.encodingLength(tScript.script.length);
-  const value = Buffer.allocUnsafe(_offset + tScript.script.length + 1);
-
-  varuint.encode(tScript.script.length, value);
-  value[_offset + tScript.script.length] = tScript.leafVersion;
-  tScript.script.copy(value, _offset);
+  const verBuf = Buffer.from([tScript.leafVersion]);
 
   return {
     key: Buffer.concat([head, tScript.controlBlock]),
-    value,
+    value: Buffer.concat([tScript.script, verBuf]),
   };
 }
 
