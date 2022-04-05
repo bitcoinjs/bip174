@@ -2,7 +2,7 @@ import { KeyValue, TapMerkleRoot } from '../../interfaces';
 import { InputTypes } from '../../typeFields';
 
 export function decode(keyVal: KeyValue): TapMerkleRoot {
-  if (keyVal.key[0] !== InputTypes.TAP_MERKLE_ROOT) {
+  if (keyVal.key[0] !== InputTypes.TAP_MERKLE_ROOT || keyVal.key.length !== 1) {
     throw new Error(
       'Decode Error: could not decode tapMerkleRoot with key 0x' +
         keyVal.key.toString('hex'),

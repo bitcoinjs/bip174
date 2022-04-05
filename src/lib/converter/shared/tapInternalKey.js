@@ -2,7 +2,7 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 function makeConverter(TYPE_BYTE) {
   function decode(keyVal) {
-    if (keyVal.key[0] !== TYPE_BYTE) {
+    if (keyVal.key[0] !== TYPE_BYTE || keyVal.key.length !== 1) {
       throw new Error(
         'Decode Error: could not decode tapInternalKey with key 0x' +
           keyVal.key.toString('hex'),

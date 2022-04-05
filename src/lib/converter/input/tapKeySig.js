@@ -2,7 +2,10 @@
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_1 = require('../../typeFields');
 function decode(keyVal) {
-  if (keyVal.key[0] !== typeFields_1.InputTypes.TAP_KEY_SIG) {
+  if (
+    keyVal.key[0] !== typeFields_1.InputTypes.TAP_KEY_SIG ||
+    keyVal.key.length !== 1
+  ) {
     throw new Error(
       'Decode Error: could not decode tapKeySig with key 0x' +
         keyVal.key.toString('hex'),

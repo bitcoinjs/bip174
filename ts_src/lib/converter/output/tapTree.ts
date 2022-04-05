@@ -3,7 +3,7 @@ import { OutputTypes } from '../../typeFields';
 import * as varuint from '../varint';
 
 export function decode(keyVal: KeyValue): TapTree {
-  if (keyVal.key[0] !== OutputTypes.TAP_TREE) {
+  if (keyVal.key[0] !== OutputTypes.TAP_TREE || keyVal.key.length !== 1) {
     throw new Error(
       'Decode Error: could not decode tapTree with key 0x' +
         keyVal.key.toString('hex'),

@@ -10,7 +10,7 @@ export function makeConverter(
   canAdd: (currentData: any, newData: any) => boolean;
 } {
   function decode(keyVal: KeyValue): TapInternalKey {
-    if (keyVal.key[0] !== TYPE_BYTE) {
+    if (keyVal.key[0] !== TYPE_BYTE || keyVal.key.length !== 1) {
       throw new Error(
         'Decode Error: could not decode tapInternalKey with key 0x' +
           keyVal.key.toString('hex'),

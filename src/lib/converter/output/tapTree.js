@@ -3,7 +3,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_1 = require('../../typeFields');
 const varuint = require('../varint');
 function decode(keyVal) {
-  if (keyVal.key[0] !== typeFields_1.OutputTypes.TAP_TREE) {
+  if (
+    keyVal.key[0] !== typeFields_1.OutputTypes.TAP_TREE ||
+    keyVal.key.length !== 1
+  ) {
     throw new Error(
       'Decode Error: could not decode tapTree with key 0x' +
         keyVal.key.toString('hex'),
