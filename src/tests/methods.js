@@ -30,7 +30,9 @@ function run(f, typ) {
             value.data.startsWith('base64:')
           ) {
             const buf = Buffer.from(value.data.slice(7), 'base64');
-            if (['pubkey', 'extendedPubkey'].indexOf(key) > -1) {
+            if (
+              ['pubkey', 'extendedPubkey', 'controlBlock'].indexOf(key) > -1
+            ) {
               buf[2] = 0xff;
             }
             return buf;

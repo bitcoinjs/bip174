@@ -43,8 +43,8 @@ export const expected =
 export function check(data: any): data is TapLeafScript {
   return (
     Buffer.isBuffer(data.controlBlock) &&
-    (data.controlBlock.length - 2) % 32 === 0 &&
-    (data.leafVersion & 0xfe) === data.leafVersion &&
+    (data.controlBlock.length - 1) % 32 === 0 &&
+    (data.controlBlock[0] & 0xfe) === data.leafVersion &&
     Buffer.isBuffer(data.script)
   );
 }
