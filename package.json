@@ -22,7 +22,7 @@
     "lint": "tslint -p tsconfig.json -c tslint.json",
     "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "prettierjs": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
-    "test": "npm run format:ci && npm run lint && npm run build && npm run unit",
+    "test": "npm run format:ci && npm run lint && npm run build && npm run coverage",
     "unit": "tape src/tests/*.js src/tests/fromBIP/*.js"
   },
   "repository": {
