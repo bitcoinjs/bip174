@@ -2,7 +2,6 @@ import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/methods';
 import { getDefaultTx } from './utils/txTools';
-const BJSON = require('buffer-json');
 
 function run(f: any, typ: string): void {
   tape(`check ${typ} method: ${f.method}`, t => {
@@ -20,28 +19,7 @@ function run(f: any, typ: string): void {
     try {
       psbt = func(...f.args);
       if (f.twice) {
-        const dup = JSON.parse(
-          BJSON.stringify(f.args),
-          (key: string, value: any) => {
-            if (
-              key &&
-              value &&
-              value.type &&
-              value.type === 'Buffer' &&
-              value.data.startsWith('base64:')
-            ) {
-              const buf = Buffer.from(value.data.slice(7), 'base64');
-              if (
-                ['pubkey', 'extendedPubkey', 'controlBlock'].indexOf(key) > -1
-              ) {
-                buf[2] = 0xff;
-              }
-              return buf;
-            }
-            return value;
-          },
-        );
-        psbt = func(...dup);
+        psbt = func(...f.args);
       }
       if (f.exception) {
         t.equal('NO ERROR', f.exception);
