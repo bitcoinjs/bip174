@@ -4,7 +4,6 @@ const tape = require('tape');
 const psbt_1 = require('../lib/psbt');
 const methods_1 = require('./fixtures/methods');
 const txTools_1 = require('./utils/txTools');
-const BJSON = require('buffer-json');
 function run(f, typ) {
   tape(`check ${typ} method: ${f.method}`, t => {
     let func;
@@ -21,23 +20,7 @@ function run(f, typ) {
     try {
       psbt = func(...f.args);
       if (f.twice) {
-        const dup = JSON.parse(BJSON.stringify(f.args), (key, value) => {
-          if (
-            key &&
-            value &&
-            value.type &&
-            value.type === 'Buffer' &&
-            value.data.startsWith('base64:')
-          ) {
-            const buf = Buffer.from(value.data.slice(7), 'base64');
-            if (['pubkey', 'extendedPubkey'].indexOf(key) > -1) {
-              buf[2] = 0xff;
-            }
-            return buf;
-          }
-          return value;
-        });
-        psbt = func(...dup);
+        psbt = func(...f.args);
       }
       if (f.exception) {
         t.equal('NO ERROR', f.exception);

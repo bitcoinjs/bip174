@@ -1,5 +1,6 @@
+/// <reference types="node" />
 import { Bip32Derivation, KeyValue } from '../../interfaces';
-export declare function makeConverter(TYPE_BYTE: number): {
+export declare function makeConverter(TYPE_BYTE: number, isValidPubkey?: (pubkey: Buffer) => boolean): {
     decode: (keyVal: KeyValue) => Bip32Derivation;
     encode: (data: Bip32Derivation) => KeyValue;
     check: (data: any) => data is Bip32Derivation;

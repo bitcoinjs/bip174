@@ -1,7 +1,10 @@
 'use strict';
 Object.defineProperty(exports, '__esModule', { value: true });
 const range = n => [...Array(n).keys()];
-function makeConverter(TYPE_BYTE) {
+const isValidDERKey = pubkey =>
+  (pubkey.length === 33 && [2, 3].includes(pubkey[0])) ||
+  (pubkey.length === 65 && 4 === pubkey[0]);
+function makeConverter(TYPE_BYTE, isValidPubkey = isValidDERKey) {
   function decode(keyVal) {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
@@ -9,10 +12,8 @@ function makeConverter(TYPE_BYTE) {
           keyVal.key.toString('hex'),
       );
     }
-    if (
-      !(keyVal.key.length === 34 || keyVal.key.length === 66) ||
-      ![2, 3, 4].includes(keyVal.key[1])
-    ) {
+    const pubkey = keyVal.key.slice(1);
+    if (!isValidPubkey(pubkey)) {
       throw new Error(
         'Decode Error: bip32Derivation has invalid pubkey in key 0x' +
           keyVal.key.toString('hex'),
@@ -23,7 +24,6 @@ function makeConverter(TYPE_BYTE) {
         'Decode Error: Input BIP32_DERIVATION value length should be multiple of 4',
       );
     }
-    const pubkey = keyVal.key.slice(1);
     const data = {
       masterFingerprint: keyVal.value.slice(0, 4),
       pubkey,
@@ -63,8 +63,7 @@ function makeConverter(TYPE_BYTE) {
       Buffer.isBuffer(data.pubkey) &&
       Buffer.isBuffer(data.masterFingerprint) &&
       typeof data.path === 'string' &&
-      [33, 65].includes(data.pubkey.length) &&
-      [2, 3, 4].includes(data.pubkey[0]) &&
+      isValidPubkey(data.pubkey) &&
       data.masterFingerprint.length === 4
     );
   }
