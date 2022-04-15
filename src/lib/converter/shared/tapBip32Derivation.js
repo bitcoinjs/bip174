@@ -36,7 +36,9 @@ function makeConverter(TYPE_BYTE) {
   function check(data) {
     return (
       Array.isArray(data.leafHashes) &&
-      data.leafHashes.every(leafHash => Buffer.isBuffer(leafHash)) &&
+      data.leafHashes.every(
+        leafHash => Buffer.isBuffer(leafHash) && leafHash.length === 32,
+      ) &&
       parent.check(data)
     );
   }
