@@ -37,7 +37,7 @@ function encode(tSig) {
   };
 }
 exports.encode = encode;
-exports.expected = '{ pubkey: Buffer; signature: Buffer; }';
+exports.expected = '{ pubkey: Buffer; leafHash: Buffer; signature: Buffer; }';
 function check(data) {
   return (
     Buffer.isBuffer(data.pubkey) &&
@@ -50,9 +50,14 @@ function check(data) {
 }
 exports.check = check;
 function canAddToArray(array, item, dupeSet) {
-  const dupeString = item.pubkey.toString('hex');
+  const dupeString =
+    item.pubkey.toString('hex') + item.leafHash.toString('hex');
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
-  return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  return (
+    array.filter(
+      v => v.pubkey.equals(item.pubkey) && v.leafHash.equals(item.leafHash),
+    ).length === 0
+  );
 }
 exports.canAddToArray = canAddToArray;

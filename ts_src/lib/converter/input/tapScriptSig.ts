@@ -37,7 +37,8 @@ export function encode(tSig: TapScriptSig): KeyValue {
   };
 }
 
-export const expected = '{ pubkey: Buffer; signature: Buffer; }';
+export const expected =
+  '{ pubkey: Buffer; leafHash: Buffer; signature: Buffer; }';
 export function check(data: any): data is TapScriptSig {
   return (
     Buffer.isBuffer(data.pubkey) &&
@@ -54,8 +55,13 @@ export function canAddToArray(
   item: TapScriptSig,
   dupeSet: Set<string>,
 ): boolean {
-  const dupeString = item.pubkey.toString('hex');
+  const dupeString =
+    item.pubkey.toString('hex') + item.leafHash.toString('hex');
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
-  return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  return (
+    array.filter(
+      v => v.pubkey.equals(item.pubkey) && v.leafHash.equals(item.leafHash),
+    ).length === 0
+  );
 }
