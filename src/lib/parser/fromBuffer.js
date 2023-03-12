@@ -114,11 +114,15 @@ function psbtFromBuffer(buffer, txGetter) {
     }
     outputKeyVals.push(output);
   }
-  return psbtFromKeyVals(unsignedTx, {
+  const psbtAttributes = psbtFromKeyVals(unsignedTx, {
     globalMapKeyVals,
     inputKeyVals,
     outputKeyVals,
   });
+  if (offset < buffer.length) {
+    throw new Error('Format Error: Extra data after PSBT');
+  }
+  return psbtAttributes;
 }
 exports.psbtFromBuffer = psbtFromBuffer;
 function checkKeyBuffer(type, keyBuf, keyNum) {

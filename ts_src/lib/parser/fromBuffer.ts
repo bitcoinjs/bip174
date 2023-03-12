@@ -139,11 +139,17 @@ export function psbtFromBuffer(
     outputKeyVals.push(output);
   }
 
-  return psbtFromKeyVals(unsignedTx, {
+  const psbtAttributes = psbtFromKeyVals(unsignedTx, {
     globalMapKeyVals,
     inputKeyVals,
     outputKeyVals,
   });
+
+  if (offset < buffer.length) {
+    throw new Error('Format Error: Extra data after PSBT');
+  }
+
+  return psbtAttributes;
 }
 
 interface PsbtFromKeyValsArg {

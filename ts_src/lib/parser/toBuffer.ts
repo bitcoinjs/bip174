@@ -17,7 +17,7 @@ export function psbtToBuffer({
   const globalBuffer = keyValsToBuffer(globalKeyVals);
 
   const keyValsOrEmptyToBuffer = (keyVals: KeyValue[][]): Buffer[] =>
-    keyVals.length === 0 ? [Buffer.from([0])] : keyVals.map(keyValsToBuffer);
+    keyVals.length === 0 ? [Buffer.from([])] : keyVals.map(keyValsToBuffer);
 
   const inputBuffers = keyValsOrEmptyToBuffer(inputKeyVals);
   const outputBuffers = keyValsOrEmptyToBuffer(outputKeyVals);

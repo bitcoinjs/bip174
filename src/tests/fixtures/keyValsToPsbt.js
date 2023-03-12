@@ -246,6 +246,6 @@ exports.fixtures = [
     expected:
       'cHNidP8BAAoCAAAAAAAAAAAATwEEiLIeA0o0bZiAAAAAAy5kZ4EAdSYO56gxGJ2BTmVqM' +
       'Aq3+aFRtzd+//6RBREDsDTsMrqmw8BUganRXG7mxIqWkuGChcF01BRxj4VnDiIQAQIDBA' +
-      'QAAIAFAACABgAAAAAAAA==',
+      'QAAIAFAACABgAAAAA=',
   },
 ];

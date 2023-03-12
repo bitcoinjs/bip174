@@ -1,32 +1,9 @@
 import * as tape from 'tape';
 import { Psbt } from '../lib/psbt';
 import { fixtures } from './fixtures/fromBuffer';
+import { Transaction } from './utils/txTools';
 
-class Blah {
-  constructor(public buf: Buffer) {}
-
-  getInputOutputCounts(): {
-    inputCount: number;
-    outputCount: number;
-  } {
-    return {
-      inputCount: this.buf[0],
-      outputCount: this.buf[1],
-    };
-  }
-
-  addInput(): void {
-    return;
-  }
-  addOutput(): void {
-    return;
-  }
-  toBuffer(): Buffer {
-    return this.buf;
-  }
-}
-
-const fromBuf = (b: Buffer): Blah => new Blah(b);
+const fromBuf = (b: Buffer): Transaction => new Transaction(b);
 
 for (const f of fixtures) {
   tape('From Buffer should throw:', t => {
