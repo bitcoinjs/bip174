@@ -156,27 +156,6 @@ export type TransactionIOCountGetter = (
   outputCount: number;
 };
 
-export interface TransactionInput {
-  hash: string | Buffer;
-  index: number;
-  sequence?: number;
-}
-
-export type TransactionInputAdder = (
-  input: TransactionInput,
-  txBuffer: Buffer,
-) => Buffer;
-
-export interface TransactionOutput {
-  script: Buffer;
-  value: number;
-}
-
-export type TransactionOutputAdder = (
-  output: TransactionOutput,
-  txBuffer: Buffer,
-) => Buffer;
-
 export type TransactionVersionSetter = (
   version: number,
   txBuffer: Buffer,
