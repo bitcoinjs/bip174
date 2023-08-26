@@ -151,7 +151,7 @@ export class Psbt {
       throw new Error('unknownKeyVals must be an Array');
     }
     addKeyVals.forEach((keyVal: KeyValue) =>
-      this.addUnknownKeyValToInput(outputIndex, keyVal),
+      this.addUnknownKeyValToOutput(outputIndex, keyVal),
     );
     addOutputAttributes(this.outputs, outputData);
     return this;
