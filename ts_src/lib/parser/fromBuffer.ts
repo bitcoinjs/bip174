@@ -206,7 +206,7 @@ export function psbtFromKeyVals(
 
   // Get input fields
   for (const index of range(inputCount)) {
-    const input: PsbtInput = {};
+    const input = {} as PsbtInput;
     for (const keyVal of inputKeyVals[index]) {
       convert.inputs.checkPubkey(keyVal);
 

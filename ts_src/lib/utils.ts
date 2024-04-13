@@ -91,6 +91,7 @@ function updateMaker<T, Y>(
   typeName: string,
 ): (updateData: T, mainData: Y) => void {
   return (updateData: T, mainData: Y): void => {
+    // @ts-ignore
     for (const name of Object.keys(updateData)) {
       // @ts-ignore
       const data = updateData[name];
