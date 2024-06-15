@@ -1,5 +1,5 @@
 import { KeyValue, PorCommitment } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): PorCommitment {
   if (keyVal.key[0] !== InputTypes.POR_COMMITMENT) {

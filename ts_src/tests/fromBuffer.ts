@@ -1,6 +1,6 @@
-import * as tape from 'tape';
-import { Psbt } from '../lib/psbt';
-import { fixtures } from './fixtures/fromBuffer';
+import tape from 'tape';
+import { Psbt } from '../lib/psbt.js';
+import { fixtures } from './fixtures/fromBuffer.js';
 
 class Blah {
   constructor(public buf: Buffer) {}

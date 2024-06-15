@@ -1,5 +1,5 @@
 import { FinalScriptWitness, KeyValue } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): FinalScriptWitness {
   if (keyVal.key[0] !== InputTypes.FINAL_SCRIPTWITNESS) {

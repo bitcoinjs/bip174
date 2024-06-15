@@ -1,5 +1,5 @@
 import { FinalScriptSig, KeyValue } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): FinalScriptSig {
   if (keyVal.key[0] !== InputTypes.FINAL_SCRIPTSIG) {

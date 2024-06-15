@@ -1,5 +1,5 @@
 import { KeyValue } from '../interfaces';
-import * as varuint from './varint';
+import * as varuint from './varint.js';
 
 export const range = (n: number): number[] => [...Array(n).keys()];
 

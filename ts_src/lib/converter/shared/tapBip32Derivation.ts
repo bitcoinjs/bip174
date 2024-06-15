@@ -1,6 +1,6 @@
 import { KeyValue, TapBip32Derivation } from '../../interfaces';
-import * as varuint from '../varint';
-import * as bip32Derivation from './bip32Derivation';
+import * as varuint from '../varint.js';
+import * as bip32Derivation from './bip32Derivation.js';
 
 const isValidBIP340Key = (pubkey: Buffer): boolean => pubkey.length === 32;
 

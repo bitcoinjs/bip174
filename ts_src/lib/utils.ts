@@ -1,4 +1,4 @@
-import * as converter from './converter';
+import * as converter from './converter/index.js';
 import {
   KeyValue,
   PsbtGlobal,

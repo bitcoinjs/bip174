@@ -1,4 +1,4 @@
-import { combine } from './combiner';
+import { combine } from './combiner/index.js';
 import {
   KeyValue,
   PsbtGlobal,
@@ -12,8 +12,8 @@ import {
   Transaction,
   TransactionFromBuffer,
 } from './interfaces';
-import { psbtFromBuffer, psbtToBuffer } from './parser';
-import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
+import { psbtFromBuffer, psbtToBuffer } from './parser/index.js';
+import { GlobalTypes, InputTypes, OutputTypes } from './typeFields.js';
 import {
   addInputAttributes,
   addOutputAttributes,
@@ -25,7 +25,7 @@ import {
   updateGlobal,
   updateInput,
   updateOutput,
-} from './utils';
+} from './utils.js';
 
 export class Psbt {
   static fromBase64<T extends typeof Psbt>(

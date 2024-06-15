@@ -1,5 +1,5 @@
 import { KeyValue, TapScriptSig } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): TapScriptSig {
   if (keyVal.key[0] !== InputTypes.TAP_SCRIPT_SIG) {

@@ -2,16 +2,26 @@
   "name": "bip174",
   "version": "2.1.1",
   "description": "",
-  "main": "src/lib/psbt.js",
-  "types": "src/lib/psbt.d.ts",
+  "main": "src/cjs/lib/psbt.js",
+  "module": "src/esm/lib/psbt.js",
+  "types": "src/cjs/lib/psbt.d.ts",
+  "exports": {
+    ".": {
+      "types": "./src/cjs/lib/psbt.d.ts",
+      "import": "./src/esm/lib/psbt.js",
+      "require": "./src/cjs/lib/psbt.js"
+    }
+  },
+  "type": "module",
   "files": [
-    "src/lib"
+    "src/cjs/lib",
+    "src/esm/lib"
   ],
   "engines": {
     "node": ">=8.0.0"
   },
   "scripts": {
-    "build": "npm run clean && tsc -p ./tsconfig.json && rimraf 'src/tests/**/*.d.ts' && npm run formatjs",
+    "build": "npm run clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json && npm run formatjs",
     "clean": "rimraf src types",
     "coverage": "nyc --check-coverage --exclude='src/tests/**/*.js' --reporter=lcov --reporter=text --branches 90 --functions 90 --lines 90 npm run unit",
     "flb": "npm run format && npm run lint && npm run build",
@@ -23,7 +33,7 @@
     "prettier": "prettier 'ts_src/**/*.ts' --ignore-path ./.prettierignore",
     "prettierjs": "prettier 'src/**/*.js' --ignore-path ./.prettierignore",
     "test": "npm run format:ci && npm run lint && npm run build && npm run coverage",
-    "unit": "tape src/tests/*.js src/tests/fromBIP/*.js"
+    "unit": "tape src/esm/tests/*.js src/tests/fromBIP/*.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +46,7 @@
     "nyc": "^14.1.1",
     "prettier": "^1.18.2",
     "rimraf": "^2.6.3",
-    "tape": "^4.10.2",
+    "tape": "^5.3.0",
     "tslint": "5.17.0",
     "typescript": "3.5.2"
   },

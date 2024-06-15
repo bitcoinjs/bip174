@@ -1,5 +1,5 @@
 import { KeyValue, SighashType } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): SighashType {
   if (keyVal.key[0] !== InputTypes.SIGHASH_TYPE) {

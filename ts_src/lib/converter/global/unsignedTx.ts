@@ -1,5 +1,5 @@
 import { KeyValue, Transaction } from '../../interfaces';
-import { GlobalTypes } from '../../typeFields';
+import { GlobalTypes } from '../../typeFields.js';
 
 export function encode(data: Transaction): KeyValue {
   return {

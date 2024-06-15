@@ -1,5 +1,5 @@
 import { GlobalXpub, KeyValue } from '../../interfaces';
-import { GlobalTypes } from '../../typeFields';
+import { GlobalTypes } from '../../typeFields.js';
 const range = (n: number): number[] => [...Array(n).keys()];
 
 export function decode(keyVal: KeyValue): GlobalXpub {

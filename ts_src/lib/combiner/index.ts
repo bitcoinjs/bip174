@@ -1,5 +1,9 @@
 import { KeyValue, Transaction } from '../interfaces';
-import { PsbtAttributes, psbtFromKeyVals, psbtToKeyVals } from '../parser';
+import {
+  PsbtAttributes,
+  psbtFromKeyVals,
+  psbtToKeyVals,
+} from '../parser/index.js';
 
 export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
   const self = psbts[0];

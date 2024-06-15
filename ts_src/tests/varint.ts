@@ -1,38 +1,38 @@
-import * as test from 'tape';
-import * as varuint from '../lib/converter/varint';
+import tape from 'tape';
+import * as varuint from '../lib/converter/varint.js';
 
-import { fixtures } from './fixtures/varint';
+import { fixtures } from './fixtures/varint.js';
 
 fixtures.valid.forEach((fixture, i) => {
-  test('valid encode #' + (i + 1), t => {
+  tape('valid encode #' + (i + 1), t => {
     t.same(varuint.encode(fixture.dec).toString('hex'), fixture.hex);
     // @ts-ignore
     t.same(varuint.encode.bytes, fixture.hex.length / 2);
     t.end();
   });
 
-  test('valid decode #' + (i + 1), t => {
+  tape('valid decode #' + (i + 1), t => {
     t.same(varuint.decode(Buffer.from(fixture.hex, 'hex')), fixture.dec);
     // @ts-ignore
     t.same(varuint.decode.bytes, fixture.hex.length / 2);
     t.end();
   });
 
-  test('valid encodingLength #' + (i + 1), t => {
+  tape('valid encodingLength #' + (i + 1), t => {
     t.same(varuint.encodingLength(fixture.dec), fixture.hex.length / 2);
     t.end();
   });
 });
 
 fixtures.invalid.forEach((fixture, i) => {
-  test('invalid encode #' + (i + 1), t => {
+  tape('invalid encode #' + (i + 1), t => {
     t.throws(() => {
       varuint.encode(fixture.dec);
     }, new RegExp(fixture.msg));
     t.end();
   });
 
-  test('invalid encodingLength #' + (i + 1), t => {
+  tape('invalid encodingLength #' + (i + 1), t => {
     t.throws(() => {
       varuint.encodingLength(fixture.dec);
     }, new RegExp(fixture.msg));
@@ -40,7 +40,7 @@ fixtures.invalid.forEach((fixture, i) => {
   });
 
   if (fixture.hex) {
-    test('invalid decode #' + (i + 1), t => {
+    tape('invalid decode #' + (i + 1), t => {
       t.throws(() => {
         // @ts-ignore
         t.decode(varuint.decode(Buffer.from(fixture.hex, 'hex')));
@@ -50,7 +50,7 @@ fixtures.invalid.forEach((fixture, i) => {
   }
 });
 
-test('encode', t => {
+tape('encode', t => {
   t.test('write to buffer with offset', _t => {
     const buffer = Buffer.from([0x00, 0x00]);
     _t.same(varuint.encode(0xfc, buffer, 1).toString('hex'), '00fc');
@@ -70,7 +70,7 @@ test('encode', t => {
   t.end();
 });
 
-test('decode', t => {
+tape('decode', t => {
   t.test('read from buffer with offset', _t => {
     const buffer = Buffer.from([0x00, 0xfc]);
     _t.same(varuint.decode(buffer, 1), 0xfc);

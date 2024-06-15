@@ -1,7 +1,7 @@
-import * as convert from '../converter';
-import { keyValsToBuffer } from '../converter/tools';
+import * as convert from '../converter/index.js';
+import { keyValsToBuffer } from '../converter/tools.js';
 import { KeyValue, PsbtGlobal, PsbtInput, PsbtOutput } from '../interfaces';
-import { PsbtAttributes } from './index';
+import { PsbtAttributes } from './index.js';
 
 export function psbtToBuffer({
   globalMap,

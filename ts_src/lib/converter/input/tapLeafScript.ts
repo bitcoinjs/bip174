@@ -1,5 +1,5 @@
 import { KeyValue, TapLeafScript } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): TapLeafScript {
   if (keyVal.key[0] !== InputTypes.TAP_LEAF_SCRIPT) {

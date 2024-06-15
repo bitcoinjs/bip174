@@ -1,6 +1,6 @@
-import * as convert from '../converter';
-import { range } from '../converter/tools';
-import * as varuint from '../converter/varint';
+import * as convert from '../converter/index.js';
+import { range } from '../converter/tools.js';
+import * as varuint from '../converter/varint.js';
 import {
   KeyValue,
   PsbtGlobal,
@@ -9,8 +9,8 @@ import {
   Transaction,
   TransactionFromBuffer,
 } from '../interfaces';
-import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
-import { PsbtAttributes } from './index';
+import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields.js';
+import { PsbtAttributes } from './index.js';
 
 export function psbtFromBuffer(
   buffer: Buffer,

@@ -1,7 +1,7 @@
-import * as tape from 'tape';
-import { Psbt } from '../lib/psbt';
-import { fixtures } from './fixtures/methods';
-import { getDefaultTx } from './utils/txTools';
+import tape from 'tape';
+import { Psbt } from '../lib/psbt.js';
+import { fixtures } from './fixtures/methods.js';
+import { getDefaultTx } from './utils/txTools.js';
 
 function run(f: any, typ: string): void {
   tape(`check ${typ} method: ${f.method}`, t => {

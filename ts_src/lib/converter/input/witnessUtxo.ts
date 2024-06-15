@@ -1,7 +1,7 @@
 import { KeyValue, WitnessUtxo } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
-import { readUInt64LE, writeUInt64LE } from '../tools';
-import * as varuint from '../varint';
+import { InputTypes } from '../../typeFields.js';
+import { readUInt64LE, writeUInt64LE } from '../tools.js';
+import * as varuint from '../varint.js';
 
 export function decode(keyVal: KeyValue): WitnessUtxo {
   if (keyVal.key[0] !== InputTypes.WITNESS_UTXO) {

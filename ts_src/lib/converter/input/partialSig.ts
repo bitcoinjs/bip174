@@ -1,5 +1,5 @@
 import { KeyValue, PartialSig } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): PartialSig {
   if (keyVal.key[0] !== InputTypes.PARTIAL_SIG) {

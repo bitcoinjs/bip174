@@ -1,5 +1,5 @@
 import { KeyValue, NonWitnessUtxo } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
 
 export function decode(keyVal: KeyValue): NonWitnessUtxo {
   if (keyVal.key[0] !== InputTypes.NON_WITNESS_UTXO) {

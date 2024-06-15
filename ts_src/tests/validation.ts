@@ -1,10 +1,10 @@
-import * as tape from 'tape';
-import { combine } from '../lib/combiner';
+import tape from 'tape';
+import { combine } from '../lib/combiner/index.js';
 import {
   globals as convertGlobal,
   inputs as convertInputs,
-} from '../lib/converter';
-import { getDefaultTx } from './utils/txTools';
+} from '../lib/converter/index.js';
+import { getDefaultTx } from './utils/txTools.js';
 
 const b = (hex: string): Buffer => Buffer.from(hex, 'hex');
 

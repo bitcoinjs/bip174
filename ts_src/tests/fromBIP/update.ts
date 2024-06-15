@@ -1,4 +1,4 @@
-import * as tape from 'tape';
+import tape from 'tape';
 import { Psbt } from '../../lib/psbt';
 import { fixtures } from '../fixtures/update';
 import { transactionFromBuffer } from '../utils/txTools';

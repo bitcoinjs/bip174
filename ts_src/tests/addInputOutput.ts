@@ -1,6 +1,6 @@
-import * as tape from 'tape';
-import { Psbt } from '../lib/psbt';
-import { getDefaultTx, transactionFromBuffer } from './utils/txTools';
+import tape from 'tape';
+import { Psbt } from '../lib/psbt.js';
+import { getDefaultTx, transactionFromBuffer } from './utils/txTools.js';
 
 tape('Test: add Input Output', t => {
   const psbt = new Psbt(getDefaultTx());

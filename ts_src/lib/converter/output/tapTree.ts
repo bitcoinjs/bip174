@@ -1,6 +1,6 @@
 import { KeyValue, TapLeaf, TapTree } from '../../interfaces';
-import { OutputTypes } from '../../typeFields';
-import * as varuint from '../varint';
+import { OutputTypes } from '../../typeFields.js';
+import * as varuint from '../varint.js';
 
 export function decode(keyVal: KeyValue): TapTree {
   if (keyVal.key[0] !== OutputTypes.TAP_TREE || keyVal.key.length !== 1) {
