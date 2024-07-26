@@ -31,16 +31,16 @@ function makeConverter(TYPE_BYTE) {
     'masterFingerprint: Buffer; ' +
     'pubkey: Buffer; ' +
     'path: string; ' +
-    'leafHashes: Buffer[]; ' +
+    'leafHashes?: Buffer[]; ' +
     '}';
   function check(data) {
-    return (
-      Array.isArray(data.leafHashes) &&
-      data.leafHashes.every(
+    let leafHashesStatus = true;
+    if (data.leafHashes && data.leafHashes.length) {
+      leafHashesStatus = data.leafHashes.every(
         leafHash => Buffer.isBuffer(leafHash) && leafHash.length === 32,
-      ) &&
-      parent.check(data)
-    );
+      );
+    }
+    return leafHashesStatus && parent.check(data);
   }
   return {
     decode,

@@ -1,5 +1,5 @@
 # bip174
-[![Build Status](https://travis-ci.org/bitcoinjs/bip174.png?branch=master)](https://travis-ci.org/bitcoinjs/bip174)
+[![Build Status](https://github.com/bitcoinjs/bip174/actions/workflows/main_ci.yml/badge.svg)](https://github.com/bitcoinjs/bip174/actions/workflows/main_ci.yml)
 [![NPM](https://img.shields.io/npm/v/bip174.svg)](https://www.npmjs.org/package/bip174)
 
 [![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)

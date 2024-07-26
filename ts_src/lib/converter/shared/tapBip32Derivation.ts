@@ -46,16 +46,17 @@ export function makeConverter(
     'masterFingerprint: Buffer; ' +
     'pubkey: Buffer; ' +
     'path: string; ' +
-    'leafHashes: Buffer[]; ' +
+    'leafHashes?: Buffer[]; ' +
     '}';
   function check(data: any): data is TapBip32Derivation {
-    return (
-      Array.isArray(data.leafHashes) &&
-      data.leafHashes.every(
+    let leafHashesStatus = true;
+    if (data.leafHashes && data.leafHashes.length){
+      leafHashesStatus = data.leafHashes.every(
         (leafHash: any) => Buffer.isBuffer(leafHash) && leafHash.length === 32,
-      ) &&
-      parent.check(data)
-    );
+      )
+    }
+
+    return leafHashesStatus && parent.check(data)
   }
 
   return {
