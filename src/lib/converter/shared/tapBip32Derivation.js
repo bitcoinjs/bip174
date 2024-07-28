@@ -31,7 +31,7 @@ function makeConverter(TYPE_BYTE) {
     'masterFingerprint: Buffer; ' +
     'pubkey: Buffer; ' +
     'path: string; ' +
-    'leafHashes?: Buffer[]; ' +
+    'leafHashes: Buffer[]; ' +
     '}';
   function check(data) {
     let leafHashesStatus = true;

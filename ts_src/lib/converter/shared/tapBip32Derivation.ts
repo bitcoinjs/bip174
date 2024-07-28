@@ -46,7 +46,7 @@ export function makeConverter(
     'masterFingerprint: Buffer; ' +
     'pubkey: Buffer; ' +
     'path: string; ' +
-    'leafHashes?: Buffer[]; ' +
+    'leafHashes: Buffer[]; ' +
     '}';
   function check(data: any): data is TapBip32Derivation {
     let leafHashesStatus = true;
