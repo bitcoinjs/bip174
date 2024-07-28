@@ -49,14 +49,13 @@ export function makeConverter(
     'leafHashes: Buffer[]; ' +
     '}';
   function check(data: any): data is TapBip32Derivation {
-    let leafHashesStatus = true;
-    if (data.leafHashes && data.leafHashes.length){
-      leafHashesStatus = data.leafHashes.every(
+    return (
+      Array.isArray(data.leafHashes) &&
+      data.leafHashes.every(
         (leafHash: any) => Buffer.isBuffer(leafHash) && leafHash.length === 32,
-      )
-    }
-
-    return leafHashesStatus && parent.check(data)
+      ) &&
+      parent.check(data)
+    );
   }
 
   return {

@@ -34,13 +34,13 @@ function makeConverter(TYPE_BYTE) {
     'leafHashes: Buffer[]; ' +
     '}';
   function check(data) {
-    let leafHashesStatus = true;
-    if (data.leafHashes && data.leafHashes.length) {
-      leafHashesStatus = data.leafHashes.every(
+    return (
+      Array.isArray(data.leafHashes) &&
+      data.leafHashes.every(
         leafHash => Buffer.isBuffer(leafHash) && leafHash.length === 32,
-      );
-    }
-    return leafHashesStatus && parent.check(data);
+      ) &&
+      parent.check(data)
+    );
   }
   return {
     decode,
