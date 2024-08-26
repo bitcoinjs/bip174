@@ -13,6 +13,7 @@ var __importStar =
 Object.defineProperty(exports, '__esModule', { value: true });
 const convert = __importStar(require('../converter/index.js'));
 const tools_js_1 = require('../converter/tools.js');
+const tools = __importStar(require('uint8array-tools'));
 function psbtToBuffer({ globalMap, inputs, outputs }) {
   const { globalKeyVals, inputKeyVals, outputKeyVals } = psbtToKeyVals({
     globalMap,
@@ -22,19 +23,19 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
   const globalBuffer = tools_js_1.keyValsToBuffer(globalKeyVals);
   const keyValsOrEmptyToBuffer = keyVals =>
     keyVals.length === 0
-      ? [Buffer.from([0])]
+      ? [Uint8Array.from([0])]
       : keyVals.map(tools_js_1.keyValsToBuffer);
   const inputBuffers = keyValsOrEmptyToBuffer(inputKeyVals);
   const outputBuffers = keyValsOrEmptyToBuffer(outputKeyVals);
-  const header = Buffer.allocUnsafe(5);
-  header.writeUIntBE(0x70736274ff, 0, 5);
-  return Buffer.concat(
+  const header = new Uint8Array(5);
+  header.set([0x70, 0x73, 0x62, 0x74, 0xff], 0);
+  return tools.concat(
     [header, globalBuffer].concat(inputBuffers, outputBuffers),
   );
 }
 exports.psbtToBuffer = psbtToBuffer;
 const sortKeyVals = (a, b) => {
-  return a.key.compare(b.key);
+  return tools.compare(a.key, b.key);
 };
 function keyValsFromMap(keyValMap, converterFactory) {
   const keyHexSet = new Set();
@@ -47,7 +48,7 @@ function keyValsFromMap(keyValMap, converterFactory) {
     const encodedKeyVals = (Array.isArray(value) ? value : [value]).map(
       converter.encode,
     );
-    const keyHexes = encodedKeyVals.map(kv => kv.key.toString('hex'));
+    const keyHexes = encodedKeyVals.map(kv => tools.toHex(kv.key));
     keyHexes.forEach(hex => {
       if (keyHexSet.has(hex))
         throw new Error('Serialize Error: Duplicate key: ' + hex);
@@ -58,7 +59,7 @@ function keyValsFromMap(keyValMap, converterFactory) {
   // Get other keyVals that have not yet been gotten
   const otherKeyVals = keyValMap.unknownKeyVals
     ? keyValMap.unknownKeyVals.filter(keyVal => {
-        return !keyHexSet.has(keyVal.key.toString('hex'));
+        return !keyHexSet.has(tools.toHex(keyVal.key));
       })
     : [];
   return keyVals.concat(otherKeyVals).sort(sortKeyVals);

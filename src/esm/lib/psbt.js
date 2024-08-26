@@ -13,6 +13,7 @@ import {
   updateInput,
   updateOutput,
 } from './utils.js';
+import * as tools from 'uint8array-tools';
 export class Psbt {
   constructor(tx) {
     this.inputs = [];
@@ -22,11 +23,11 @@ export class Psbt {
     };
   }
   static fromBase64(data, txFromBuffer) {
-    const buffer = Buffer.from(data, 'base64');
+    const buffer = tools.fromBase64(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromHex(data, txFromBuffer) {
-    const buffer = Buffer.from(data, 'hex');
+    const buffer = tools.fromHex(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromBuffer(buffer, txFromBuffer) {
@@ -37,11 +38,11 @@ export class Psbt {
   }
   toBase64() {
     const buffer = this.toBuffer();
-    return buffer.toString('base64');
+    return tools.toBase64(buffer);
   }
   toHex() {
     const buffer = this.toBuffer();
-    return buffer.toString('hex');
+    return tools.toHex(buffer);
   }
   toBuffer() {
     return psbtToBuffer(this);
@@ -146,3 +147,17 @@ export class Psbt {
     return this.globalMap.unsignedTx.toBuffer();
   }
 }
+export {
+  addInputAttributes,
+  addOutputAttributes,
+  checkForInput,
+  checkForOutput,
+  checkHasKey,
+  defaultLocktimeSetter,
+  defaultVersionSetter,
+  getEnumLength,
+  inputCheckUncleanFinalized,
+  updateGlobal,
+  updateInput,
+  updateOutput,
+} from './utils.js';

@@ -12,19 +12,22 @@ var __importStar =
   };
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_js_1 = require('../../typeFields.js');
-const tools_js_1 = require('../tools.js');
-const varuint = __importStar(require('../varint.js'));
+const tools = __importStar(require('uint8array-tools'));
+const varuint = __importStar(require('varuint-bitcoin'));
 function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_js_1.InputTypes.WITNESS_UTXO) {
     throw new Error(
       'Decode Error: could not decode witnessUtxo with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
-  const value = tools_js_1.readUInt64LE(keyVal.value, 0);
+  const value = tools.readInt64(keyVal.value, 0, 'LE');
   let _offset = 8;
-  const scriptLen = varuint.decode(keyVal.value, _offset);
-  _offset += varuint.encodingLength(scriptLen);
+  const { numberValue: scriptLen, bytes } = varuint.decode(
+    keyVal.value,
+    _offset,
+  );
+  _offset += bytes;
   const script = keyVal.value.slice(_offset);
   if (script.length !== scriptLen) {
     throw new Error('Decode Error: WITNESS_UTXO script is not proper length');
@@ -37,20 +40,20 @@ function decode(keyVal) {
 exports.decode = decode;
 function encode(data) {
   const { script, value } = data;
-  const varintLen = varuint.encodingLength(script.length);
-  const result = Buffer.allocUnsafe(8 + varintLen + script.length);
-  tools_js_1.writeUInt64LE(result, value, 0);
+  const varuintlen = varuint.encodingLength(script.length);
+  const result = new Uint8Array(8 + varuintlen + script.length);
+  tools.writeUInt64(result, 0, BigInt(value), 'LE');
   varuint.encode(script.length, result, 8);
-  script.copy(result, 8 + varintLen);
+  result.set(script, 8 + varuintlen);
   return {
-    key: Buffer.from([typeFields_js_1.InputTypes.WITNESS_UTXO]),
+    key: Uint8Array.from([typeFields_js_1.InputTypes.WITNESS_UTXO]),
     value: result,
   };
 }
 exports.encode = encode;
-exports.expected = '{ script: Buffer; value: number; }';
+exports.expected = '{ script: Uint8Array; value: bigint; }';
 function check(data) {
-  return Buffer.isBuffer(data.script) && typeof data.value === 'number';
+  return data.script instanceof Uint8Array && typeof data.value === 'bigint';
 }
 exports.check = check;
 function canAdd(currentData, newData) {

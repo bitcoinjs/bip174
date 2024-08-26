@@ -1,9 +1,10 @@
 import { InputTypes } from '../../typeFields.js';
+import * as tools from 'uint8array-tools';
 export function decode(keyVal) {
   if (keyVal.key[0] !== InputTypes.TAP_KEY_SIG || keyVal.key.length !== 1) {
     throw new Error(
       'Decode Error: could not decode tapKeySig with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   if (!check(keyVal.value)) {
@@ -14,12 +15,14 @@ export function decode(keyVal) {
   return keyVal.value;
 }
 export function encode(value) {
-  const key = Buffer.from([InputTypes.TAP_KEY_SIG]);
+  const key = Uint8Array.from([InputTypes.TAP_KEY_SIG]);
   return { key, value };
 }
-export const expected = 'Buffer';
+export const expected = 'Uint8Array';
 export function check(data) {
-  return Buffer.isBuffer(data) && (data.length === 64 || data.length === 65);
+  return (
+    data instanceof Uint8Array && (data.length === 64 || data.length === 65)
+  );
 }
 export function canAdd(currentData, newData) {
   return !!currentData && !!newData && currentData.tapKeySig === undefined;

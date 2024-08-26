@@ -2,6 +2,7 @@ import tape from 'tape';
 import { Psbt } from '../lib/psbt.js';
 import { fixtures } from './fixtures/first.js';
 import { transactionFromBuffer } from './utils/txTools.js';
+import * as tools from 'uint8array-tools';
 
 for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
@@ -24,8 +25,11 @@ function jsonify(parsed: any): string {
   return JSON.stringify(
     parsed,
     (key, value) => {
-      return key !== undefined && value !== undefined && value.type === 'Buffer'
-        ? Buffer.from(value.data).toString('hex')
+      return (key !== undefined &&
+        value !== undefined &&
+        value instanceof Uint8Array) ||
+        value.type === 'Buffer'
+        ? tools.toHex(value)
         : value;
     },
     2,

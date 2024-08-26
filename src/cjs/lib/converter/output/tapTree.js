@@ -12,7 +12,9 @@ var __importStar =
   };
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_js_1 = require('../../typeFields.js');
-const varuint = __importStar(require('../varint.js'));
+// import * as varuint from '../varint.js';
+const varuint = __importStar(require('varuint-bitcoin'));
+const tools = __importStar(require('uint8array-tools'));
 function decode(keyVal) {
   if (
     keyVal.key[0] !== typeFields_js_1.OutputTypes.TAP_TREE ||
@@ -20,7 +22,7 @@ function decode(keyVal) {
   ) {
     throw new Error(
       'Decode Error: could not decode tapTree with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   let _offset = 0;
@@ -28,8 +30,11 @@ function decode(keyVal) {
   while (_offset < keyVal.value.length) {
     const depth = keyVal.value[_offset++];
     const leafVersion = keyVal.value[_offset++];
-    const scriptLen = varuint.decode(keyVal.value, _offset);
-    _offset += varuint.encodingLength(scriptLen);
+    const { numberValue: scriptLen, bytes } = varuint.decode(
+      keyVal.value,
+      _offset,
+    );
+    _offset += bytes;
     data.push({
       depth,
       leafVersion,
@@ -41,22 +46,22 @@ function decode(keyVal) {
 }
 exports.decode = decode;
 function encode(tree) {
-  const key = Buffer.from([typeFields_js_1.OutputTypes.TAP_TREE]);
+  const key = Uint8Array.from([typeFields_js_1.OutputTypes.TAP_TREE]);
   const bufs = [].concat(
     ...tree.leaves.map(tapLeaf => [
-      Buffer.of(tapLeaf.depth, tapLeaf.leafVersion),
-      varuint.encode(tapLeaf.script.length),
+      Uint8Array.of(tapLeaf.depth, tapLeaf.leafVersion),
+      varuint.encode(BigInt(tapLeaf.script.length)).buffer,
       tapLeaf.script,
     ]),
   );
   return {
     key,
-    value: Buffer.concat(bufs),
+    value: tools.concat(bufs),
   };
 }
 exports.encode = encode;
 exports.expected =
-  '{ leaves: [{ depth: number; leafVersion: number, script: Buffer; }] }';
+  '{ leaves: [{ depth: number; leafVersion: number, script: Uint8Array; }] }';
 function check(data) {
   return (
     Array.isArray(data.leaves) &&
@@ -65,7 +70,7 @@ function check(data) {
         tapLeaf.depth >= 0 &&
         tapLeaf.depth <= 128 &&
         (tapLeaf.leafVersion & 0xfe) === tapLeaf.leafVersion &&
-        Buffer.isBuffer(tapLeaf.script),
+        tapLeaf.script instanceof Uint8Array,
     )
   );
 }

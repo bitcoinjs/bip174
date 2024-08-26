@@ -8,7 +8,7 @@ export function getDefaultTx(version = 1) {
 export const transactionFromBuffer = buffer => new Transaction(buffer);
 export class Transaction {
   constructor(buffer) {
-    this.tx = BTransaction.fromBuffer(buffer);
+    this.tx = BTransaction.fromBuffer(Buffer.from(buffer));
     if (this.tx.ins.some(input => input.script.length !== 0)) {
       throw new Error('Format Error: Transaction ScriptSigs are not empty');
     }

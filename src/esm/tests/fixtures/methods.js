@@ -432,14 +432,14 @@ export const fixtures = {
       ],
       exception:
         'Data for global key globalXpub is incorrect: Expected { ' +
-        'masterFingerprint: Buffer; extendedPubkey: Buffer; path: string; } and got',
+        'masterFingerprint: Uint8Array; extendedPubkey: Uint8Array; path: string; } and got',
     },
     {
       method: 'updateInput',
       addInputOutput: true,
       args: [0, { nonWitnessUtxo: 'blah' }],
       exception:
-        'Data for input key nonWitnessUtxo is incorrect: Expected Buffer and got',
+        'Data for input key nonWitnessUtxo is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateInput',
@@ -507,7 +507,7 @@ export const fixtures = {
       ],
       exception:
         'Data for input key witnessUtxo is incorrect: Expected { ' +
-        'script: Buffer; value: number; } and got',
+        'script: Uint8Array; value: number; } and got',
     },
     {
       method: 'updateInput',
@@ -532,7 +532,7 @@ export const fixtures = {
       ],
       exception:
         'Data for input key partialSig is incorrect: Expected { pubkey: ' +
-        'Buffer; signature: Buffer; } and got',
+        'Uint8Array; signature: Uint8Array; } and got',
     },
     {
       method: 'updateInput',
@@ -546,14 +546,14 @@ export const fixtures = {
       addInputOutput: true,
       args: [0, { redeemScript: 'a' }],
       exception:
-        'Data for input key redeemScript is incorrect: Expected Buffer and got',
+        'Data for input key redeemScript is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateInput',
       addInputOutput: true,
       args: [0, { witnessScript: 'a' }],
       exception:
-        'Data for input key witnessScript is incorrect: Expected Buffer and got',
+        'Data for input key witnessScript is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateInput',
@@ -570,21 +570,21 @@ export const fixtures = {
       ],
       exception:
         'Data for input key bip32Derivation is incorrect: Expected { ' +
-        'masterFingerprint: Buffer; pubkey: Buffer; path: string; } and got',
+        'masterFingerprint: Uint8Array; pubkey: Uint8Array; path: string; } and got',
     },
     {
       method: 'updateInput',
       addInputOutput: true,
       args: [0, { finalScriptSig: 8 }],
       exception:
-        'Data for input key finalScriptSig is incorrect: Expected Buffer and got',
+        'Data for input key finalScriptSig is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateInput',
       addInputOutput: true,
       args: [0, { finalScriptWitness: 8 }],
       exception:
-        'Data for input key finalScriptWitness is incorrect: Expected Buffer and got',
+        'Data for input key finalScriptWitness is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateInput',
@@ -598,14 +598,14 @@ export const fixtures = {
       addInputOutput: true,
       args: [0, { redeemScript: 8 }],
       exception:
-        'Data for output key redeemScript is incorrect: Expected Buffer and got',
+        'Data for output key redeemScript is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateOutput',
       addInputOutput: true,
       args: [0, { witnessScript: 8 }],
       exception:
-        'Data for output key witnessScript is incorrect: Expected Buffer and got',
+        'Data for output key witnessScript is incorrect: Expected Uint8Array and got',
     },
     {
       method: 'updateOutput',
@@ -622,7 +622,7 @@ export const fixtures = {
       ],
       exception:
         'Data for output key bip32Derivation is incorrect: Expected { ' +
-        'masterFingerprint: Buffer; pubkey: Buffer; path: string; } and got',
+        'masterFingerprint: Uint8Array; pubkey: Uint8Array; path: string; } and got',
     },
     {
       method: 'updateInput',

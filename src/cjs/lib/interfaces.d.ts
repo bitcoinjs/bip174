@@ -1,5 +1,4 @@
-/// <reference types="node" />
-export declare type TransactionFromBuffer = (buffer: Buffer) => Transaction;
+export declare type TransactionFromBuffer = (buffer: Uint8Array) => Transaction;
 export interface Transaction {
     getInputOutputCounts(): {
         inputCount: number;
@@ -7,11 +6,11 @@ export interface Transaction {
     };
     addInput(objectArg: any): void;
     addOutput(objectArg: any): void;
-    toBuffer(): Buffer;
+    toBuffer(): Uint8Array;
 }
 export interface KeyValue {
-    key: Buffer;
-    value: Buffer;
+    key: Uint8Array;
+    value: Uint8Array;
 }
 export interface PsbtGlobal extends PsbtGlobalUpdate {
     unsignedTx: Transaction;
@@ -59,57 +58,57 @@ export interface PsbtOutputExtended extends PsbtOutput {
     [index: string]: any;
 }
 export interface GlobalXpub {
-    extendedPubkey: Buffer;
-    masterFingerprint: Buffer;
+    extendedPubkey: Uint8Array;
+    masterFingerprint: Uint8Array;
     path: string;
 }
 export interface PartialSig {
-    pubkey: Buffer;
-    signature: Buffer;
+    pubkey: Uint8Array;
+    signature: Uint8Array;
 }
 export interface Bip32Derivation {
-    masterFingerprint: Buffer;
-    pubkey: Buffer;
+    masterFingerprint: Uint8Array;
+    pubkey: Uint8Array;
     path: string;
 }
 export interface WitnessUtxo {
-    script: Buffer;
-    value: number;
+    script: Uint8Array;
+    value: bigint;
 }
-export declare type NonWitnessUtxo = Buffer;
+export declare type NonWitnessUtxo = Uint8Array;
 export declare type SighashType = number;
-export declare type RedeemScript = Buffer;
-export declare type WitnessScript = Buffer;
-export declare type FinalScriptSig = Buffer;
-export declare type FinalScriptWitness = Buffer;
+export declare type RedeemScript = Uint8Array;
+export declare type WitnessScript = Uint8Array;
+export declare type FinalScriptSig = Uint8Array;
+export declare type FinalScriptWitness = Uint8Array;
 export declare type PorCommitment = string;
-export declare type TapKeySig = Buffer;
+export declare type TapKeySig = Uint8Array;
 export interface TapScriptSig extends PartialSig {
-    leafHash: Buffer;
+    leafHash: Uint8Array;
 }
 interface TapScript {
     leafVersion: number;
-    script: Buffer;
+    script: Uint8Array;
 }
-export declare type ControlBlock = Buffer;
+export declare type ControlBlock = Uint8Array;
 export interface TapLeafScript extends TapScript {
     controlBlock: ControlBlock;
 }
 export interface TapBip32Derivation extends Bip32Derivation {
-    leafHashes: Buffer[];
+    leafHashes: Uint8Array[];
 }
-export declare type TapInternalKey = Buffer;
-export declare type TapMerkleRoot = Buffer;
+export declare type TapInternalKey = Uint8Array;
+export declare type TapMerkleRoot = Uint8Array;
 export interface TapLeaf extends TapScript {
     depth: number;
 }
 export interface TapTree {
     leaves: TapLeaf[];
 }
-export declare type TransactionIOCountGetter = (txBuffer: Buffer) => {
+export declare type TransactionIOCountGetter = (txBuffer: Uint8Array) => {
     inputCount: number;
     outputCount: number;
 };
-export declare type TransactionVersionSetter = (version: number, txBuffer: Buffer) => Buffer;
-export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Buffer) => Buffer;
+export declare type TransactionVersionSetter = (version: number, txBuffer: Uint8Array) => Uint8Array;
+export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Uint8Array) => Uint8Array;
 export {};

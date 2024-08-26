@@ -12,11 +12,6 @@ for (const f of fixtures) {
     const jsonB1 = jsonify(psbts[0]);
     const jsonB2 = jsonify(psbts[1]);
 
-    // console.log(jsonA1);
-    // console.log(jsonA2);
-    // console.log(jsonB1);
-    // console.log(jsonB2);
-
     t.notDeepEqual(JSON.parse(jsonA1), JSON.parse(jsonB1));
     t.deepEqual(JSON.parse(jsonA2), JSON.parse(jsonB2));
     t.equal(psbts[0].toHex(), f.result);
@@ -30,6 +25,8 @@ function jsonify(parsed: any): string {
     (key, value) => {
       return key !== undefined && value.type === 'Buffer'
         ? Buffer.from(value.data).toString('hex')
+        : typeof value === 'bigint'
+        ? value.toString()
         : value;
     },
     2,

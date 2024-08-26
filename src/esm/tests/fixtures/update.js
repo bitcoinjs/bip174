@@ -20,7 +20,7 @@ export const fixtures = [
         ),
         witnessUtxo: {
           script: b('0014ce2ef55e561be15ef65dcc79f998117e142d6016'),
-          value: 10413,
+          value: 10413n,
         },
         redeemScript: b(
           '5221029583bf39ae0a609747ad199addd634fa6108559d6c5cd39b4c2183f1ab96' +
@@ -47,7 +47,7 @@ export const fixtures = [
       {
         witnessUtxo: {
           script: b('a914b7f5faf40e3d40a5a459b1db3535f2b72fa921e887'),
-          value: 200000000,
+          value: 200000000n,
         },
         redeemScript: b(
           '00208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',

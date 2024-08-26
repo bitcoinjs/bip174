@@ -5,7 +5,7 @@ export declare function getDefaultTx(version?: number): Transaction;
 export declare const transactionFromBuffer: TransactionFromBuffer;
 export declare class Transaction implements ITransaction {
     tx: BTransaction;
-    constructor(buffer: Buffer);
+    constructor(buffer: Uint8Array);
     getInputOutputCounts(): {
         inputCount: number;
         outputCount: number;

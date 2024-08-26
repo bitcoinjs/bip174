@@ -3,7 +3,7 @@ import { Psbt } from '../lib/psbt.js';
 import { fixtures } from './fixtures/fromBuffer.js';
 
 class Blah {
-  constructor(public buf: Buffer) {}
+  constructor(public buf: Uint8Array) {}
 
   getInputOutputCounts(): {
     inputCount: number;
@@ -21,12 +21,12 @@ class Blah {
   addOutput(): void {
     return;
   }
-  toBuffer(): Buffer {
+  toBuffer(): Uint8Array {
     return this.buf;
   }
 }
 
-const fromBuf = (b: Buffer): Blah => new Blah(b);
+const fromBuf = (b: Uint8Array): Blah => new Blah(b);
 
 for (const f of fixtures) {
   tape('From Buffer should throw:', t => {

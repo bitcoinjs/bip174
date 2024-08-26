@@ -4,11 +4,7 @@
   "rules": {
     "arrow-parens": [true, "ban-single-arg-parens"],
     "curly": false,
-    "indent": [
-      true,
-      "spaces",
-      2
-    ],
+    "indent": [true, "spaces", 2],
     "interface-name": [false],
     "match-default-export-name": true,
     "max-classes-per-file": [false],
@@ -19,6 +15,7 @@
     "no-implicit-dependencies": [true, "dev"],
     "no-return-await": true,
     "no-var-requires": false,
+    "ordered-imports": false,
     "no-unnecessary-callback-wrapper": true,
     "no-unused-expression": false,
     "object-literal-sort-keys": false,

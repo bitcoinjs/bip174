@@ -1,7 +1,7 @@
 // This function should throw if the scriptSig or scriptWitness section for
 // any input is not empty. And it should throw if the transaction is segwit
 // format. As per the BIP.
-export type TransactionFromBuffer = (buffer: Buffer) => Transaction;
+export type TransactionFromBuffer = (buffer: Uint8Array) => Transaction;
 // This is a light wrapper that will give the information needed for parsing
 // and modifying the Transaction internally.
 // This library will have no logical understanding of the Transaction format,
@@ -19,12 +19,12 @@ export interface Transaction {
   // This is primarily used when serializing the PSBT to a binary.
   // You can implement caching behind the scenes if needed and clear the cache
   // when addInput or addOutput are called.
-  toBuffer(): Buffer;
+  toBuffer(): Uint8Array;
 }
 
 export interface KeyValue {
-  key: Buffer;
-  value: Buffer;
+  key: Uint8Array;
+  value: Uint8Array;
 }
 
 export interface PsbtGlobal extends PsbtGlobalUpdate {
@@ -81,65 +81,65 @@ export interface PsbtOutputExtended extends PsbtOutput {
 }
 
 export interface GlobalXpub {
-  extendedPubkey: Buffer;
-  masterFingerprint: Buffer;
+  extendedPubkey: Uint8Array;
+  masterFingerprint: Uint8Array;
   path: string;
 }
 
 export interface PartialSig {
-  pubkey: Buffer;
-  signature: Buffer;
+  pubkey: Uint8Array;
+  signature: Uint8Array;
 }
 
 export interface Bip32Derivation {
-  masterFingerprint: Buffer;
-  pubkey: Buffer;
+  masterFingerprint: Uint8Array;
+  pubkey: Uint8Array;
   path: string;
 }
 
 export interface WitnessUtxo {
-  script: Buffer;
-  value: number;
+  script: Uint8Array;
+  value: bigint;
 }
 
-export type NonWitnessUtxo = Buffer;
+export type NonWitnessUtxo = Uint8Array;
 
 export type SighashType = number;
 
-export type RedeemScript = Buffer;
+export type RedeemScript = Uint8Array;
 
-export type WitnessScript = Buffer;
+export type WitnessScript = Uint8Array;
 
-export type FinalScriptSig = Buffer;
+export type FinalScriptSig = Uint8Array;
 
-export type FinalScriptWitness = Buffer;
+export type FinalScriptWitness = Uint8Array;
 
 export type PorCommitment = string;
 
-export type TapKeySig = Buffer;
+export type TapKeySig = Uint8Array;
 
 export interface TapScriptSig extends PartialSig {
-  leafHash: Buffer;
+  leafHash: Uint8Array;
 }
 
 interface TapScript {
   leafVersion: number;
-  script: Buffer;
+  script: Uint8Array;
 }
 
-export type ControlBlock = Buffer;
+export type ControlBlock = Uint8Array;
 
 export interface TapLeafScript extends TapScript {
   controlBlock: ControlBlock;
 }
 
 export interface TapBip32Derivation extends Bip32Derivation {
-  leafHashes: Buffer[];
+  leafHashes: Uint8Array[];
 }
 
-export type TapInternalKey = Buffer;
+export type TapInternalKey = Uint8Array;
 
-export type TapMerkleRoot = Buffer;
+export type TapMerkleRoot = Uint8Array;
 
 export interface TapLeaf extends TapScript {
   depth: number;
@@ -150,7 +150,7 @@ export interface TapTree {
 }
 
 export type TransactionIOCountGetter = (
-  txBuffer: Buffer,
+  txBuffer: Uint8Array,
 ) => {
   inputCount: number;
   outputCount: number;
@@ -158,10 +158,10 @@ export type TransactionIOCountGetter = (
 
 export type TransactionVersionSetter = (
   version: number,
-  txBuffer: Buffer,
-) => Buffer;
+  txBuffer: Uint8Array,
+) => Uint8Array;
 
 export type TransactionLocktimeSetter = (
   locktime: number,
-  txBuffer: Buffer,
-) => Buffer;
+  txBuffer: Uint8Array,
+) => Uint8Array;

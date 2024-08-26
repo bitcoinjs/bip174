@@ -6,7 +6,7 @@ export declare const fixtures: ({
         nonWitnessUtxo: Buffer;
         witnessUtxo: {
             script: Buffer;
-            value: number;
+            value: bigint;
         };
         redeemScript: Buffer;
         bip32Derivation: {
@@ -18,7 +18,7 @@ export declare const fixtures: ({
     } | {
         witnessUtxo: {
             script: Buffer;
-            value: number;
+            value: bigint;
         };
         redeemScript: Buffer;
         witnessScript: Buffer;

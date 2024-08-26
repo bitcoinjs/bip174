@@ -1,3 +1,4 @@
+import * as tools from 'uint8array-tools';
 export function makeChecker(pubkeyTypes) {
   return checkPubkey;
   function checkPubkey(keyVal) {
@@ -9,7 +10,7 @@ export function makeChecker(pubkeyTypes) {
         ![2, 3, 4].includes(pubkey[0])
       ) {
         throw new Error(
-          'Format Error: invalid pubkey in key 0x' + keyVal.key.toString('hex'),
+          'Format Error: invalid pubkey in key 0x' + tools.toHex(keyVal.key),
         );
       }
     }

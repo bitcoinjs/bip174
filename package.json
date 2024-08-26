@@ -18,7 +18,7 @@
     "src/esm/lib"
   ],
   "engines": {
-    "node": ">=8.0.0"
+    "node": ">=18.0.0"
   },
   "scripts": {
     "build": "npm run clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json && npm run formatjs",
@@ -38,6 +38,10 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bitcoinjs/bip174.git"
+  },
+  "dependencies": {
+    "uint8array-tools": "../uint8array-tools",
+    "varuint-bitcoin": "../varuint-bitcoin"
   },
   "devDependencies": {
     "@types/node": "12.0.8",

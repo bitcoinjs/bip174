@@ -1,23 +1,24 @@
+import * as tools from 'uint8array-tools';
 export function makeConverter(TYPE_BYTE) {
   function decode(keyVal) {
     if (keyVal.key[0] !== TYPE_BYTE) {
       throw new Error(
         'Decode Error: could not decode witnessScript with key 0x' +
-          keyVal.key.toString('hex'),
+          tools.toHex(keyVal.key),
       );
     }
     return keyVal.value;
   }
   function encode(data) {
-    const key = Buffer.from([TYPE_BYTE]);
+    const key = Uint8Array.from([TYPE_BYTE]);
     return {
       key,
       value: data,
     };
   }
-  const expected = 'Buffer';
+  const expected = 'Uint8Array';
   function check(data) {
-    return Buffer.isBuffer(data);
+    return data instanceof Uint8Array;
   }
   function canAdd(currentData, newData) {
     return (

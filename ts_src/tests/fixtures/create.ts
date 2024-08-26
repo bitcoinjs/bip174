@@ -19,11 +19,11 @@ export const fixtures = [
       addOutputs: [
         {
           script: b('0014d85c2b71d0060b09c9886aeb815e50991dda124d'),
-          value: 149990000,
+          value: 149990000n,
         },
         {
           script: b('001400aea9a2e5f0f876a588df5546e8742d1d87008f'),
-          value: 100000000,
+          value: 100000000n,
         },
       ],
       updateInputData: [
@@ -61,7 +61,7 @@ export const fixtures = [
         {
           witnessUtxo: {
             script: b('a914b7f5faf40e3d40a5a459b1db3535f2b72fa921e887'),
-            value: 200000000,
+            value: 200000000n,
           },
           redeemScript: b(
             '00208c2353173743b595dfb4a07b72ba8e42e3797da74e87fe7d9d7497e3b2028903',

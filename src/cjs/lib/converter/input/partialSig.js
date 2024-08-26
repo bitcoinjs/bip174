@@ -1,11 +1,23 @@
 'use strict';
+var __importStar =
+  (this && this.__importStar) ||
+  function(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null)
+      for (var k in mod)
+        if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result['default'] = mod;
+    return result;
+  };
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_js_1 = require('../../typeFields.js');
+const tools = __importStar(require('uint8array-tools'));
 function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_js_1.InputTypes.PARTIAL_SIG) {
     throw new Error(
       'Decode Error: could not decode partialSig with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   if (
@@ -14,7 +26,7 @@ function decode(keyVal) {
   ) {
     throw new Error(
       'Decode Error: partialSig has invalid pubkey in key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   const pubkey = keyVal.key.slice(1);
@@ -25,18 +37,18 @@ function decode(keyVal) {
 }
 exports.decode = decode;
 function encode(pSig) {
-  const head = Buffer.from([typeFields_js_1.InputTypes.PARTIAL_SIG]);
+  const head = new Uint8Array([typeFields_js_1.InputTypes.PARTIAL_SIG]);
   return {
-    key: Buffer.concat([head, pSig.pubkey]),
+    key: tools.concat([head, pSig.pubkey]),
     value: pSig.signature,
   };
 }
 exports.encode = encode;
-exports.expected = '{ pubkey: Buffer; signature: Buffer; }';
+exports.expected = '{ pubkey: Uint8Array; signature: Uint8Array; }';
 function check(data) {
   return (
-    Buffer.isBuffer(data.pubkey) &&
-    Buffer.isBuffer(data.signature) &&
+    data.pubkey instanceof Uint8Array &&
+    data.signature instanceof Uint8Array &&
     [33, 65].includes(data.pubkey.length) &&
     [2, 3, 4].includes(data.pubkey[0]) &&
     isDerSigWithSighash(data.signature)
@@ -44,7 +56,7 @@ function check(data) {
 }
 exports.check = check;
 function isDerSigWithSighash(buf) {
-  if (!Buffer.isBuffer(buf) || buf.length < 9) return false;
+  if (!(buf instanceof Uint8Array) || buf.length < 9) return false;
   if (buf[0] !== 0x30) return false;
   if (buf.length !== buf[1] + 3) return false;
   if (buf[2] !== 0x02) return false;
@@ -57,9 +69,11 @@ function isDerSigWithSighash(buf) {
   return true;
 }
 function canAddToArray(array, item, dupeSet) {
-  const dupeString = item.pubkey.toString('hex');
+  const dupeString = tools.toHex(item.pubkey);
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
-  return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  return (
+    array.filter(v => tools.compare(v.pubkey, item.pubkey) === 0).length === 0
+  );
 }
 exports.canAddToArray = canAddToArray;

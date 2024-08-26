@@ -8,7 +8,7 @@ export declare const fixtures: {
         }[];
         addOutputs: {
             script: Buffer;
-            value: number;
+            value: bigint;
         }[];
         updateInputData: ({
             nonWitnessUtxo: Buffer;
@@ -23,7 +23,7 @@ export declare const fixtures: {
         } | {
             witnessUtxo: {
                 script: Buffer;
-                value: number;
+                value: bigint;
             };
             redeemScript: Buffer;
             witnessScript: Buffer;

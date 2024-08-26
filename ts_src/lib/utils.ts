@@ -7,7 +7,8 @@ import {
   PsbtInputUpdate,
   PsbtOutput,
   PsbtOutputUpdate,
-} from './interfaces';
+} from './interfaces.js';
+import * as tools from 'uint8array-tools';
 
 export function checkForInput(
   inputs: PsbtInput[],
@@ -39,9 +40,10 @@ export function checkHasKey(
   }
   if (
     keyVals &&
-    keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0
+    keyVals.filter(kv => tools.compare(kv.key, checkKeyVal.key) === 0)
+      .length !== 0
   ) {
-    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
+    throw new Error(`Duplicate Key: ${tools.toHex(checkKeyVal.key)}`);
   }
 }
 
@@ -91,6 +93,7 @@ function updateMaker<T, Y>(
   typeName: string,
 ): (updateData: T, mainData: Y) => void {
   return (updateData: T, mainData: Y): void => {
+    // @ts-ignore
     for (const name of Object.keys(updateData)) {
       // @ts-ignore
       const data = updateData[name];
@@ -150,18 +153,24 @@ export function addOutputAttributes(outputs: PsbtOutput[], data: any): void {
   updateOutput(data, output);
 }
 
-export function defaultVersionSetter(version: number, txBuf: Buffer): Buffer {
-  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+export function defaultVersionSetter(
+  version: number,
+  txBuf: Uint8Array,
+): Uint8Array {
+  if (!(txBuf instanceof Uint8Array) || txBuf.length < 4) {
     throw new Error('Set Version: Invalid Transaction');
   }
-  txBuf.writeUInt32LE(version, 0);
+  tools.writeUInt32(txBuf, 0, version, 'LE');
   return txBuf;
 }
 
-export function defaultLocktimeSetter(locktime: number, txBuf: Buffer): Buffer {
-  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+export function defaultLocktimeSetter(
+  locktime: number,
+  txBuf: Uint8Array,
+): Uint8Array {
+  if (!(txBuf instanceof Uint8Array) || txBuf.length < 4) {
     throw new Error('Set Locktime: Invalid Transaction');
   }
-  txBuf.writeUInt32LE(locktime, txBuf.length - 4);
+  tools.writeUInt32(txBuf, txBuf.length - 4, locktime, 'LE');
   return txBuf;
 }

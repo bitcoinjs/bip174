@@ -12,13 +12,13 @@ export function getDefaultTx(version: number = 1): Transaction {
 }
 
 export const transactionFromBuffer: TransactionFromBuffer = (
-  buffer: Buffer,
+  buffer: Uint8Array,
 ): Transaction => new Transaction(buffer);
 
 export class Transaction implements ITransaction {
   tx: BTransaction;
-  constructor(buffer: Buffer) {
-    this.tx = BTransaction.fromBuffer(buffer);
+  constructor(buffer: Uint8Array) {
+    this.tx = BTransaction.fromBuffer(Buffer.from(buffer));
     if (this.tx.ins.some(input => input.script.length !== 0)) {
       throw new Error('Format Error: Transaction ScriptSigs are not empty');
     }

@@ -1,4 +1,5 @@
 import * as converter from './converter/index.js';
+import * as tools from 'uint8array-tools';
 export function checkForInput(inputs, inputIndex) {
   const input = inputs[inputIndex];
   if (input === undefined) throw new Error(`No input #${inputIndex}`);
@@ -17,9 +18,10 @@ export function checkHasKey(checkKeyVal, keyVals, enumLength) {
   }
   if (
     keyVals &&
-    keyVals.filter(kv => kv.key.equals(checkKeyVal.key)).length !== 0
+    keyVals.filter(kv => tools.compare(kv.key, checkKeyVal.key) === 0)
+      .length !== 0
   ) {
-    throw new Error(`Duplicate Key: ${checkKeyVal.key.toString('hex')}`);
+    throw new Error(`Duplicate Key: ${tools.toHex(checkKeyVal.key)}`);
   }
 }
 export function getEnumLength(myenum) {
@@ -55,6 +57,7 @@ function throwForUpdateMaker(typeName, name, expected, data) {
 }
 function updateMaker(typeName) {
   return (updateData, mainData) => {
+    // @ts-ignore
     for (const name of Object.keys(updateData)) {
       // @ts-ignore
       const data = updateData[name];
@@ -112,16 +115,16 @@ export function addOutputAttributes(outputs, data) {
   updateOutput(data, output);
 }
 export function defaultVersionSetter(version, txBuf) {
-  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+  if (!(txBuf instanceof Uint8Array) || txBuf.length < 4) {
     throw new Error('Set Version: Invalid Transaction');
   }
-  txBuf.writeUInt32LE(version, 0);
+  tools.writeUInt32(txBuf, 0, version, 'LE');
   return txBuf;
 }
 export function defaultLocktimeSetter(locktime, txBuf) {
-  if (!Buffer.isBuffer(txBuf) || txBuf.length < 4) {
+  if (!(txBuf instanceof Uint8Array) || txBuf.length < 4) {
     throw new Error('Set Locktime: Invalid Transaction');
   }
-  txBuf.writeUInt32LE(locktime, txBuf.length - 4);
+  tools.writeUInt32(txBuf, txBuf.length - 4, locktime, 'LE');
   return txBuf;
 }

@@ -1,4 +1,3 @@
-/// <reference types="node" />
 import * as globalXpub from './global/globalXpub.js';
 import * as unsignedTx from './global/unsignedTx.js';
 import * as finalScriptSig from './input/finalScriptSig.js';
@@ -16,7 +15,7 @@ import * as tapTree from './output/tapTree.js';
 declare const globals: {
     unsignedTx: typeof unsignedTx;
     globalXpub: typeof globalXpub;
-    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Buffer | undefined;
+    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array | undefined;
 };
 declare const inputs: {
     nonWitnessUtxo: typeof nonWitnessUtxo;
@@ -34,20 +33,20 @@ declare const inputs: {
         canAddToArray: (array: import("../interfaces.js").Bip32Derivation[], item: import("../interfaces.js").Bip32Derivation, dupeSet: Set<string>) => boolean;
     };
     redeemScript: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
     witnessScript: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
-    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Buffer | undefined;
+    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array | undefined;
     tapKeySig: typeof tapKeySig;
     tapScriptSig: typeof tapScriptSig;
     tapLeafScript: typeof tapLeafScript;
@@ -59,9 +58,9 @@ declare const inputs: {
         canAddToArray: (array: import("../interfaces.js").TapBip32Derivation[], item: import("../interfaces.js").TapBip32Derivation, dupeSet: Set<string>) => boolean;
     };
     tapInternalKey: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
@@ -76,20 +75,20 @@ declare const outputs: {
         canAddToArray: (array: import("../interfaces.js").Bip32Derivation[], item: import("../interfaces.js").Bip32Derivation, dupeSet: Set<string>) => boolean;
     };
     redeemScript: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
     witnessScript: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
-    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Buffer | undefined;
+    checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array | undefined;
     tapBip32Derivation: {
         decode: (keyVal: import("../interfaces.js").KeyValue) => import("../interfaces.js").TapBip32Derivation;
         encode: (data: import("../interfaces.js").TapBip32Derivation) => import("../interfaces.js").KeyValue;
@@ -99,9 +98,9 @@ declare const outputs: {
     };
     tapTree: typeof tapTree;
     tapInternalKey: {
-        decode: (keyVal: import("../interfaces.js").KeyValue) => Buffer;
-        encode: (data: Buffer) => import("../interfaces.js").KeyValue;
-        check: (data: any) => data is Buffer;
+        decode: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array;
+        encode: (data: Uint8Array) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is Uint8Array;
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };

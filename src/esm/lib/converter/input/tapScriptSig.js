@@ -1,21 +1,22 @@
 import { InputTypes } from '../../typeFields.js';
+import * as tools from 'uint8array-tools';
 export function decode(keyVal) {
   if (keyVal.key[0] !== InputTypes.TAP_SCRIPT_SIG) {
     throw new Error(
       'Decode Error: could not decode tapScriptSig with key 0x' +
-        keyVal.key.toString('hex'),
+        // keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   if (keyVal.key.length !== 65) {
     throw new Error(
-      'Decode Error: tapScriptSig has invalid key 0x' +
-        keyVal.key.toString('hex'),
+      'Decode Error: tapScriptSig has invalid key 0x' + tools.toHex(keyVal.key),
     );
   }
   if (keyVal.value.length !== 64 && keyVal.value.length !== 65) {
     throw new Error(
       'Decode Error: tapScriptSig has invalid signature in key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   const pubkey = keyVal.key.slice(1, 33);
@@ -27,32 +28,33 @@ export function decode(keyVal) {
   };
 }
 export function encode(tSig) {
-  const head = Buffer.from([InputTypes.TAP_SCRIPT_SIG]);
+  const head = Uint8Array.from([InputTypes.TAP_SCRIPT_SIG]);
   return {
-    key: Buffer.concat([head, tSig.pubkey, tSig.leafHash]),
+    key: tools.concat([head, tSig.pubkey, tSig.leafHash]),
     value: tSig.signature,
   };
 }
 export const expected =
-  '{ pubkey: Buffer; leafHash: Buffer; signature: Buffer; }';
+  '{ pubkey: Uint8Array; leafHash: Uint8Array; signature: Uint8Array; }';
 export function check(data) {
   return (
-    Buffer.isBuffer(data.pubkey) &&
-    Buffer.isBuffer(data.leafHash) &&
-    Buffer.isBuffer(data.signature) &&
+    data.pubkey instanceof Uint8Array &&
+    data.leafHash instanceof Uint8Array &&
+    data.signature instanceof Uint8Array &&
     data.pubkey.length === 32 &&
     data.leafHash.length === 32 &&
     (data.signature.length === 64 || data.signature.length === 65)
   );
 }
 export function canAddToArray(array, item, dupeSet) {
-  const dupeString =
-    item.pubkey.toString('hex') + item.leafHash.toString('hex');
+  const dupeString = tools.toHex(item.pubkey) + tools.toHex(item.leafHash);
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
   return (
     array.filter(
-      v => v.pubkey.equals(item.pubkey) && v.leafHash.equals(item.leafHash),
+      v =>
+        tools.compare(v.pubkey, item.pubkey) === 0 &&
+        tools.compare(v.leafHash, item.leafHash) === 0,
     ).length === 0
   );
 }

@@ -1,12 +1,14 @@
 import { KeyValue, TapLeaf, TapTree } from '../../interfaces';
 import { OutputTypes } from '../../typeFields.js';
-import * as varuint from '../varint.js';
+// import * as varuint from '../varint.js';
+import * as varuint from 'varuint-bitcoin';
+import * as tools from 'uint8array-tools';
 
 export function decode(keyVal: KeyValue): TapTree {
   if (keyVal.key[0] !== OutputTypes.TAP_TREE || keyVal.key.length !== 1) {
     throw new Error(
       'Decode Error: could not decode tapTree with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   let _offset = 0;
@@ -14,35 +16,39 @@ export function decode(keyVal: KeyValue): TapTree {
   while (_offset < keyVal.value.length) {
     const depth = keyVal.value[_offset++];
     const leafVersion = keyVal.value[_offset++];
-    const scriptLen = varuint.decode(keyVal.value, _offset);
-    _offset += varuint.encodingLength(scriptLen);
+    const { numberValue: scriptLen, bytes } = varuint.decode(
+      keyVal.value,
+      _offset,
+    );
+    _offset += bytes;
     data.push({
       depth,
       leafVersion,
-      script: keyVal.value.slice(_offset, _offset + scriptLen),
+      script: keyVal.value.slice(_offset, _offset + scriptLen!),
     });
-    _offset += scriptLen;
+    _offset += scriptLen!;
   }
   return { leaves: data };
 }
 
 export function encode(tree: TapTree): KeyValue {
-  const key = Buffer.from([OutputTypes.TAP_TREE]);
-  const bufs = ([] as Buffer[]).concat(
+  const key = Uint8Array.from([OutputTypes.TAP_TREE]);
+
+  const bufs = ([] as Uint8Array[]).concat(
     ...tree.leaves.map(tapLeaf => [
-      Buffer.of(tapLeaf.depth, tapLeaf.leafVersion),
-      varuint.encode(tapLeaf.script.length),
+      Uint8Array.of(tapLeaf.depth, tapLeaf.leafVersion),
+      varuint.encode(BigInt(tapLeaf.script.length)).buffer,
       tapLeaf.script,
     ]),
   );
   return {
     key,
-    value: Buffer.concat(bufs),
+    value: tools.concat(bufs),
   };
 }
 
 export const expected =
-  '{ leaves: [{ depth: number; leafVersion: number, script: Buffer; }] }';
+  '{ leaves: [{ depth: number; leafVersion: number, script: Uint8Array; }] }';
 export function check(data: any): data is TapTree {
   return (
     Array.isArray(data.leaves) &&
@@ -51,7 +57,7 @@ export function check(data: any): data is TapTree {
         tapLeaf.depth >= 0 &&
         tapLeaf.depth <= 128 &&
         (tapLeaf.leafVersion & 0xfe) === tapLeaf.leafVersion &&
-        Buffer.isBuffer(tapLeaf.script),
+        tapLeaf.script instanceof Uint8Array,
     )
   );
 }

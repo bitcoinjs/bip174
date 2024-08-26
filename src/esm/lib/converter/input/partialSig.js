@@ -1,9 +1,10 @@
 import { InputTypes } from '../../typeFields.js';
+import * as tools from 'uint8array-tools';
 export function decode(keyVal) {
   if (keyVal.key[0] !== InputTypes.PARTIAL_SIG) {
     throw new Error(
       'Decode Error: could not decode partialSig with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   if (
@@ -12,7 +13,7 @@ export function decode(keyVal) {
   ) {
     throw new Error(
       'Decode Error: partialSig has invalid pubkey in key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   const pubkey = keyVal.key.slice(1);
@@ -22,24 +23,24 @@ export function decode(keyVal) {
   };
 }
 export function encode(pSig) {
-  const head = Buffer.from([InputTypes.PARTIAL_SIG]);
+  const head = new Uint8Array([InputTypes.PARTIAL_SIG]);
   return {
-    key: Buffer.concat([head, pSig.pubkey]),
+    key: tools.concat([head, pSig.pubkey]),
     value: pSig.signature,
   };
 }
-export const expected = '{ pubkey: Buffer; signature: Buffer; }';
+export const expected = '{ pubkey: Uint8Array; signature: Uint8Array; }';
 export function check(data) {
   return (
-    Buffer.isBuffer(data.pubkey) &&
-    Buffer.isBuffer(data.signature) &&
+    data.pubkey instanceof Uint8Array &&
+    data.signature instanceof Uint8Array &&
     [33, 65].includes(data.pubkey.length) &&
     [2, 3, 4].includes(data.pubkey[0]) &&
     isDerSigWithSighash(data.signature)
   );
 }
 function isDerSigWithSighash(buf) {
-  if (!Buffer.isBuffer(buf) || buf.length < 9) return false;
+  if (!(buf instanceof Uint8Array) || buf.length < 9) return false;
   if (buf[0] !== 0x30) return false;
   if (buf.length !== buf[1] + 3) return false;
   if (buf[2] !== 0x02) return false;
@@ -52,8 +53,10 @@ function isDerSigWithSighash(buf) {
   return true;
 }
 export function canAddToArray(array, item, dupeSet) {
-  const dupeString = item.pubkey.toString('hex');
+  const dupeString = tools.toHex(item.pubkey);
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
-  return array.filter(v => v.pubkey.equals(item.pubkey)).length === 0;
+  return (
+    array.filter(v => tools.compare(v.pubkey, item.pubkey) === 0).length === 0
+  );
 }

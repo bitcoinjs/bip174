@@ -1,41 +1,43 @@
-import * as varuint from '../varint.js';
+import * as varuint from 'varuint-bitcoin';
+import * as tools from 'uint8array-tools';
 import * as bip32Derivation from './bip32Derivation.js';
 const isValidBIP340Key = pubkey => pubkey.length === 32;
 export function makeConverter(TYPE_BYTE) {
   const parent = bip32Derivation.makeConverter(TYPE_BYTE, isValidBIP340Key);
   function decode(keyVal) {
-    const nHashes = varuint.decode(keyVal.value);
-    const nHashesLen = varuint.encodingLength(nHashes);
+    const { numberValue: nHashes, bytes: nHashesLen } = varuint.decode(
+      keyVal.value,
+    );
     const base = parent.decode({
       key: keyVal.key,
-      value: keyVal.value.slice(nHashesLen + nHashes * 32),
+      value: keyVal.value.slice(nHashesLen + Number(nHashes) * 32),
     });
-    const leafHashes = new Array(nHashes);
+    const leafHashes = new Array(Number(nHashes));
     for (let i = 0, _offset = nHashesLen; i < nHashes; i++, _offset += 32) {
       leafHashes[i] = keyVal.value.slice(_offset, _offset + 32);
     }
-    return Object.assign({}, base, { leafHashes });
+    return { ...base, leafHashes };
   }
   function encode(data) {
     const base = parent.encode(data);
     const nHashesLen = varuint.encodingLength(data.leafHashes.length);
-    const nHashesBuf = Buffer.allocUnsafe(nHashesLen);
+    const nHashesBuf = new Uint8Array(nHashesLen);
     varuint.encode(data.leafHashes.length, nHashesBuf);
-    const value = Buffer.concat([nHashesBuf, ...data.leafHashes, base.value]);
-    return Object.assign({}, base, { value });
+    const value = tools.concat([nHashesBuf, ...data.leafHashes, base.value]);
+    return { ...base, value };
   }
   const expected =
     '{ ' +
-    'masterFingerprint: Buffer; ' +
-    'pubkey: Buffer; ' +
+    'masterFingerprint: Uint8Array; ' +
+    'pubkey: Uint8Array; ' +
     'path: string; ' +
-    'leafHashes: Buffer[]; ' +
+    'leafHashes: Uint8Array[]; ' +
     '}';
   function check(data) {
     return (
       Array.isArray(data.leafHashes) &&
       data.leafHashes.every(
-        leafHash => Buffer.isBuffer(leafHash) && leafHash.length === 32,
+        leafHash => leafHash instanceof Uint8Array && leafHash.length === 32,
       ) &&
       parent.check(data)
     );

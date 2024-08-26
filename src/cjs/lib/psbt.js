@@ -1,9 +1,21 @@
 'use strict';
+var __importStar =
+  (this && this.__importStar) ||
+  function(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null)
+      for (var k in mod)
+        if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result['default'] = mod;
+    return result;
+  };
 Object.defineProperty(exports, '__esModule', { value: true });
 const index_js_1 = require('./combiner/index.js');
 const index_js_2 = require('./parser/index.js');
 const typeFields_js_1 = require('./typeFields.js');
 const utils_js_1 = require('./utils.js');
+const tools = __importStar(require('uint8array-tools'));
 class Psbt {
   constructor(tx) {
     this.inputs = [];
@@ -13,11 +25,11 @@ class Psbt {
     };
   }
   static fromBase64(data, txFromBuffer) {
-    const buffer = Buffer.from(data, 'base64');
+    const buffer = tools.fromBase64(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromHex(data, txFromBuffer) {
-    const buffer = Buffer.from(data, 'hex');
+    const buffer = tools.fromHex(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromBuffer(buffer, txFromBuffer) {
@@ -28,11 +40,11 @@ class Psbt {
   }
   toBase64() {
     const buffer = this.toBuffer();
-    return buffer.toString('base64');
+    return tools.toBase64(buffer);
   }
   toHex() {
     const buffer = this.toBuffer();
-    return buffer.toString('hex');
+    return tools.toHex(buffer);
   }
   toBuffer() {
     return index_js_2.psbtToBuffer(this);
@@ -146,3 +158,16 @@ class Psbt {
   }
 }
 exports.Psbt = Psbt;
+var utils_js_2 = require('./utils.js');
+exports.addInputAttributes = utils_js_2.addInputAttributes;
+exports.addOutputAttributes = utils_js_2.addOutputAttributes;
+exports.checkForInput = utils_js_2.checkForInput;
+exports.checkForOutput = utils_js_2.checkForOutput;
+exports.checkHasKey = utils_js_2.checkHasKey;
+exports.defaultLocktimeSetter = utils_js_2.defaultLocktimeSetter;
+exports.defaultVersionSetter = utils_js_2.defaultVersionSetter;
+exports.getEnumLength = utils_js_2.getEnumLength;
+exports.inputCheckUncleanFinalized = utils_js_2.inputCheckUncleanFinalized;
+exports.updateGlobal = utils_js_2.updateGlobal;
+exports.updateInput = utils_js_2.updateInput;
+exports.updateOutput = utils_js_2.updateOutput;

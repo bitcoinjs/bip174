@@ -1,11 +1,23 @@
 'use strict';
+var __importStar =
+  (this && this.__importStar) ||
+  function(mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null)
+      for (var k in mod)
+        if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result['default'] = mod;
+    return result;
+  };
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_js_1 = require('../../typeFields.js');
+const tools = __importStar(require('uint8array-tools'));
 function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_js_1.InputTypes.NON_WITNESS_UTXO) {
     throw new Error(
       'Decode Error: could not decode nonWitnessUtxo with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   return keyVal.value;
@@ -13,14 +25,14 @@ function decode(keyVal) {
 exports.decode = decode;
 function encode(data) {
   return {
-    key: Buffer.from([typeFields_js_1.InputTypes.NON_WITNESS_UTXO]),
+    key: new Uint8Array([typeFields_js_1.InputTypes.NON_WITNESS_UTXO]),
     value: data,
   };
 }
 exports.encode = encode;
-exports.expected = 'Buffer';
+exports.expected = 'Uint8Array';
 function check(data) {
-  return Buffer.isBuffer(data);
+  return data instanceof Uint8Array;
 }
 exports.check = check;
 function canAdd(currentData, newData) {

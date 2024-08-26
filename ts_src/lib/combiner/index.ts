@@ -4,6 +4,7 @@ import {
   psbtFromKeyVals,
   psbtToKeyVals,
 } from '../parser/index.js';
+import * as tools from 'uint8array-tools';
 
 export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
   const self = psbts[0];
@@ -23,7 +24,7 @@ export function combine(psbts: PsbtAttributes[]): PsbtAttributes {
     const otherTx = getTx(other);
     if (
       otherTx === undefined ||
-      !otherTx.toBuffer().equals(selfTx.toBuffer())
+      tools.compare(otherTx.toBuffer(), selfTx.toBuffer()) !== 0
     ) {
       throw new Error(
         'Combine: One of the Psbts does not have the same transaction.',
@@ -76,7 +77,8 @@ function keyPusher(
 ): (key: string) => void {
   return (key: string): void => {
     if (selfSet.has(key)) return;
-    const newKv = otherKeyVals.filter(kv => kv.key.toString('hex') === key)[0];
+    // const newKv = otherKeyVals.filter(kv => kv.key.toString('hex') === key)[0];
+    const newKv = otherKeyVals.filter(kv => tools.toHex(kv.key) === key)[0];
     selfKeyVals.push(newKv);
     selfSet.add(key);
   };
@@ -89,7 +91,8 @@ function getTx(psbt: PsbtAttributes): Transaction | undefined {
 function getKeySet(keyVals: KeyValue[]): Set<string> {
   const set: Set<string> = new Set();
   keyVals.forEach(keyVal => {
-    const hex = keyVal.key.toString('hex');
+    // const hex = keyVal.key.toString('hex');
+    const hex = tools.toHex(keyVal.key);
     if (set.has(hex))
       throw new Error('Combine: KeyValue Map keys should be unique');
     set.add(hex);
