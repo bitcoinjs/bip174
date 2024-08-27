@@ -43,10 +43,10 @@ export class Transaction implements ITransaction {
   }
 
   addOutput(output: any): void {
-    this.tx.addOutput(output.script, output.value);
+    this.tx.addOutput(output.script, Number(output.value));
   }
 
-  toBuffer(): Buffer {
-    return this.tx.toBuffer();
+  toBuffer(): Uint8Array {
+    return Uint8Array.from(this.tx.toBuffer());
   }
 }

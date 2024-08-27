@@ -28,6 +28,8 @@ function jsonify(parsed) {
         value instanceof Uint8Array) ||
         value.type === 'Buffer'
         ? tools.toHex(value)
+        : typeof value === 'bigint'
+        ? value.toString()
         : value;
     },
     2,

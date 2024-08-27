@@ -27,9 +27,9 @@ export class Transaction {
     this.tx.addInput(hash, input.index, input.sequence);
   }
   addOutput(output) {
-    this.tx.addOutput(output.script, output.value);
+    this.tx.addOutput(output.script, Number(output.value));
   }
   toBuffer() {
-    return this.tx.toBuffer();
+    return Uint8Array.from(this.tx.toBuffer());
   }
 }
