@@ -1,3 +1,4 @@
+// import { Transaction as BTransaction } from './transaction.js';
 import { Transaction as BTransaction } from 'bitcoinjs-lib';
 import { reverseBuffer } from '../../lib/converter/tools.js';
 export function getDefaultTx(version = 1) {
@@ -30,6 +31,6 @@ export class Transaction {
     this.tx.addOutput(output.script, Number(output.value));
   }
   toBuffer() {
-    return Uint8Array.from(this.tx.toBuffer());
+    return this.tx.toBuffer();
   }
 }

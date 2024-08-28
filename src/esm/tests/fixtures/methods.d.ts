@@ -24,7 +24,7 @@ export declare const fixtures: {
         args: (number | {
             witnessUtxo: {
                 script: Buffer;
-                value: number;
+                value: bigint;
             };
         })[];
         expected: string;
@@ -269,7 +269,7 @@ export declare const fixtures: {
         args: (number | {
             witnessUtxo: {
                 script: Buffer;
-                value: number;
+                value: bigint;
             };
         })[];
         exception: string;
@@ -361,7 +361,7 @@ export declare const fixtures: {
     } | {
         method: string;
         addInputOutput: boolean;
-        args: import("bitcoinjs-lib").StackElement[];
+        args: (number | Buffer)[];
         exception: string;
         twice?: undefined;
     } | {

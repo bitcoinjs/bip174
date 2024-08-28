@@ -42,7 +42,7 @@ function encode(data) {
   const { script, value } = data;
   const varuintlen = varuint.encodingLength(script.length);
   const result = new Uint8Array(8 + varuintlen + script.length);
-  tools.writeUInt64(result, 0, BigInt(value), 'LE');
+  tools.writeInt64(result, 0, BigInt(value), 'LE');
   varuint.encode(script.length, result, 8);
   result.set(script, 8 + varuintlen);
   return {

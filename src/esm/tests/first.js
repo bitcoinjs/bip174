@@ -23,13 +23,12 @@ function jsonify(parsed) {
   return JSON.stringify(
     parsed,
     (key, value) => {
-      return (key !== undefined &&
+      return key !== undefined &&
         value !== undefined &&
-        value instanceof Uint8Array) ||
-        value.type === 'Buffer'
+        (value.type === 'Buffer' || value instanceof Uint8Array)
         ? tools.toHex(value)
         : typeof value === 'bigint'
-        ? value.toString()
+        ? Number(value)
         : value;
     },
     2,

@@ -72,7 +72,7 @@ export const fixtures = {
       addInputOutput: true,
       args: [
         0,
-        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890 } },
+        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890n } },
       ],
       expected:
         'cHNidP8BAFMBAAAAAdSnb/ld4fTAFho+U+qHapHtlTMa6NAS2B+XE4SYzl2GAwAAAAD/' +
@@ -508,7 +508,7 @@ export const fixtures = {
       ],
       exception:
         'Data for input key witnessUtxo is incorrect: Expected { ' +
-        'script: Uint8Array; value: number; } and got',
+        'script: Uint8Array; value: bigint; } and got',
     },
     {
       method: 'updateInput',
@@ -516,7 +516,7 @@ export const fixtures = {
       twice: true,
       args: [
         0,
-        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890 } },
+        { witnessUtxo: { script: Buffer.from([1, 2, 3]), value: 1234567890n } },
       ],
       exception: 'Can not add duplicate data to input',
     },

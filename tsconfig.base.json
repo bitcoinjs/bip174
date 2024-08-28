@@ -20,7 +20,8 @@
     "module": "ESNext",
     "resolveJsonModule": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true, 
+    "skipLibCheck": true
   },
   "include": ["ts_src/**/*.ts"],
   "exclude": ["**/*.spec.ts", "node_modules/**/*"]
