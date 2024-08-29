@@ -159,15 +159,5 @@ class Psbt {
 }
 exports.Psbt = Psbt;
 var utils_js_2 = require('./utils.js');
-exports.addInputAttributes = utils_js_2.addInputAttributes;
-exports.addOutputAttributes = utils_js_2.addOutputAttributes;
 exports.checkForInput = utils_js_2.checkForInput;
 exports.checkForOutput = utils_js_2.checkForOutput;
-exports.checkHasKey = utils_js_2.checkHasKey;
-exports.defaultLocktimeSetter = utils_js_2.defaultLocktimeSetter;
-exports.defaultVersionSetter = utils_js_2.defaultVersionSetter;
-exports.getEnumLength = utils_js_2.getEnumLength;
-exports.inputCheckUncleanFinalized = utils_js_2.inputCheckUncleanFinalized;
-exports.updateGlobal = utils_js_2.updateGlobal;
-exports.updateInput = utils_js_2.updateInput;
-exports.updateOutput = utils_js_2.updateOutput;

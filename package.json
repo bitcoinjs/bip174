@@ -23,7 +23,7 @@
   "scripts": {
     "build": "npm run clean && tsc -p ./tsconfig.json && tsc -p ./tsconfig.cjs.json && npm run formatjs",
     "clean": "rimraf src types",
-    "coverage": "c8 --check-coverage --exclude='src/esm/tests/**/*.js' --reporter=lcov --reporter=text --branches 90 --functions 90 --lines 90 npm run unit",
+    "coverage": "c8 --check-coverage --include='src/esm/lib/**/*.js' --reporter=lcov --reporter=text --branches 90 --functions 90 --lines 90 npm run unit",
     "flb": "npm run format && npm run lint && npm run build",
     "format": "npm run prettier -- --write",
     "formatjs": "npm run prettierjs -- --write > /dev/null 2>&1",
@@ -40,8 +40,8 @@
     "url": "git+https://github.com/bitcoinjs/bip174.git"
   },
   "dependencies": {
-    "uint8array-tools": "../uint8array-tools",
-    "varuint-bitcoin": "../varuint-bitcoin"
+    "uint8array-tools": "^0.0.9",
+    "varuint-bitcoin": "^2.0.0"
   },
   "devDependencies": {
     "@types/node": "12.0.8",

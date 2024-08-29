@@ -230,16 +230,6 @@ export {
 } from './interfaces.js';
 
 export {
-  addInputAttributes,
-  addOutputAttributes,
   checkForInput,
   checkForOutput,
-  checkHasKey,
-  defaultLocktimeSetter,
-  defaultVersionSetter,
-  getEnumLength,
-  inputCheckUncleanFinalized,
-  updateGlobal,
-  updateInput,
-  updateOutput,
 } from './utils.js';

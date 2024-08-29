@@ -23,4 +23,4 @@ export declare class Psbt {
     getTransaction(): Uint8Array;
 }
 export { Bip32Derivation, NonWitnessUtxo, ControlBlock, FinalScriptSig, FinalScriptWitness, GlobalXpub, KeyValue, PartialSig, PorCommitment, PsbtGlobal, PsbtGlobalUpdate, PsbtInput, PsbtInputExtended, PsbtInputUpdate, PsbtOutput, PsbtOutputExtended, PsbtOutputUpdate, RedeemScript, SighashType, TapBip32Derivation, TapInternalKey, TapKeySig, TapLeaf, TapLeafScript, TapMerkleRoot, TapScriptSig, TapTree, Transaction, TransactionFromBuffer, TransactionIOCountGetter, TransactionLocktimeSetter, TransactionVersionSetter, WitnessScript, WitnessUtxo, } from './interfaces.js';
-export { addInputAttributes, addOutputAttributes, checkForInput, checkForOutput, checkHasKey, defaultLocktimeSetter, defaultVersionSetter, getEnumLength, inputCheckUncleanFinalized, updateGlobal, updateInput, updateOutput, } from './utils.js';
+export { checkForInput, checkForOutput, } from './utils.js';

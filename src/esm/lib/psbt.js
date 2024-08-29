@@ -147,17 +147,4 @@ export class Psbt {
     return this.globalMap.unsignedTx.toBuffer();
   }
 }
-export {
-  addInputAttributes,
-  addOutputAttributes,
-  checkForInput,
-  checkForOutput,
-  checkHasKey,
-  defaultLocktimeSetter,
-  defaultVersionSetter,
-  getEnumLength,
-  inputCheckUncleanFinalized,
-  updateGlobal,
-  updateInput,
-  updateOutput,
-} from './utils.js';
+export { checkForInput, checkForOutput } from './utils.js';

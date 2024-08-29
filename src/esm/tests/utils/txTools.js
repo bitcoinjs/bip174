@@ -1,4 +1,3 @@
-// import { Transaction as BTransaction } from './transaction.js';
 import { Transaction as BTransaction } from 'bitcoinjs-lib';
 import { reverseBuffer } from '../../lib/converter/tools.js';
 export function getDefaultTx(version = 1) {
