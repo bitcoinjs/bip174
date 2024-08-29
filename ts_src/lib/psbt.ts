@@ -229,7 +229,4 @@ export {
   WitnessUtxo,
 } from './interfaces.js';
 
-export {
-  checkForInput,
-  checkForOutput,
-} from './utils.js';
+export { checkForInput, checkForOutput } from './utils.js';
