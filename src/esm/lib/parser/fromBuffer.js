@@ -1,6 +1,5 @@
 import * as convert from '../converter/index.js';
 import { range } from '../converter/tools.js';
-// import * as varuint from '../converter/varint.js';
 import * as varuint from 'varuint-bitcoin';
 import * as tools from 'uint8array-tools';
 import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields.js';

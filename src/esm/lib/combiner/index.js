@@ -61,7 +61,6 @@ export function combine(psbts) {
 function keyPusher(selfSet, selfKeyVals, otherKeyVals) {
   return key => {
     if (selfSet.has(key)) return;
-    // const newKv = otherKeyVals.filter(kv => kv.key.toString('hex') === key)[0];
     const newKv = otherKeyVals.filter(kv => tools.toHex(kv.key) === key)[0];
     selfKeyVals.push(newKv);
     selfSet.add(key);
@@ -73,7 +72,6 @@ function getTx(psbt) {
 function getKeySet(keyVals) {
   const set = new Set();
   keyVals.forEach(keyVal => {
-    // const hex = keyVal.key.toString('hex');
     const hex = tools.toHex(keyVal.key);
     if (set.has(hex))
       throw new Error('Combine: KeyValue Map keys should be unique');

@@ -73,7 +73,6 @@ tape('should not pass isPartialSig with invalid DER signature', t => {
   }, new RegExp('Decode Error: partialSig has invalid pubkey in key 0x02ff'));
   keyVal.key = Buffer.concat([b('02'), data.pubkey, data.pubkey.slice(1)]);
   const result = convertInputs.partialSig.decode(keyVal);
-  // t.assert(result.pubkey.equals(keyVal.key.slice(1)));
   t.assert(tools.compare(result.pubkey, keyVal.key.slice(1)) === 0);
 
   const psbt1: any = {

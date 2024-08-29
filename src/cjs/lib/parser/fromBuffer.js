@@ -13,7 +13,6 @@ var __importStar =
 Object.defineProperty(exports, '__esModule', { value: true });
 const convert = __importStar(require('../converter/index.js'));
 const tools_js_1 = require('../converter/tools.js');
-// import * as varuint from '../converter/varint.js';
 const varuint = __importStar(require('varuint-bitcoin'));
 const tools = __importStar(require('uint8array-tools'));
 const typeFields_js_1 = require('../typeFields.js');

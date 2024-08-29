@@ -21,7 +21,6 @@ for (const f of fixtures) {
       const psbt = new Psbt(tx);
       Object.assign(psbt, data);
       t.strictEqual(psbt.toBase64(), f.expected);
-      // else console.log(psbt.toBase64());
       t.end();
     });
   }

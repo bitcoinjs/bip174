@@ -17,7 +17,6 @@ function decode(keyVal) {
   if (keyVal.key[0] !== typeFields_js_1.InputTypes.TAP_SCRIPT_SIG) {
     throw new Error(
       'Decode Error: could not decode tapScriptSig with key 0x' +
-        // keyVal.key.toString('hex'),
         tools.toHex(keyVal.key),
     );
   }

@@ -1,6 +1,4 @@
-// import * as tools from 'uint8array-tools';
 const b = hex => Buffer.from(hex, 'hex');
-// const b = (hex: string): Uint8Array => tools.fromHex(hex);
 export const fixtures = [
   {
     data: {

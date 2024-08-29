@@ -12,7 +12,6 @@ var __importStar =
   };
 Object.defineProperty(exports, '__esModule', { value: true });
 const typeFields_js_1 = require('../../typeFields.js');
-// import * as varuint from '../varint.js';
 const varuint = __importStar(require('varuint-bitcoin'));
 const tools = __importStar(require('uint8array-tools'));
 function decode(keyVal) {

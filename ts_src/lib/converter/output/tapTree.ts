@@ -1,6 +1,5 @@
 import { KeyValue, TapLeaf, TapTree } from '../../interfaces';
 import { OutputTypes } from '../../typeFields.js';
-// import * as varuint from '../varint.js';
 import * as varuint from 'varuint-bitcoin';
 import * as tools from 'uint8array-tools';
 
