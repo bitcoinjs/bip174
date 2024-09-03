@@ -41,9 +41,9 @@ export interface PsbtInput extends PsbtInputUpdate {
 }
 
 export interface PsbtInputUpdate {
-  partialSig?: PartialSig[];
   nonWitnessUtxo?: NonWitnessUtxo;
   witnessUtxo?: WitnessUtxo;
+  partialSig?: PartialSig[];
   sighashType?: SighashType;
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
@@ -51,6 +51,15 @@ export interface PsbtInputUpdate {
   finalScriptSig?: FinalScriptSig;
   finalScriptWitness?: FinalScriptWitness;
   porCommitment?: PorCommitment;
+  ripemd160?: RIPEMD160;
+  sha256?: SHA256;
+  hash160?: HASH160;
+  hash256?: HASH256;
+  previousTxId?: PreviousTxId;
+  spentOutputIndex?: SpentOutputIndex;
+  sequenceNumber?: SequenceNumber;
+  requiredTimeLocktime?: RequiredTimeLocktime;
+  requiredHeightLocktime?: RequiredHeightLocktime;
   tapKeySig?: TapKeySig;
   tapScriptSig?: TapScriptSig[];
   tapLeafScript?: TapLeafScript[];
@@ -71,6 +80,8 @@ export interface PsbtOutputUpdate {
   redeemScript?: RedeemScript;
   witnessScript?: WitnessScript;
   bip32Derivation?: Bip32Derivation[];
+  outputAmount?: OutputAmount;
+  outputScript?: OutputScript;
   tapBip32Derivation?: TapBip32Derivation[];
   tapTree?: TapTree;
   tapInternalKey?: TapInternalKey;
@@ -115,6 +126,33 @@ export type FinalScriptSig = Buffer;
 export type FinalScriptWitness = Buffer;
 
 export type PorCommitment = string;
+
+type Hash = {
+  preimage: Buffer;
+  hash: Buffer;
+};
+
+export type RIPEMD160 = Hash;
+
+export type SHA256 = Hash;
+
+export type HASH160 = Hash;
+
+export type HASH256 = Hash;
+
+export type PreviousTxId = Buffer;
+
+export type SpentOutputIndex = number;
+
+export type SequenceNumber = number;
+
+export type RequiredTimeLocktime = number;
+
+export type RequiredHeightLocktime = number;
+
+export type OutputAmount = number;
+
+export type OutputScript = string;
 
 export type TapKeySig = Buffer;
 
