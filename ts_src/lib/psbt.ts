@@ -1,4 +1,4 @@
-import { combine } from './combiner';
+import { combine } from './combiner/index.js';
 import {
   KeyValue,
   PsbtGlobal,
@@ -11,9 +11,9 @@ import {
   PsbtOutputUpdate,
   Transaction,
   TransactionFromBuffer,
-} from './interfaces';
-import { psbtFromBuffer, psbtToBuffer } from './parser';
-import { GlobalTypes, InputTypes, OutputTypes } from './typeFields';
+} from './interfaces.js';
+import { psbtFromBuffer, psbtToBuffer } from './parser/index.js';
+import { GlobalTypes, InputTypes, OutputTypes } from './typeFields.js';
 import {
   addInputAttributes,
   addOutputAttributes,
@@ -25,7 +25,9 @@ import {
   updateGlobal,
   updateInput,
   updateOutput,
-} from './utils';
+} from './utils.js';
+
+import * as tools from 'uint8array-tools';
 
 export class Psbt {
   static fromBase64<T extends typeof Psbt>(
@@ -33,7 +35,7 @@ export class Psbt {
     data: string,
     txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
-    const buffer = Buffer.from(data, 'base64');
+    const buffer = tools.fromBase64(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromHex<T extends typeof Psbt>(
@@ -41,12 +43,12 @@ export class Psbt {
     data: string,
     txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
-    const buffer = Buffer.from(data, 'hex');
+    const buffer = tools.fromHex(data);
     return this.fromBuffer(buffer, txFromBuffer);
   }
   static fromBuffer<T extends typeof Psbt>(
     this: T,
-    buffer: Buffer,
+    buffer: Uint8Array,
     txFromBuffer: TransactionFromBuffer,
   ): InstanceType<T> {
     const results = psbtFromBuffer(buffer, txFromBuffer);
@@ -67,15 +69,15 @@ export class Psbt {
 
   toBase64(): string {
     const buffer = this.toBuffer();
-    return buffer.toString('base64');
+    return tools.toBase64(buffer);
   }
 
   toHex(): string {
     const buffer = this.toBuffer();
-    return buffer.toString('hex');
+    return tools.toHex(buffer);
   }
 
-  toBuffer(): Buffer {
+  toBuffer(): Uint8Array {
     return psbtToBuffer(this);
   }
 
@@ -185,7 +187,46 @@ export class Psbt {
     return this;
   }
 
-  getTransaction(): Buffer {
+  getTransaction(): Uint8Array {
     return this.globalMap.unsignedTx.toBuffer();
   }
 }
+
+export {
+  Bip32Derivation,
+  NonWitnessUtxo,
+  ControlBlock,
+  FinalScriptSig,
+  FinalScriptWitness,
+  GlobalXpub,
+  KeyValue,
+  PartialSig,
+  PorCommitment,
+  PsbtGlobal,
+  PsbtGlobalUpdate,
+  PsbtInput,
+  PsbtInputExtended,
+  PsbtInputUpdate,
+  PsbtOutput,
+  PsbtOutputExtended,
+  PsbtOutputUpdate,
+  RedeemScript,
+  SighashType,
+  TapBip32Derivation,
+  TapInternalKey,
+  TapKeySig,
+  TapLeaf,
+  TapLeafScript,
+  TapMerkleRoot,
+  TapScriptSig,
+  TapTree,
+  Transaction,
+  TransactionFromBuffer,
+  TransactionIOCountGetter,
+  TransactionLocktimeSetter,
+  TransactionVersionSetter,
+  WitnessScript,
+  WitnessUtxo,
+} from './interfaces.js';
+
+export { checkForInput, checkForOutput } from './utils.js';

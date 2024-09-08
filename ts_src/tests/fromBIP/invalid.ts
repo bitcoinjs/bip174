@@ -1,7 +1,7 @@
-import * as tape from 'tape';
-import { Psbt } from '../../lib/psbt';
-import { fixtures } from '../fixtures/invalid';
-import { transactionFromBuffer } from '../utils/txTools';
+import tape from 'tape';
+import { Psbt } from '../../lib/psbt.js';
+import { fixtures } from '../fixtures/invalid.js';
+import { transactionFromBuffer } from '../utils/txTools.js';
 
 // const res: any[] = [];
 

@@ -1,17 +1,18 @@
 import { KeyValue, TapLeafScript } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
+import * as tools from 'uint8array-tools';
 
 export function decode(keyVal: KeyValue): TapLeafScript {
   if (keyVal.key[0] !== InputTypes.TAP_LEAF_SCRIPT) {
     throw new Error(
       'Decode Error: could not decode tapLeafScript with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   if ((keyVal.key.length - 2) % 32 !== 0) {
     throw new Error(
       'Decode Error: tapLeafScript has invalid control block in key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
 
@@ -19,7 +20,7 @@ export function decode(keyVal: KeyValue): TapLeafScript {
   if ((keyVal.key[1] & 0xfe) !== leafVersion) {
     throw new Error(
       'Decode Error: tapLeafScript bad leaf version in key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
 
@@ -29,23 +30,23 @@ export function decode(keyVal: KeyValue): TapLeafScript {
 }
 
 export function encode(tScript: TapLeafScript): KeyValue {
-  const head = Buffer.from([InputTypes.TAP_LEAF_SCRIPT]);
-  const verBuf = Buffer.from([tScript.leafVersion]);
+  const head = Uint8Array.from([InputTypes.TAP_LEAF_SCRIPT]);
+  const verBuf = Uint8Array.from([tScript.leafVersion]);
 
   return {
-    key: Buffer.concat([head, tScript.controlBlock]),
-    value: Buffer.concat([tScript.script, verBuf]),
+    key: tools.concat([head, tScript.controlBlock]),
+    value: tools.concat([tScript.script, verBuf]),
   };
 }
 
 export const expected =
-  '{ controlBlock: Buffer; leafVersion: number, script: Buffer; }';
+  '{ controlBlock: Uint8Array; leafVersion: number, script: Uint8Array; }';
 export function check(data: any): data is TapLeafScript {
   return (
-    Buffer.isBuffer(data.controlBlock) &&
+    data.controlBlock instanceof Uint8Array &&
     (data.controlBlock.length - 1) % 32 === 0 &&
     (data.controlBlock[0] & 0xfe) === data.leafVersion &&
-    Buffer.isBuffer(data.script)
+    data.script instanceof Uint8Array
   );
 }
 
@@ -54,10 +55,11 @@ export function canAddToArray(
   item: TapLeafScript,
   dupeSet: Set<string>,
 ): boolean {
-  const dupeString = item.controlBlock.toString('hex');
+  const dupeString = tools.toHex(item.controlBlock);
   if (dupeSet.has(dupeString)) return false;
   dupeSet.add(dupeString);
   return (
-    array.filter(v => v.controlBlock.equals(item.controlBlock)).length === 0
+    array.filter(v => tools.compare(v.controlBlock, item.controlBlock) === 0)
+      .length === 0
   );
 }

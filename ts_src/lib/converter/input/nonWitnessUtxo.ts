@@ -1,11 +1,12 @@
 import { KeyValue, NonWitnessUtxo } from '../../interfaces';
-import { InputTypes } from '../../typeFields';
+import { InputTypes } from '../../typeFields.js';
+import * as tools from 'uint8array-tools';
 
 export function decode(keyVal: KeyValue): NonWitnessUtxo {
   if (keyVal.key[0] !== InputTypes.NON_WITNESS_UTXO) {
     throw new Error(
       'Decode Error: could not decode nonWitnessUtxo with key 0x' +
-        keyVal.key.toString('hex'),
+        tools.toHex(keyVal.key),
     );
   }
   return keyVal.value;
@@ -13,14 +14,14 @@ export function decode(keyVal: KeyValue): NonWitnessUtxo {
 
 export function encode(data: NonWitnessUtxo): KeyValue {
   return {
-    key: Buffer.from([InputTypes.NON_WITNESS_UTXO]),
+    key: new Uint8Array([InputTypes.NON_WITNESS_UTXO]),
     value: data,
   };
 }
 
-export const expected = 'Buffer';
+export const expected = 'Uint8Array';
 export function check(data: any): data is NonWitnessUtxo {
-  return Buffer.isBuffer(data);
+  return data instanceof Uint8Array;
 }
 
 export function canAdd(currentData: any, newData: any): boolean {

@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "outDir": "./src",
+    "declaration": true,
+    "rootDir": "./ts_src",
+    "types": ["node"],
+    "allowJs": false,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "moduleResolution": "Node",
+    "module": "ESNext",
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop": true, 
+    "skipLibCheck": true
+  },
+  "include": ["ts_src/**/*.ts"],
+  "exclude": ["**/*.spec.ts", "node_modules/**/*"]
+}

@@ -1,7 +1,7 @@
-import * as tape from 'tape';
-import { Psbt } from '../lib/psbt';
-import { fixtures } from './fixtures/combine';
-import { transactionFromBuffer } from './utils/txTools';
+import tape from 'tape';
+import { Psbt } from '../lib/psbt.js';
+import { fixtures } from './fixtures/combine.js';
+import { transactionFromBuffer } from './utils/txTools.js';
 
 for (const f of fixtures) {
   tape('Test: ' + f.description, t => {
@@ -11,11 +11,6 @@ for (const f of fixtures) {
     psbts[0].combine(psbts[1]);
     const jsonB1 = jsonify(psbts[0]);
     const jsonB2 = jsonify(psbts[1]);
-
-    // console.log(jsonA1);
-    // console.log(jsonA2);
-    // console.log(jsonB1);
-    // console.log(jsonB2);
 
     t.notDeepEqual(JSON.parse(jsonA1), JSON.parse(jsonB1));
     t.deepEqual(JSON.parse(jsonA2), JSON.parse(jsonB2));
@@ -30,6 +25,8 @@ function jsonify(parsed: any): string {
     (key, value) => {
       return key !== undefined && value.type === 'Buffer'
         ? Buffer.from(value.data).toString('hex')
+        : typeof value === 'bigint'
+        ? value.toString()
         : value;
     },
     2,

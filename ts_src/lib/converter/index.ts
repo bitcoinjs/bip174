@@ -1,28 +1,28 @@
-import { InputTypes, OutputTypes } from '../typeFields';
+import { InputTypes, OutputTypes } from '../typeFields.js';
 
-import * as globalXpub from './global/globalXpub';
-import * as unsignedTx from './global/unsignedTx';
+import * as globalXpub from './global/globalXpub.js';
+import * as unsignedTx from './global/unsignedTx.js';
 
-import * as finalScriptSig from './input/finalScriptSig';
-import * as finalScriptWitness from './input/finalScriptWitness';
-import * as nonWitnessUtxo from './input/nonWitnessUtxo';
-import * as partialSig from './input/partialSig';
-import * as porCommitment from './input/porCommitment';
-import * as sighashType from './input/sighashType';
-import * as tapKeySig from './input/tapKeySig';
-import * as tapLeafScript from './input/tapLeafScript';
-import * as tapMerkleRoot from './input/tapMerkleRoot';
-import * as tapScriptSig from './input/tapScriptSig';
-import * as witnessUtxo from './input/witnessUtxo';
+import * as finalScriptSig from './input/finalScriptSig.js';
+import * as finalScriptWitness from './input/finalScriptWitness.js';
+import * as nonWitnessUtxo from './input/nonWitnessUtxo.js';
+import * as partialSig from './input/partialSig.js';
+import * as porCommitment from './input/porCommitment.js';
+import * as sighashType from './input/sighashType.js';
+import * as tapKeySig from './input/tapKeySig.js';
+import * as tapLeafScript from './input/tapLeafScript.js';
+import * as tapMerkleRoot from './input/tapMerkleRoot.js';
+import * as tapScriptSig from './input/tapScriptSig.js';
+import * as witnessUtxo from './input/witnessUtxo.js';
 
-import * as tapTree from './output/tapTree';
+import * as tapTree from './output/tapTree.js';
 
-import * as bip32Derivation from './shared/bip32Derivation';
-import * as checkPubkey from './shared/checkPubkey';
-import * as redeemScript from './shared/redeemScript';
-import * as tapBip32Derivation from './shared/tapBip32Derivation';
-import * as tapInternalKey from './shared/tapInternalKey';
-import * as witnessScript from './shared/witnessScript';
+import * as bip32Derivation from './shared/bip32Derivation.js';
+import * as checkPubkey from './shared/checkPubkey.js';
+import * as redeemScript from './shared/redeemScript.js';
+import * as tapBip32Derivation from './shared/tapBip32Derivation.js';
+import * as tapInternalKey from './shared/tapInternalKey.js';
+import * as witnessScript from './shared/witnessScript.js';
 
 const globals = {
   unsignedTx,

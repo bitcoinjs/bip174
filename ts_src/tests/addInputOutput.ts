@@ -1,6 +1,6 @@
-import * as tape from 'tape';
-import { Psbt } from '../lib/psbt';
-import { getDefaultTx, transactionFromBuffer } from './utils/txTools';
+import tape from 'tape';
+import { Psbt } from '../lib/psbt.js';
+import { getDefaultTx, transactionFromBuffer } from './utils/txTools.js';
 
 tape('Test: add Input Output', t => {
   const psbt = new Psbt(getDefaultTx());
@@ -37,13 +37,5 @@ tape('Test: add Input Output', t => {
       'e18870f2c297fbfca54c5c6f645c7745a5b66eda87000000000000000000',
   );
   t.equal(hex, hex2);
-
-  // console.log(jsonA1);
-  // console.log(jsonA2);
-  // console.log(jsonB1);
-  // console.log(jsonB2);
-
-  // t.notDeepEqual(JSON.parse(jsonA1), JSON.parse(jsonB1));
-  // t.deepEqual(JSON.parse(jsonA2), JSON.parse(jsonB2));
   t.end();
 });

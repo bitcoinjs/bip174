@@ -1,4 +1,5 @@
 import { KeyValue, TapInternalKey } from '../../interfaces';
+import * as tools from 'uint8array-tools';
 
 export function makeConverter(
   TYPE_BYTE: number,
@@ -13,7 +14,7 @@ export function makeConverter(
     if (keyVal.key[0] !== TYPE_BYTE || keyVal.key.length !== 1) {
       throw new Error(
         'Decode Error: could not decode tapInternalKey with key 0x' +
-          keyVal.key.toString('hex'),
+          tools.toHex(keyVal.key),
       );
     }
     if (keyVal.value.length !== 32) {
@@ -25,13 +26,13 @@ export function makeConverter(
   }
 
   function encode(value: TapInternalKey): KeyValue {
-    const key = Buffer.from([TYPE_BYTE]);
+    const key = Uint8Array.from([TYPE_BYTE]);
     return { key, value };
   }
 
-  const expected = 'Buffer';
+  const expected = 'Uint8Array';
   function check(data: any): data is TapInternalKey {
-    return Buffer.isBuffer(data) && data.length === 32;
+    return data instanceof Uint8Array && data.length === 32;
   }
 
   function canAdd(currentData: any, newData: any): boolean {

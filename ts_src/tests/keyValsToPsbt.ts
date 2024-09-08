@@ -1,8 +1,8 @@
-import * as tape from 'tape';
-import { psbtFromKeyVals } from '../lib/parser/fromBuffer';
-import { Psbt } from '../lib/psbt';
-import { fixtures } from './fixtures/keyValsToPsbt';
-import { getDefaultTx, transactionFromBuffer } from './utils/txTools';
+import tape from 'tape';
+import { psbtFromKeyVals } from '../lib/parser/fromBuffer.js';
+import { Psbt } from '../lib/psbt.js';
+import { fixtures } from './fixtures/keyValsToPsbt.js';
+import { getDefaultTx, transactionFromBuffer } from './utils/txTools.js';
 
 for (const f of fixtures) {
   if (f.exception) {
@@ -21,7 +21,6 @@ for (const f of fixtures) {
       const psbt = new Psbt(tx);
       Object.assign(psbt, data);
       t.strictEqual(psbt.toBase64(), f.expected);
-      // else console.log(psbt.toBase64());
       t.end();
     });
   }

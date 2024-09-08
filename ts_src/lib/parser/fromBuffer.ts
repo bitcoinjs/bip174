@@ -1,6 +1,7 @@
-import * as convert from '../converter';
-import { range } from '../converter/tools';
-import * as varuint from '../converter/varint';
+import * as convert from '../converter/index.js';
+import { range } from '../converter/tools.js';
+import * as varuint from 'varuint-bitcoin';
+import * as tools from 'uint8array-tools';
 import {
   KeyValue,
   PsbtGlobal,
@@ -9,31 +10,31 @@ import {
   Transaction,
   TransactionFromBuffer,
 } from '../interfaces';
-import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields';
-import { PsbtAttributes } from './index';
+import { GlobalTypes, InputTypes, OutputTypes } from '../typeFields.js';
+import { PsbtAttributes } from './index.js';
 
 export function psbtFromBuffer(
-  buffer: Buffer,
+  buffer: Uint8Array,
   txGetter: TransactionFromBuffer,
 ): PsbtAttributes {
   let offset = 0;
 
-  function varSlice(): Buffer {
-    const keyLen = varuint.decode(buffer, offset);
-    offset += varuint.encodingLength(keyLen);
-    const key = buffer.slice(offset, offset + keyLen);
-    offset += keyLen;
+  function varSlice(): Uint8Array {
+    const { numberValue: keyLen, bytes } = varuint.decode(buffer, offset);
+    offset += bytes;
+    const key = buffer.slice(offset, offset + Number(keyLen));
+    offset += Number(keyLen);
     return key;
   }
 
   function readUInt32BE(): number {
-    const num = buffer.readUInt32BE(offset);
+    const num = tools.readUInt32(buffer, offset, 'BE');
     offset += 4;
     return num;
   }
 
   function readUInt8(): number {
-    const num = buffer.readUInt8(offset);
+    const num = tools.readUInt8(buffer, offset);
     offset += 1;
     return num;
   }
@@ -51,7 +52,7 @@ export function psbtFromBuffer(
     if (offset >= buffer.length) {
       throw new Error('Format Error: Unexpected End of PSBT');
     }
-    const isEnd = buffer.readUInt8(offset) === 0;
+    const isEnd = tools.readUInt8(buffer, offset) === 0;
     if (isEnd) {
       offset++;
     }
@@ -71,7 +72,7 @@ export function psbtFromBuffer(
   const globalKeyIndex: { [index: string]: number } = {};
   while (!checkEndOfKeyValPairs()) {
     const keyVal = getKeyValue();
-    const hexKey = keyVal.key.toString('hex');
+    const hexKey = tools.toHex(keyVal.key);
     if (globalKeyIndex[hexKey]) {
       throw new Error(
         'Format Error: Keys must be unique for global keymap: key ' + hexKey,
@@ -102,7 +103,7 @@ export function psbtFromBuffer(
     const input = [] as KeyValue[];
     while (!checkEndOfKeyValPairs()) {
       const keyVal = getKeyValue();
-      const hexKey = keyVal.key.toString('hex');
+      const hexKey = tools.toHex(keyVal.key);
       if (inputKeyIndex[hexKey]) {
         throw new Error(
           'Format Error: Keys must be unique for each input: ' +
@@ -123,7 +124,7 @@ export function psbtFromBuffer(
     const output = [] as KeyValue[];
     while (!checkEndOfKeyValPairs()) {
       const keyVal = getKeyValue();
-      const hexKey = keyVal.key.toString('hex');
+      const hexKey = tools.toHex(keyVal.key);
       if (outputKeyIndex[hexKey]) {
         throw new Error(
           'Format Error: Keys must be unique for each output: ' +
@@ -154,12 +155,13 @@ interface PsbtFromKeyValsArg {
 
 export function checkKeyBuffer(
   type: string,
-  keyBuf: Buffer,
+  keyBuf: Uint8Array,
   keyNum: number,
 ): void {
-  if (!keyBuf.equals(Buffer.from([keyNum]))) {
+  if (tools.compare(keyBuf, Uint8Array.from([keyNum]))) {
     throw new Error(
-      `Format Error: Invalid ${type} key: ${keyBuf.toString('hex')}`,
+      // `Format Error: Invalid ${type} key: ${keyBuf.toString('hex')}`,
+      `Format Error: Invalid ${type} key: ${tools.toHex(keyBuf)}`,
     );
   }
 }
