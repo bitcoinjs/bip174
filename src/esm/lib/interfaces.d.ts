@@ -18,6 +18,8 @@ export interface PsbtGlobal extends PsbtGlobalUpdate {
 }
 export interface PsbtGlobalUpdate {
     globalXpub?: GlobalXpub[];
+    silentPaymentEcdhShare?: SilentPaymentEcdhShare[];
+    silentPaymentDleq?: SilentPaymentDleq[];
 }
 export interface PsbtInput extends PsbtInputUpdate {
     unknownKeyVals?: KeyValue[];
@@ -39,6 +41,8 @@ export interface PsbtInputUpdate {
     tapBip32Derivation?: TapBip32Derivation[];
     tapInternalKey?: TapInternalKey;
     tapMerkleRoot?: TapMerkleRoot;
+    silentPaymentEcdhShare?: SilentPaymentEcdhShare[];
+    silentPaymentDleq?: SilentPaymentDleq[];
 }
 export interface PsbtInputExtended extends PsbtInput {
     [index: string]: any;
@@ -53,6 +57,9 @@ export interface PsbtOutputUpdate {
     tapBip32Derivation?: TapBip32Derivation[];
     tapTree?: TapTree;
     tapInternalKey?: TapInternalKey;
+    script?: OutputScript;
+    silentPaymentV0Info?: SilentPaymentV0Info;
+    silentPaymentOutputLabel?: SilentPaymentOutputLabel;
 }
 export interface PsbtOutputExtended extends PsbtOutput {
     [index: string]: any;
@@ -83,6 +90,7 @@ export declare type FinalScriptSig = Uint8Array;
 export declare type FinalScriptWitness = Uint8Array;
 export declare type PorCommitment = string;
 export declare type TapKeySig = Uint8Array;
+export declare type OutputScript = Uint8Array;
 export interface TapScriptSig extends PartialSig {
     leafHash: Uint8Array;
 }
@@ -111,4 +119,17 @@ export declare type TransactionIOCountGetter = (txBuffer: Uint8Array) => {
 };
 export declare type TransactionVersionSetter = (version: number, txBuffer: Uint8Array) => Uint8Array;
 export declare type TransactionLocktimeSetter = (locktime: number, txBuffer: Uint8Array) => Uint8Array;
+export interface SilentPaymentEcdhShare {
+    scanKey: Uint8Array;
+    share: Uint8Array;
+}
+export interface SilentPaymentDleq {
+    scanKey: Uint8Array;
+    proof: Uint8Array;
+}
+export interface SilentPaymentV0Info {
+    scanKey: Uint8Array;
+    spendKey: Uint8Array;
+}
+export declare type SilentPaymentOutputLabel = number;
 export {};
