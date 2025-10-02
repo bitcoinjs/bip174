@@ -27,10 +27,22 @@ const tapLeafScript = __importStar(require('./input/tapLeafScript.cjs'));
 const tapMerkleRoot = __importStar(require('./input/tapMerkleRoot.cjs'));
 const tapScriptSig = __importStar(require('./input/tapScriptSig.cjs'));
 const witnessUtxo = __importStar(require('./input/witnessUtxo.cjs'));
+const silentPaymentOutputLabel = __importStar(
+  require('./output/silentPaymentOutputLabel.cjs'),
+);
+const silentPaymentV0Info = __importStar(
+  require('./output/silentPaymentV0Info.cjs'),
+);
 const tapTree = __importStar(require('./output/tapTree.cjs'));
 const bip32Derivation = __importStar(require('./shared/bip32Derivation.cjs'));
 const checkPubkey = __importStar(require('./shared/checkPubkey.cjs'));
 const redeemScript = __importStar(require('./shared/redeemScript.cjs'));
+const silentPaymentDleq = __importStar(
+  require('./shared/silentPaymentDleq.cjs'),
+);
+const silentPaymentEcdhShare = __importStar(
+  require('./shared/silentPaymentEcdhShare.cjs'),
+);
 const tapBip32Derivation = __importStar(
   require('./shared/tapBip32Derivation.cjs'),
 );
@@ -41,6 +53,12 @@ const globals = {
   globalXpub,
   // pass an Array of key bytes that require pubkey beside the key
   checkPubkey: checkPubkey.makeChecker([]),
+  silentPaymentEcdhShare: silentPaymentEcdhShare.makeConverter(
+    typeFields_js_1.GlobalTypes.GLOBAL_SP_ECDH_SHARE,
+  ),
+  silentPaymentDleq: silentPaymentDleq.makeConverter(
+    typeFields_js_1.GlobalTypes.GLOBAL_SP_DLEQ,
+  ),
 };
 exports.globals = globals;
 const inputs = {
@@ -74,6 +92,12 @@ const inputs = {
     typeFields_js_1.InputTypes.TAP_INTERNAL_KEY,
   ),
   tapMerkleRoot,
+  silentPaymentEcdhShare: silentPaymentEcdhShare.makeConverter(
+    typeFields_js_1.InputTypes.SP_ECDH_SHARE,
+  ),
+  silentPaymentDleq: silentPaymentDleq.makeConverter(
+    typeFields_js_1.InputTypes.SP_DLEQ,
+  ),
 };
 exports.inputs = inputs;
 const outputs = {
@@ -96,5 +120,7 @@ const outputs = {
   tapInternalKey: tapInternalKey.makeConverter(
     typeFields_js_1.OutputTypes.TAP_INTERNAL_KEY,
   ),
+  silentPaymentV0Info,
+  silentPaymentOutputLabel,
 };
 exports.outputs = outputs;

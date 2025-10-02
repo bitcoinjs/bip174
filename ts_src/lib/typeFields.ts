@@ -1,8 +1,15 @@
 export enum GlobalTypes {
   UNSIGNED_TX,
   GLOBAL_XPUB,
+  GLOBAL_SP_ECDH_SHARE = 0x07,
+  GLOBAL_SP_DLEQ,
 }
-export const GLOBAL_TYPE_NAMES = ['unsignedTx', 'globalXpub'];
+export const GLOBAL_TYPE_NAMES = [
+  'unsignedTx',
+  'globalXpub',
+  'silentPaymentEcdhShare',
+  'silentPaymentDleq',
+];
 
 export enum InputTypes {
   NON_WITNESS_UTXO,
@@ -21,6 +28,8 @@ export enum InputTypes {
   TAP_BIP32_DERIVATION, // multiple OK, key contains x-only pubkey
   TAP_INTERNAL_KEY,
   TAP_MERKLE_ROOT,
+  SP_ECDH_SHARE = 0x1d, // multiple OK, key contains silent payment scanKey
+  SP_DLEQ, // multiple OK, key contains silent payment scanKey
 }
 export const INPUT_TYPE_NAMES = [
   'nonWitnessUtxo',
@@ -39,6 +48,8 @@ export const INPUT_TYPE_NAMES = [
   'tapBip32Derivation',
   'tapInternalKey',
   'tapMerkleRoot',
+  'silentPaymentEcdhShare',
+  'silentPaymentDleq',
 ];
 
 export enum OutputTypes {
@@ -48,6 +59,8 @@ export enum OutputTypes {
   TAP_INTERNAL_KEY = 0x05,
   TAP_TREE,
   TAP_BIP32_DERIVATION, // multiple OK, key contains x-only pubkey
+  SP_V0_INFO = 0x09,
+  SP_V0_LABEL,
 }
 export const OUTPUT_TYPE_NAMES = [
   'redeemScript',
@@ -56,4 +69,6 @@ export const OUTPUT_TYPE_NAMES = [
   'tapInternalKey',
   'tapTree',
   'tapBip32Derivation',
+  'silentPaymentV0Info',
+  'silentPaymentV0Label',
 ];

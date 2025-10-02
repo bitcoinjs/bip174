@@ -11,11 +11,27 @@ import * as tapLeafScript from './input/tapLeafScript.js';
 import * as tapMerkleRoot from './input/tapMerkleRoot.js';
 import * as tapScriptSig from './input/tapScriptSig.js';
 import * as witnessUtxo from './input/witnessUtxo.js';
+import * as silentPaymentOutputLabel from './output/silentPaymentOutputLabel.js';
+import * as silentPaymentV0Info from './output/silentPaymentV0Info.js';
 import * as tapTree from './output/tapTree.js';
 declare const globals: {
     unsignedTx: typeof unsignedTx;
     globalXpub: typeof globalXpub;
     checkPubkey: (keyVal: import("../interfaces.js").KeyValue) => Uint8Array | undefined;
+    silentPaymentEcdhShare: {
+        decode: (keyVal: import("../interfaces.js").KeyValue) => import("../interfaces.js").SilentPaymentEcdhShare;
+        encode: (data: import("../interfaces.js").SilentPaymentEcdhShare) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is import("../interfaces.js").SilentPaymentEcdhShare;
+        expected: string;
+        canAddToArray: (array: import("../interfaces.js").SilentPaymentEcdhShare[], item: import("../interfaces.js").SilentPaymentEcdhShare, dupeSet: Set<string>) => boolean;
+    };
+    silentPaymentDleq: {
+        decode: (keyVal: import("../interfaces.js").KeyValue) => import("../interfaces.js").SilentPaymentDleq;
+        encode: (data: import("../interfaces.js").SilentPaymentDleq) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is import("../interfaces.js").SilentPaymentDleq;
+        expected: string;
+        canAddToArray: (array: import("../interfaces.js").SilentPaymentDleq[], item: import("../interfaces.js").SilentPaymentDleq, dupeSet: Set<string>) => boolean;
+    };
 };
 declare const inputs: {
     nonWitnessUtxo: typeof nonWitnessUtxo;
@@ -65,6 +81,20 @@ declare const inputs: {
         canAdd: (currentData: any, newData: any) => boolean;
     };
     tapMerkleRoot: typeof tapMerkleRoot;
+    silentPaymentEcdhShare: {
+        decode: (keyVal: import("../interfaces.js").KeyValue) => import("../interfaces.js").SilentPaymentEcdhShare;
+        encode: (data: import("../interfaces.js").SilentPaymentEcdhShare) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is import("../interfaces.js").SilentPaymentEcdhShare;
+        expected: string;
+        canAddToArray: (array: import("../interfaces.js").SilentPaymentEcdhShare[], item: import("../interfaces.js").SilentPaymentEcdhShare, dupeSet: Set<string>) => boolean;
+    };
+    silentPaymentDleq: {
+        decode: (keyVal: import("../interfaces.js").KeyValue) => import("../interfaces.js").SilentPaymentDleq;
+        encode: (data: import("../interfaces.js").SilentPaymentDleq) => import("../interfaces.js").KeyValue;
+        check: (data: any) => data is import("../interfaces.js").SilentPaymentDleq;
+        expected: string;
+        canAddToArray: (array: import("../interfaces.js").SilentPaymentDleq[], item: import("../interfaces.js").SilentPaymentDleq, dupeSet: Set<string>) => boolean;
+    };
 };
 declare const outputs: {
     bip32Derivation: {
@@ -104,5 +134,7 @@ declare const outputs: {
         expected: string;
         canAdd: (currentData: any, newData: any) => boolean;
     };
+    silentPaymentV0Info: typeof silentPaymentV0Info;
+    silentPaymentOutputLabel: typeof silentPaymentOutputLabel;
 };
 export { globals, inputs, outputs };

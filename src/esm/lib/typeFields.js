@@ -2,8 +2,16 @@ export var GlobalTypes;
 (function(GlobalTypes) {
   GlobalTypes[(GlobalTypes['UNSIGNED_TX'] = 0)] = 'UNSIGNED_TX';
   GlobalTypes[(GlobalTypes['GLOBAL_XPUB'] = 1)] = 'GLOBAL_XPUB';
+  GlobalTypes[(GlobalTypes['GLOBAL_SP_ECDH_SHARE'] = 7)] =
+    'GLOBAL_SP_ECDH_SHARE';
+  GlobalTypes[(GlobalTypes['GLOBAL_SP_DLEQ'] = 8)] = 'GLOBAL_SP_DLEQ';
 })(GlobalTypes || (GlobalTypes = {}));
-export const GLOBAL_TYPE_NAMES = ['unsignedTx', 'globalXpub'];
+export const GLOBAL_TYPE_NAMES = [
+  'unsignedTx',
+  'globalXpub',
+  'silentPaymentEcdhShare',
+  'silentPaymentDleq',
+];
 export var InputTypes;
 (function(InputTypes) {
   InputTypes[(InputTypes['NON_WITNESS_UTXO'] = 0)] = 'NON_WITNESS_UTXO';
@@ -23,6 +31,8 @@ export var InputTypes;
     'TAP_BIP32_DERIVATION';
   InputTypes[(InputTypes['TAP_INTERNAL_KEY'] = 23)] = 'TAP_INTERNAL_KEY';
   InputTypes[(InputTypes['TAP_MERKLE_ROOT'] = 24)] = 'TAP_MERKLE_ROOT';
+  InputTypes[(InputTypes['SP_ECDH_SHARE'] = 29)] = 'SP_ECDH_SHARE';
+  InputTypes[(InputTypes['SP_DLEQ'] = 30)] = 'SP_DLEQ';
 })(InputTypes || (InputTypes = {}));
 export const INPUT_TYPE_NAMES = [
   'nonWitnessUtxo',
@@ -41,6 +51,8 @@ export const INPUT_TYPE_NAMES = [
   'tapBip32Derivation',
   'tapInternalKey',
   'tapMerkleRoot',
+  'silentPaymentEcdhShare',
+  'silentPaymentDleq',
 ];
 export var OutputTypes;
 (function(OutputTypes) {
@@ -51,6 +63,8 @@ export var OutputTypes;
   OutputTypes[(OutputTypes['TAP_TREE'] = 6)] = 'TAP_TREE';
   OutputTypes[(OutputTypes['TAP_BIP32_DERIVATION'] = 7)] =
     'TAP_BIP32_DERIVATION';
+  OutputTypes[(OutputTypes['SP_V0_INFO'] = 9)] = 'SP_V0_INFO';
+  OutputTypes[(OutputTypes['SP_V0_LABEL'] = 10)] = 'SP_V0_LABEL';
 })(OutputTypes || (OutputTypes = {}));
 export const OUTPUT_TYPE_NAMES = [
   'redeemScript',
@@ -59,4 +73,6 @@ export const OUTPUT_TYPE_NAMES = [
   'tapInternalKey',
   'tapTree',
   'tapBip32Derivation',
+  'silentPaymentV0Info',
+  'silentPaymentV0Label',
 ];
