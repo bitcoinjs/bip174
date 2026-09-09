@@ -1,6 +1,8 @@
 export declare enum GlobalTypes {
     UNSIGNED_TX = 0,
-    GLOBAL_XPUB = 1
+    GLOBAL_XPUB = 1,
+    GLOBAL_SP_ECDH_SHARE = 7,
+    GLOBAL_SP_DLEQ = 8
 }
 export declare const GLOBAL_TYPE_NAMES: string[];
 export declare enum InputTypes {
@@ -19,7 +21,9 @@ export declare enum InputTypes {
     TAP_LEAF_SCRIPT = 21,
     TAP_BIP32_DERIVATION = 22,
     TAP_INTERNAL_KEY = 23,
-    TAP_MERKLE_ROOT = 24
+    TAP_MERKLE_ROOT = 24,
+    SP_ECDH_SHARE = 29,
+    SP_DLEQ = 30
 }
 export declare const INPUT_TYPE_NAMES: string[];
 export declare enum OutputTypes {
@@ -28,6 +32,8 @@ export declare enum OutputTypes {
     BIP32_DERIVATION = 2,
     TAP_INTERNAL_KEY = 5,
     TAP_TREE = 6,
-    TAP_BIP32_DERIVATION = 7
+    TAP_BIP32_DERIVATION = 7,
+    SP_V0_INFO = 9,
+    SP_V0_LABEL = 10
 }
 export declare const OUTPUT_TYPE_NAMES: string[];

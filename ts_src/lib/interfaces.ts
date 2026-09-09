@@ -14,7 +14,7 @@ export interface Transaction {
   // This function will modify the internal state of the transaction.
   addInput(objectArg: any): void;
   // Same as addInput. But with adding an output. For Bitcoin scriptPubkey
-  // and value are all that should be needed.
+  // or silentPayment and value are all that should be needed.
   addOutput(objectArg: any): void;
   // This is primarily used when serializing the PSBT to a binary.
   // You can implement caching behind the scenes if needed and clear the cache
@@ -34,6 +34,8 @@ export interface PsbtGlobal extends PsbtGlobalUpdate {
 
 export interface PsbtGlobalUpdate {
   globalXpub?: GlobalXpub[];
+  silentPaymentEcdhShare?: SilentPaymentEcdhShare[];
+  silentPaymentDleq?: SilentPaymentDleq[];
 }
 
 export interface PsbtInput extends PsbtInputUpdate {
@@ -57,6 +59,8 @@ export interface PsbtInputUpdate {
   tapBip32Derivation?: TapBip32Derivation[];
   tapInternalKey?: TapInternalKey;
   tapMerkleRoot?: TapMerkleRoot;
+  silentPaymentEcdhShare?: SilentPaymentEcdhShare[];
+  silentPaymentDleq?: SilentPaymentDleq[];
 }
 
 export interface PsbtInputExtended extends PsbtInput {
@@ -74,6 +78,9 @@ export interface PsbtOutputUpdate {
   tapBip32Derivation?: TapBip32Derivation[];
   tapTree?: TapTree;
   tapInternalKey?: TapInternalKey;
+  script?: OutputScript;
+  silentPaymentV0Info?: SilentPaymentV0Info;
+  silentPaymentOutputLabel?: SilentPaymentOutputLabel;
 }
 
 export interface PsbtOutputExtended extends PsbtOutput {
@@ -117,6 +124,8 @@ export type FinalScriptWitness = Uint8Array;
 export type PorCommitment = string;
 
 export type TapKeySig = Uint8Array;
+
+export type OutputScript = Uint8Array;
 
 export interface TapScriptSig extends PartialSig {
   leafHash: Uint8Array;
@@ -165,3 +174,20 @@ export type TransactionLocktimeSetter = (
   locktime: number,
   txBuffer: Uint8Array,
 ) => Uint8Array;
+
+export interface SilentPaymentEcdhShare {
+  scanKey: Uint8Array;
+  share: Uint8Array;
+}
+
+export interface SilentPaymentDleq {
+  scanKey: Uint8Array;
+  proof: Uint8Array;
+}
+
+export interface SilentPaymentV0Info {
+  scanKey: Uint8Array;
+  spendKey: Uint8Array;
+}
+
+export type SilentPaymentOutputLabel = number;

@@ -153,6 +153,22 @@ export function psbtFromKeyVals(
         }
         globalMap.globalXpub.push(convert.globals.globalXpub.decode(keyVal));
         break;
+      case GlobalTypes.GLOBAL_SP_ECDH_SHARE:
+        if (globalMap.silentPaymentEcdhShare === undefined) {
+          globalMap.silentPaymentEcdhShare = [];
+        }
+        globalMap.silentPaymentEcdhShare.push(
+          convert.globals.silentPaymentEcdhShare.decode(keyVal),
+        );
+        break;
+      case GlobalTypes.GLOBAL_SP_DLEQ:
+        if (globalMap.silentPaymentDleq === undefined) {
+          globalMap.silentPaymentDleq = [];
+        }
+        globalMap.silentPaymentDleq.push(
+          convert.globals.silentPaymentDleq.decode(keyVal),
+        );
+        break;
       default:
         // This will allow inclusion during serialization.
         if (!globalMap.unknownKeyVals) globalMap.unknownKeyVals = [];
@@ -267,6 +283,22 @@ export function psbtFromKeyVals(
           checkKeyBuffer('input', keyVal.key, InputTypes.TAP_MERKLE_ROOT);
           input.tapMerkleRoot = convert.inputs.tapMerkleRoot.decode(keyVal);
           break;
+        case InputTypes.SP_ECDH_SHARE:
+          if (input.silentPaymentEcdhShare === undefined) {
+            input.silentPaymentEcdhShare = [];
+          }
+          input.silentPaymentEcdhShare.push(
+            convert.inputs.silentPaymentEcdhShare.decode(keyVal),
+          );
+          break;
+        case InputTypes.SP_DLEQ:
+          if (input.silentPaymentDleq === undefined) {
+            input.silentPaymentDleq = [];
+          }
+          input.silentPaymentDleq.push(
+            convert.inputs.silentPaymentDleq.decode(keyVal),
+          );
+          break;
         default:
           // This will allow inclusion during serialization.
           if (!input.unknownKeyVals) input.unknownKeyVals = [];
@@ -316,6 +348,18 @@ export function psbtFromKeyVals(
           }
           output.tapBip32Derivation.push(
             convert.outputs.tapBip32Derivation.decode(keyVal),
+          );
+          break;
+        case OutputTypes.SP_V0_INFO:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.SP_V0_INFO);
+          output.silentPaymentV0Info = convert.outputs.silentPaymentV0Info.decode(
+            keyVal,
+          );
+          break;
+        case OutputTypes.SP_V0_LABEL:
+          checkKeyBuffer('output', keyVal.key, OutputTypes.SP_V0_LABEL);
+          output.silentPaymentOutputLabel = convert.outputs.silentPaymentOutputLabel.decode(
+            keyVal,
           );
           break;
         default:
