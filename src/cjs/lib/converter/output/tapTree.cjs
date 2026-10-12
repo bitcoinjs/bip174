@@ -34,6 +34,11 @@ function decode(keyVal) {
       _offset,
     );
     _offset += bytes;
+    if (scriptLen === null || scriptLen > keyVal.value.length - _offset) {
+      throw new Error(
+        'Decode Error: tapTree script length exceeds remaining data',
+      );
+    }
     data.push({
       depth,
       leafVersion,
