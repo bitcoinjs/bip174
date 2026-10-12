@@ -20,12 +20,17 @@ export function decode(keyVal: KeyValue): TapTree {
       _offset,
     );
     _offset += bytes;
+    if (scriptLen === null || scriptLen > keyVal.value.length - _offset) {
+      throw new Error(
+        'Decode Error: tapTree script length exceeds remaining data',
+      );
+    }
     data.push({
       depth,
       leafVersion,
-      script: keyVal.value.slice(_offset, _offset + scriptLen!),
+      script: keyVal.value.slice(_offset, _offset + scriptLen),
     });
-    _offset += scriptLen!;
+    _offset += scriptLen;
   }
   return { leaves: data };
 }
