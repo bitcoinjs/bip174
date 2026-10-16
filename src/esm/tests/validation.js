@@ -7,6 +7,46 @@ import {
 import { getDefaultTx } from './utils/txTools.js';
 import * as tools from 'uint8array-tools';
 const b = hex => Buffer.from(hex, 'hex');
+tape('tapLeafScript enforces control block length bounds', t => {
+  for (const length of [1, 32, 34, 33 + 32 * 129]) {
+    const controlBlock = new Uint8Array(length);
+    controlBlock[0] = 0xc0;
+    const data = {
+      controlBlock,
+      leafVersion: 0xc0,
+      script: new Uint8Array([0x51]),
+    };
+    t.notOk(convertInputs.tapLeafScript.check(data), `reject length ${length}`);
+    t.throws(
+      () =>
+        convertInputs.tapLeafScript.decode(
+          convertInputs.tapLeafScript.encode(data),
+        ),
+      /tapLeafScript has invalid control block/,
+      `reject encoded length ${length}`,
+    );
+  }
+  for (const depth of [0, 1, 128]) {
+    for (const parity of [0, 1]) {
+      const controlBlock = new Uint8Array(33 + 32 * depth);
+      controlBlock[0] = 0xc0 | parity;
+      const data = {
+        controlBlock,
+        leafVersion: 0xc0,
+        script: new Uint8Array([0x51]),
+      };
+      t.ok(convertInputs.tapLeafScript.check(data), `accept depth ${depth}`);
+      t.same(
+        convertInputs.tapLeafScript.decode(
+          convertInputs.tapLeafScript.encode(data),
+        ),
+        data,
+        `round trip depth ${depth}, parity ${parity}`,
+      );
+    }
+  }
+  t.end();
+});
 tape('should not pass isPartialSig with invalid DER signature', t => {
   const data = {
     pubkey: b(

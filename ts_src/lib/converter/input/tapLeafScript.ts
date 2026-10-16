@@ -9,7 +9,11 @@ export function decode(keyVal: KeyValue): TapLeafScript {
         tools.toHex(keyVal.key),
     );
   }
-  if ((keyVal.key.length - 2) % 32 !== 0) {
+  if (
+    keyVal.key.length < 34 ||
+    keyVal.key.length > 34 + 32 * 128 ||
+    (keyVal.key.length - 2) % 32 !== 0
+  ) {
     throw new Error(
       'Decode Error: tapLeafScript has invalid control block in key 0x' +
         tools.toHex(keyVal.key),
@@ -44,6 +48,8 @@ export const expected =
 export function check(data: any): data is TapLeafScript {
   return (
     data.controlBlock instanceof Uint8Array &&
+    data.controlBlock.length >= 33 &&
+    data.controlBlock.length <= 33 + 32 * 128 &&
     (data.controlBlock.length - 1) % 32 === 0 &&
     (data.controlBlock[0] & 0xfe) === data.leafVersion &&
     data.script instanceof Uint8Array
