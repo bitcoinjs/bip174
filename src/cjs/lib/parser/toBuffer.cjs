@@ -21,12 +21,10 @@ function psbtToBuffer({ globalMap, inputs, outputs }) {
     outputs,
   });
   const globalBuffer = tools_js_1.keyValsToBuffer(globalKeyVals);
-  const keyValsOrEmptyToBuffer = keyVals =>
-    keyVals.length === 0
-      ? [Uint8Array.from([0])]
-      : keyVals.map(tools_js_1.keyValsToBuffer);
-  const inputBuffers = keyValsOrEmptyToBuffer(inputKeyVals);
-  const outputBuffers = keyValsOrEmptyToBuffer(outputKeyVals);
+  // Each input and output has its own map ending in a separator, so no
+  // inputs or no outputs means no bytes at all.
+  const inputBuffers = inputKeyVals.map(tools_js_1.keyValsToBuffer);
+  const outputBuffers = outputKeyVals.map(tools_js_1.keyValsToBuffer);
   const header = new Uint8Array(5);
   header.set([0x70, 0x73, 0x62, 0x74, 0xff], 0);
   return tools.concat(
